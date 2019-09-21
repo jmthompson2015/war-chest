@@ -79,6 +79,7 @@ class PlayerPanel extends React.Component {
       discardFaceup,
       hand,
       morgue,
+      myKey,
       player,
       resourceBase,
       supply,
@@ -93,7 +94,7 @@ class PlayerPanel extends React.Component {
 
     const cells = [discardUI, handUI, morgueUI, supplyUI, tableauUI];
 
-    return ReactUtils.createFlexboxWrap(cells, "titledElementTable", className);
+    return ReactUtils.createFlexboxWrap(cells, myKey, className);
   }
 }
 
@@ -108,11 +109,13 @@ PlayerPanel.propTypes = {
   tableau: PropTypes.arrayOf().isRequired,
 
   className: PropTypes.string,
+  myKey: PropTypes.string,
   resourceBase: PropTypes.string
 };
 
 PlayerPanel.defaultProps = {
   className: undefined,
+  myKey: "playerPanel",
   resourceBase: Endpoint.NETWORK_RESOURCE
 };
 
