@@ -1,7 +1,7 @@
 import Resolver from "../artifact/Resolver.js";
 
+import CoinUI from "./CoinUI.js";
 import Endpoint from "./Endpoint.js";
-import LabeledImage from "./LabeledImage.js";
 import ReactUtils from "./ReactUtilities.js";
 
 class CoinsUI extends React.PureComponent {
@@ -10,16 +10,11 @@ class CoinsUI extends React.PureComponent {
 
     const mapFunction = coinState => {
       const coin = Resolver.coin(coinState.coinKey);
-      const image = Resolver.coinImage(coinState.coinKey, coinState.isFaceup);
-      const element = React.createElement(LabeledImage, {
-        key: coin.name,
-        height: width,
-        image,
-        label: String(coinState.count),
-        labelClass: "b f3 tc black",
+      const element = React.createElement(CoinUI, {
+        coin,
+        count: coinState.count,
+        isFaceup: coinState.isFaceup,
         resourceBase,
-        showOne: false,
-        title: coin.name,
         width
       });
 
