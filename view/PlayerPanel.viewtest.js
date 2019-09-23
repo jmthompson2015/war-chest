@@ -1,3 +1,5 @@
+/* eslint no-console: ["error", { allow: ["log"] }] */
+
 import UnitCoin from "../artifact/UnitCoin.js";
 
 import ActionCreator from "../state/ActionCreator.js";
@@ -7,6 +9,17 @@ import TestData from "../model/TestData.js";
 
 import Endpoint from "./Endpoint.js";
 import PlayerPanel from "./PlayerPanel.js";
+
+const myOnClick = event => {
+  console.log(`myOnClick()`);
+
+  const element = event.currentTarget;
+  const { coinkey, count, isfaceup } = element.dataset;
+
+  console.log(`coinkey = ${coinkey}`);
+  console.log(`count = ${count}`);
+  console.log(`isfaceup = ${isfaceup}`);
+};
 
 const store = TestData.createStore();
 store.dispatch(ActionCreator.addToPlayerArray("playerToDiscardFacedown", 1, UnitCoin.SWORDSMAN));
@@ -38,6 +51,7 @@ const element = React.createElement(PlayerPanel, {
   morgue,
   supply,
   tableau,
+  onClick: myOnClick,
   resourceBase: Endpoint.LOCAL_RESOURCE
 });
 ReactDOM.render(element, document.getElementById("panel"));

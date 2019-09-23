@@ -33,41 +33,53 @@ const createDiscardUI = (player, discardFacedown, discardFaceup, resourceBase) =
       : [];
   const coinStates2 = createCoinStates(discardFaceup);
   const coinStates = R.concat(coinStates1, coinStates2);
-  const element = React.createElement(CoinsUI, { coinStates, resourceBase });
+  const customKey = "discard";
+  const element = React.createElement(CoinsUI, { coinStates, customKey, resourceBase });
 
-  return React.createElement(TitledElement, { element, title: "Discard" });
+  return React.createElement(TitledElement, { key: "discard", element, title: "Discard" });
 };
 
-const createHandUI = (hand, resourceBase) => {
+const createHandUI = (hand, resourceBase, onClick) => {
   const reduceFunction = (accum, coinKey) => {
     const coinState = CoinState.create({ coinKey });
     return R.append(coinState, accum);
   };
   const coinStates = R.reduce(reduceFunction, [], hand);
-  const element = React.createElement(CoinsUI, { coinStates, resourceBase });
+  const customKey = "hand";
+  const eventSource = "hand";
+  const element = React.createElement(CoinsUI, {
+    coinStates,
+    customKey,
+    eventSource,
+    onClick,
+    resourceBase
+  });
 
-  return React.createElement(TitledElement, { element, title: "Hand" });
+  return React.createElement(TitledElement, { key: "hand", element, title: "Hand" });
 };
 
 const createMorgueUI = (morgue, resourceBase) => {
   const coinStates = createCoinStates(morgue);
-  const element = React.createElement(CoinsUI, { coinStates, resourceBase });
+  const customKey = "morgue";
+  const element = React.createElement(CoinsUI, { coinStates, customKey, resourceBase });
 
-  return React.createElement(TitledElement, { element, title: "Morgue" });
+  return React.createElement(TitledElement, { key: "morgue", element, title: "Morgue" });
 };
 
 const createSupplyUI = (supply, resourceBase) => {
   const coinStates = createCoinStates(supply);
-  const element = React.createElement(CoinsUI, { coinStates, resourceBase });
+  const customKey = "supply";
+  const element = React.createElement(CoinsUI, { coinStates, customKey, resourceBase });
 
-  return React.createElement(TitledElement, { element, title: "Supply" });
+  return React.createElement(TitledElement, { key: "supply", element, title: "Supply" });
 };
 
 const createTableauUI = (tableau, resourceBase) => {
   const cards = Resolver.cards(tableau);
-  const element = React.createElement(CardsUI, { cards, resourceBase, width: 125 });
+  const customKey = "tableau";
+  const element = React.createElement(CardsUI, { cards, customKey, resourceBase, width: 125 });
 
-  return React.createElement(TitledElement, { element, title: "Tableau" });
+  return React.createElement(TitledElement, { key: "tableau", element, title: "Tableau" });
 };
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,11 +87,12 @@ class PlayerPanel extends React.Component {
   render() {
     const {
       className,
+      customKey,
       discardFacedown,
       discardFaceup,
       hand,
       morgue,
-      myKey,
+      onClick,
       player,
       resourceBase,
       supply,
@@ -87,14 +100,14 @@ class PlayerPanel extends React.Component {
     } = this.props;
 
     const discardUI = createDiscardUI(player, discardFacedown, discardFaceup, resourceBase);
-    const handUI = createHandUI(hand, resourceBase);
+    const handUI = createHandUI(hand, resourceBase, onClick);
     const morgueUI = createMorgueUI(morgue, resourceBase);
     const supplyUI = createSupplyUI(supply, resourceBase);
     const tableauUI = createTableauUI(tableau, resourceBase);
 
     const cells = [discardUI, handUI, morgueUI, supplyUI, tableauUI];
 
-    return ReactUtils.createFlexboxWrap(cells, myKey, className);
+    return ReactUtils.createFlexboxWrap(cells, customKey, className);
   }
 }
 
@@ -109,13 +122,15 @@ PlayerPanel.propTypes = {
   tableau: PropTypes.arrayOf().isRequired,
 
   className: PropTypes.string,
-  myKey: PropTypes.string,
+  customKey: PropTypes.string,
+  onClick: PropTypes.func,
   resourceBase: PropTypes.string
 };
 
 PlayerPanel.defaultProps = {
   className: undefined,
-  myKey: "playerPanel",
+  customKey: "playerPanel",
+  onClick: () => {},
   resourceBase: Endpoint.NETWORK_RESOURCE
 };
 

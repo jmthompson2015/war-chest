@@ -5,15 +5,33 @@ import Endpoint from "./Endpoint.js";
 import ReactUtils from "./ReactUtilities.js";
 
 class CoinsUI extends React.PureComponent {
-  render() {
-    const { coinStates, resourceBase, width } = this.props;
+  constructor(props) {
+    super(props);
 
-    const mapFunction = coinState => {
-      const coin = Resolver.coin(coinState.coinKey);
+    this.handleOnClick = this.handleOnClickFunction.bind(this);
+  }
+
+  handleOnClickFunction(event) {
+    const { onClick } = this.props;
+
+    onClick(event);
+  }
+
+  render() {
+    const { coinStates, customKey, eventSource, resourceBase, width } = this.props;
+
+    const mapIndexed = R.addIndex(R.map);
+    const mapFunction = (coinState, i) => {
+      const { coinKey, count, isFaceup } = coinState;
+      const coin = Resolver.coin(coinKey);
+      const customKey2 = `${customKey}${coin.key}-${coin.name}-${count}-${isFaceup}-${i}`;
       const element = React.createElement(CoinUI, {
         coin,
-        count: coinState.count,
-        isFaceup: coinState.isFaceup,
+        count,
+        isFaceup,
+        customKey: customKey2,
+        eventSource,
+        onClick: this.handleOnClick,
         resourceBase,
         width
       });
@@ -21,21 +39,27 @@ class CoinsUI extends React.PureComponent {
       return ReactUtils.createCell(element, `coinCell${coin.name}`, "alignTop pa1 v-top");
     };
 
-    const coinCells = R.map(mapFunction, coinStates);
+    const coinCells = mapIndexed(mapFunction, coinStates);
     const row = ReactUtils.createRow(coinCells);
 
-    return ReactUtils.createTable(row, "coinsUITable", "bg-light-gray center");
+    return ReactUtils.createTable(row, "coinsUITable", "center");
   }
 }
 
 CoinsUI.propTypes = {
   coinStates: PropTypes.arrayOf().isRequired,
 
+  customKey: PropTypes.string,
+  eventSource: PropTypes.string,
+  onClick: PropTypes.func,
   resourceBase: PropTypes.string,
   width: PropTypes.number
 };
 
 CoinsUI.defaultProps = {
+  customKey: "CoinsUI",
+  eventSource: "CoinsUI",
+  onClick: () => {},
   resourceBase: Endpoint.NETWORK_RESOURCE,
   width: 50
 };

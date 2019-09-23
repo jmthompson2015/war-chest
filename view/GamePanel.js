@@ -1,3 +1,5 @@
+/* eslint no-console: ["error", { allow: ["log"] }] */
+
 import Selector from "../state/Selector.js";
 
 import BoardUI from "./BoardUI.js";
@@ -13,7 +15,7 @@ const createBoardUI = state =>
     resourceBase: Endpoint.LOCAL_RESOURCE
   });
 
-const createPlayerPanel = (player, state) =>
+const createPlayerPanel = (player, state, onClick) =>
   React.createElement(PlayerPanel, {
     myKey: `playerPanel${player.id}`,
     player,
@@ -23,20 +25,43 @@ const createPlayerPanel = (player, state) =>
     morgue: Selector.morgue(player.id, state),
     supply: Selector.supply(player.id, state),
     tableau: Selector.tableau(player.id, state),
+    onClick,
     resourceBase: Endpoint.LOCAL_RESOURCE
   });
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 class GamePanel extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.handleOnClick = this.handleOnClickFunction.bind(this);
+  }
+
+  handleOnClickFunction(event) {
+    const { state } = this.props;
+
+    if (!R.isNil(state)) {
+      const element = event.currentTarget;
+      const { dataset } = element;
+      const { source } = dataset;
+
+      if (source === "hand") {
+        const { coinKey, count, isFaceup } = dataset;
+        console.log(`GamePanel.handleOnClickFunction() event = ${event}`);
+        console.log(`source=${source} coinKey=${coinKey} count=${count} isFaceup=${isFaceup}`);
+      }
+    }
+  }
+
   render() {
     const { className, state } = this.props;
 
     const player1 = Selector.player(1, state);
     const player2 = Selector.player(2, state);
 
-    const playerPanel1 = createPlayerPanel(player1, state);
+    const playerPanel1 = createPlayerPanel(player1, state, this.handleOnClick);
     const boardUI = createBoardUI(state);
-    const playerPanel2 = createPlayerPanel(player2, state);
+    const playerPanel2 = createPlayerPanel(player2, state, this.handleOnClick);
 
     const rows = [
       ReactUtils.createRow(playerPanel1, "PlayerPanel1Row"),
