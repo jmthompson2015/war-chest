@@ -45,6 +45,9 @@ const morgue = Selector.morgue(1, state);
 const supply = Selector.supply(1, state);
 const tableau = Selector.tableau(1, state);
 
+const initiativePlayer = Selector.initiativePlayer(state);
+const isInitiativePlayer = player.id === initiativePlayer.id;
+
 const paymentCoin = Resolver.coin(hand[1]);
 const moveStates = MoveGenerator.generateForCoin(player, paymentCoin, state);
 
@@ -53,6 +56,7 @@ const element = React.createElement(PlayerPanel, {
   discardFacedown,
   discardFaceup,
   hand,
+  isInitiativePlayer,
   morgue,
   moveStates,
   supply,

@@ -59,6 +59,14 @@ const createHandUI = (hand, resourceBase, onClick) => {
   return React.createElement(TitledElement, { key: "hand", element, title: "Hand" });
 };
 
+const createInitiativeUI = (initiativeTeamKey, resourceBase) => {
+  const coinStates = [CoinState.create({ coinKey: initiativeTeamKey })];
+  const customKey = "initiative";
+  const element = React.createElement(CoinsUI, { coinStates, customKey, resourceBase });
+
+  return React.createElement(TitledElement, { key: "initiative", element, title: "Initiative" });
+};
+
 const createMorgueUI = (morgue, resourceBase) => {
   const coinStates = createCoinStates(morgue);
   const customKey = "morgue";
@@ -99,6 +107,7 @@ class PlayerPanel extends React.Component {
       discardFacedown,
       discardFaceup,
       hand,
+      isInitiativePlayer,
       morgue,
       moveStates,
       onClick,
@@ -108,15 +117,22 @@ class PlayerPanel extends React.Component {
       tableau
     } = this.props;
 
+    let cells = [];
+
+    if (isInitiativePlayer) {
+      const initiativeUI = createInitiativeUI(player.teamKey, resourceBase);
+      cells = R.append(initiativeUI, cells);
+    }
+
     const discardUI = createDiscardUI(player, discardFacedown, discardFaceup, resourceBase);
     const handUI = createHandUI(hand, resourceBase, onClick);
     const morgueUI = createMorgueUI(morgue, resourceBase);
     const supplyUI = createSupplyUI(supply, resourceBase);
     const tableauUI = createTableauUI(tableau, resourceBase);
 
-    let cells = [discardUI, handUI, morgueUI, supplyUI, tableauUI];
+    cells = R.append([discardUI, handUI, morgueUI, supplyUI, tableauUI], cells);
 
-    if (!R.isEmpty(moveStates)) {
+    if (!R.isNil(moveStates) && !R.isEmpty(moveStates)) {
       const moveUI = createMoveUI(moveStates);
       cells = R.append(moveUI, cells);
     }
@@ -137,6 +153,7 @@ PlayerPanel.propTypes = {
 
   className: PropTypes.string,
   customKey: PropTypes.string,
+  isInitiativePlayer: PropTypes.bool,
   moveStates: PropTypes.arrayOf(),
   onClick: PropTypes.func,
   resourceBase: PropTypes.string
@@ -145,6 +162,7 @@ PlayerPanel.propTypes = {
 PlayerPanel.defaultProps = {
   className: undefined,
   customKey: "playerPanel",
+  isInitiativePlayer: false,
   moveStates: undefined,
   onClick: () => {},
   resourceBase: Endpoint.NETWORK_RESOURCE

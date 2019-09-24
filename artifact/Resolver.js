@@ -12,15 +12,7 @@ Resolver.card = cardKey => UnitCard.properties[cardKey];
 
 Resolver.cards = cardKeys => R.map(c => Resolver.card(c), cardKeys);
 
-Resolver.coin = coinKey => {
-  let answer = UnitCoin.properties[coinKey];
-
-  if (R.isNil(answer)) {
-    answer = RoyalCoin.properties[coinKey];
-  }
-
-  return answer;
-};
+Resolver.coin = coinKey => Resolver.unitCoin(coinKey) || Resolver.royalCoin(coinKey);
 
 Resolver.coinImage = (coinKey, isFaceup) => {
   const coin = Resolver.coin(coinKey);
@@ -32,15 +24,19 @@ Resolver.coins = coinKeys => R.map(c => Resolver.coin(c), coinKeys);
 
 Resolver.control = controlKey => ControlMarker.properties[controlKey];
 
-Resolver.isRoyalCoin = coinKey => !R.isNil(RoyalCoin.properties[coinKey]);
+Resolver.isRoyalCoin = coinKey => !R.isNil(Resolver.royalCoin(coinKey));
 
-Resolver.isUnitCoin = coinKey => !R.isNil(UnitCoin.properties[coinKey]);
+Resolver.isUnitCoin = coinKey => !R.isNil(Resolver.unitCoin(coinKey));
 
 Resolver.move = moveKey => Move.properties[moveKey];
 
 Resolver.phase = phaseKey => Phase.properties[phaseKey];
 
+Resolver.royalCoin = coinKey => RoyalCoin.properties[coinKey];
+
 Resolver.team = teamKey => Team.properties[teamKey];
+
+Resolver.unitCoin = coinKey => UnitCoin.properties[coinKey];
 
 Object.freeze(Resolver);
 
