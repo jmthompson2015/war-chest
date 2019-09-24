@@ -15,19 +15,24 @@ const createBoardUI = state =>
     resourceBase: Endpoint.LOCAL_RESOURCE
   });
 
-const createPlayerPanel = (player, state, onClick) =>
-  React.createElement(PlayerPanel, {
+const createPlayerPanel = (player, state, onClick) => {
+  const initiativePlayer = Selector.initiativePlayer(state);
+  const isInitiativePlayer = player.id === initiativePlayer.id;
+
+  return React.createElement(PlayerPanel, {
     myKey: `playerPanel${player.id}`,
     player,
     discardFacedown: Selector.discardFacedown(player.id, state),
     discardFaceup: Selector.discardFaceup(player.id, state),
     hand: Selector.hand(player.id, state),
+    isInitiativePlayer,
     morgue: Selector.morgue(player.id, state),
     supply: Selector.supply(player.id, state),
     tableau: Selector.tableau(player.id, state),
     onClick,
     resourceBase: Endpoint.LOCAL_RESOURCE
   });
+};
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 class GamePanel extends React.Component {
