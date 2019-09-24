@@ -124,13 +124,28 @@ class PlayerPanel extends React.Component {
       cells = R.append(initiativeUI, cells);
     }
 
-    const discardUI = createDiscardUI(player, discardFacedown, discardFaceup, resourceBase);
-    const handUI = createHandUI(hand, resourceBase, onClick);
-    const morgueUI = createMorgueUI(morgue, resourceBase);
-    const supplyUI = createSupplyUI(supply, resourceBase);
-    const tableauUI = createTableauUI(tableau, resourceBase);
+    if (!R.isEmpty(discardFacedown) || !R.isEmpty(discardFaceup)) {
+      const discardUI = createDiscardUI(player, discardFacedown, discardFaceup, resourceBase);
+      cells = R.append(discardUI, cells);
+    }
 
-    cells = R.append([discardUI, handUI, morgueUI, supplyUI, tableauUI], cells);
+    if (!R.isEmpty(hand)) {
+      const handUI = createHandUI(hand, resourceBase, onClick);
+      cells = R.append(handUI, cells);
+    }
+
+    if (!R.isEmpty(morgue)) {
+      const morgueUI = createMorgueUI(morgue, resourceBase);
+      cells = R.append(morgueUI, cells);
+    }
+
+    if (!R.isEmpty(supply)) {
+      const supplyUI = createSupplyUI(supply, resourceBase);
+      cells = R.append(supplyUI, cells);
+    }
+
+    const tableauUI = createTableauUI(tableau, resourceBase);
+    cells = R.append(tableauUI, cells);
 
     if (!R.isNil(moveStates) && !R.isEmpty(moveStates)) {
       const moveUI = createMoveUI(moveStates);
