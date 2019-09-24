@@ -21,7 +21,7 @@ const myOnClick = event => {
 const coinStates = [
   CoinState.create({ coinKey: UnitCoin.ARCHER }),
   CoinState.create({ coinKey: UnitCoin.BERSERKER, count: 2, isFaceup: false }),
-  CoinState.create({ coinKey: UnitCoin.CAVALRY, count: 3 })
+  CoinState.create({ coinKey: UnitCoin.CAVALRY, count: 3, isHighlighted: true })
 ];
 
 const element = React.createElement(CoinsUI, {

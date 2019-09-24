@@ -32,6 +32,7 @@ const element2 = React.createElement(CoinUI, {
   coin: coin2,
   count: 2,
   customKey: "coin2",
+  isHighlighted: true,
   onClick: myOnClick,
   resourceBase: Endpoint.LOCAL_RESOURCE
 });

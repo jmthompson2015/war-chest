@@ -40,9 +40,10 @@ const createDiscardUI = (player, discardFacedown, discardFaceup, resourceBase) =
   return React.createElement(TitledElement, { key: "discard", element, title: "Discard" });
 };
 
-const createHandUI = (hand, resourceBase, onClick) => {
+const createHandUI = (hand, paymentCoin, resourceBase, onClick) => {
   const reduceFunction = (accum, coinKey) => {
-    const coinState = CoinState.create({ coinKey });
+    const isHighlighted = !R.isNil(paymentCoin) && coinKey === paymentCoin.key;
+    const coinState = CoinState.create({ coinKey, isHighlighted });
     return R.append(coinState, accum);
   };
   const coinStates = R.reduce(reduceFunction, [], hand);
@@ -102,19 +103,21 @@ const createTableauUI = (tableau, resourceBase) => {
 class PlayerPanel extends React.Component {
   render() {
     const {
-      className,
-      customKey,
+      player,
       discardFacedown,
       discardFaceup,
       hand,
-      isInitiativePlayer,
       morgue,
+      supply,
+      tableau,
+
+      className,
+      customKey,
+      isInitiativePlayer,
       moveStates,
       onClick,
-      player,
-      resourceBase,
-      supply,
-      tableau
+      paymentCoin,
+      resourceBase
     } = this.props;
 
     let cells = [];
@@ -130,7 +133,7 @@ class PlayerPanel extends React.Component {
     }
 
     if (!R.isEmpty(hand)) {
-      const handUI = createHandUI(hand, resourceBase, onClick);
+      const handUI = createHandUI(hand, paymentCoin, resourceBase, onClick);
       cells = R.append(handUI, cells);
     }
 
@@ -171,6 +174,7 @@ PlayerPanel.propTypes = {
   isInitiativePlayer: PropTypes.bool,
   moveStates: PropTypes.arrayOf(),
   onClick: PropTypes.func,
+  paymentCoin: PropTypes.shape(),
   resourceBase: PropTypes.string
 };
 
@@ -180,6 +184,7 @@ PlayerPanel.defaultProps = {
   isInitiativePlayer: false,
   moveStates: undefined,
   onClick: () => {},
+  paymentCoin: undefined,
   resourceBase: Endpoint.NETWORK_RESOURCE
 };
 

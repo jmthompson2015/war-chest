@@ -1,12 +1,13 @@
 const CoinState = {};
 
-CoinState.create = ({ coinKey, count = 1, isFaceup = true }) =>
+CoinState.create = ({ coinKey, count = 1, isFaceup = true, isHighlighted = false }) =>
   Immutable({
     // Required.
     coinKey,
     // Situational.
     count,
-    isFaceup
+    isFaceup,
+    isHighlighted
   });
 
 Object.freeze(CoinState);

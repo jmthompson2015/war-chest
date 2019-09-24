@@ -22,13 +22,14 @@ class CoinsUI extends React.PureComponent {
 
     const mapIndexed = R.addIndex(R.map);
     const mapFunction = (coinState, i) => {
-      const { coinKey, count, isFaceup } = coinState;
+      const { coinKey, count, isFaceup, isHighlighted } = coinState;
       const coin = Resolver.coin(coinKey);
       const customKey2 = `${customKey}${coin.key}-${coin.name}-${count}-${isFaceup}-${i}`;
       const element = React.createElement(CoinUI, {
         coin,
         count,
         isFaceup,
+        isHighlighted,
         customKey: customKey2,
         eventSource,
         onClick: this.handleOnClick,

@@ -56,12 +56,14 @@ const element = React.createElement(PlayerPanel, {
   discardFacedown,
   discardFaceup,
   hand,
-  isInitiativePlayer,
   morgue,
-  moveStates,
   supply,
   tableau,
+
+  isInitiativePlayer,
+  moveStates,
   onClick: myOnClick,
+  paymentCoin,
   resourceBase: Endpoint.LOCAL_RESOURCE
 });
 ReactDOM.render(element, document.getElementById("panel"));
