@@ -5,6 +5,7 @@ import CoinState from "../state/CoinState.js";
 import CardsUI from "./CardsUI.js";
 import CoinsUI from "./CoinsUI.js";
 import Endpoint from "./Endpoint.js";
+import MoveOptionUI from "./MoveOptionUI.js";
 import ReactUtils from "./ReactUtilities.js";
 import TitledElement from "./TitledElement.js";
 
@@ -66,6 +67,13 @@ const createMorgueUI = (morgue, resourceBase) => {
   return React.createElement(TitledElement, { key: "morgue", element, title: "Morgue" });
 };
 
+const createMoveUI = moveStates => {
+  const customKey = "move";
+  const element = React.createElement(MoveOptionUI, { moveStates, customKey });
+
+  return React.createElement(TitledElement, { key: "move", element, title: "Move" });
+};
+
 const createSupplyUI = (supply, resourceBase) => {
   const coinStates = createCoinStates(supply);
   const customKey = "supply";
@@ -92,6 +100,7 @@ class PlayerPanel extends React.Component {
       discardFaceup,
       hand,
       morgue,
+      moveStates,
       onClick,
       player,
       resourceBase,
@@ -105,7 +114,12 @@ class PlayerPanel extends React.Component {
     const supplyUI = createSupplyUI(supply, resourceBase);
     const tableauUI = createTableauUI(tableau, resourceBase);
 
-    const cells = [discardUI, handUI, morgueUI, supplyUI, tableauUI];
+    let cells = [discardUI, handUI, morgueUI, supplyUI, tableauUI];
+
+    if (!R.isEmpty(moveStates)) {
+      const moveUI = createMoveUI(moveStates);
+      cells = R.append(moveUI, cells);
+    }
 
     return ReactUtils.createFlexboxWrap(cells, customKey, className);
   }
@@ -123,6 +137,7 @@ PlayerPanel.propTypes = {
 
   className: PropTypes.string,
   customKey: PropTypes.string,
+  moveStates: PropTypes.arrayOf(),
   onClick: PropTypes.func,
   resourceBase: PropTypes.string
 };
@@ -130,6 +145,7 @@ PlayerPanel.propTypes = {
 PlayerPanel.defaultProps = {
   className: undefined,
   customKey: "playerPanel",
+  moveStates: undefined,
   onClick: () => {},
   resourceBase: Endpoint.NETWORK_RESOURCE
 };

@@ -1,10 +1,12 @@
 /* eslint no-console: ["error", { allow: ["log"] }] */
 
+import Resolver from "../artifact/Resolver.js";
 import UnitCoin from "../artifact/UnitCoin.js";
 
 import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
 
+import MoveGenerator from "../model/MoveGenerator.js";
 import TestData from "../model/TestData.js";
 
 import Endpoint from "./Endpoint.js";
@@ -43,12 +45,16 @@ const morgue = Selector.morgue(1, state);
 const supply = Selector.supply(1, state);
 const tableau = Selector.tableau(1, state);
 
+const paymentCoin = Resolver.coin(hand[1]);
+const moveStates = MoveGenerator.generateForCoin(player, paymentCoin, state);
+
 const element = React.createElement(PlayerPanel, {
   player,
   discardFacedown,
   discardFaceup,
   hand,
   morgue,
+  moveStates,
   supply,
   tableau,
   onClick: myOnClick,
