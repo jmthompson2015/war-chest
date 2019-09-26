@@ -1,11 +1,20 @@
 const PlayerState = {};
 
-PlayerState.create = ({ id, name, teamKey, isComputer = true }) =>
+PlayerState.create = ({
+  id,
+  name,
+  teamKey,
+
+  isComputer = true,
+  strategy = "SimplePlayerStrategy"
+}) =>
   Immutable({
     id,
     name,
     teamKey,
-    isComputer
+
+    isComputer,
+    strategy
   });
 
 Object.freeze(PlayerState);

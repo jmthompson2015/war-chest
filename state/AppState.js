@@ -9,6 +9,11 @@ AppState.create = ({
   isGameOver = false,
   winner = null,
 
+  round = 0,
+  currentPhaseKey = null,
+  currentPlayerId = null,
+  currentPaymentCoinKey = null,
+
   playerToBag = {},
   playerToDiscardFacedown = {},
   playerToDiscardFaceup = {},
@@ -27,6 +32,11 @@ AppState.create = ({
     initiativePlayerId,
     isGameOver,
     winner,
+
+    round,
+    currentPhaseKey,
+    currentPlayerId,
+    currentPaymentCoinKey,
 
     playerToBag,
     playerToDiscardFacedown,

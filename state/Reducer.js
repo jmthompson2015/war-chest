@@ -1,4 +1,4 @@
-/* eslint no-console: ["error", { allow: ["warn"] }] */
+/* eslint no-console: ["error", { allow: ["log", "warn"] }] */
 
 import ArrayUtils from "../util/ArrayUtilities.js";
 
@@ -105,6 +105,15 @@ Reducer.root = (state, action) => {
     case ActionType.SET_CONTROL:
       newAnToControl = assoc(action.an, action.controlKey, state.anToControl);
       return assoc("anToControl", newAnToControl, state);
+    case ActionType.SET_CURRENT_PAYMENT_COIN:
+      console.log(`Reducer SET_CURRENT_PAYMENT_COIN coinKey = ${action.coinKey}`);
+      return assoc("currentPaymentCoinKey", action.coinKey, state);
+    case ActionType.SET_CURRENT_PHASE:
+      console.log(`Reducer SET_CURRENT_PHASE phaseKey = ${action.phaseKey}`);
+      return assoc("currentPhaseKey", action.phaseKey, state);
+    case ActionType.SET_CURRENT_PLAYER:
+      console.log(`Reducer SET_CURRENT_PLAYER playerId = ${action.playerId}`);
+      return assoc("currentPlayerId", action.playerId, state);
     case ActionType.SET_INITIATIVE_CHANGED_THIS_ROUND:
       return assoc("initiativeChangedThisRound", action.isChanged, state);
     case ActionType.SET_INITIATIVE_PLAYER:
@@ -112,6 +121,9 @@ Reducer.root = (state, action) => {
     case ActionType.SET_PLAYERS:
       newPlayers = R.reduce((accum, p) => assoc(p.id, p, accum), {}, action.players);
       return assoc("playerInstances", newPlayers, state);
+    case ActionType.SET_ROUND:
+      console.log(`Reducer SET_ROUND round = ${action.round}`);
+      return assoc("round", action.round, state);
     case ActionType.SET_UNIT:
       // console.log(`Reducer SET_UNIT an = ${action.an} coinKey = ${action.coinKey}`);
       oldUnit = state.anToTokens[action.an] || [];

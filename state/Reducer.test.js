@@ -177,6 +177,48 @@ QUnit.test("setControl()", assert => {
   assert.equal(result.anToControl[an], controlKey);
 });
 
+QUnit.test("setCurrentPaymentCoin()", assert => {
+  // Setup.
+  const state = AppState.create();
+  const coinKey = "bogus";
+  const action = ActionCreator.setCurrentPaymentCoin(coinKey);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.currentPaymentCoinKey, coinKey);
+});
+
+QUnit.test("setCurrentPhase()", assert => {
+  // Setup.
+  const state = AppState.create();
+  const phaseKey = "bogus";
+  const action = ActionCreator.setCurrentPhase(phaseKey);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.currentPhaseKey, phaseKey);
+});
+
+QUnit.test("setCurrentPlayer()", assert => {
+  // Setup.
+  const state = AppState.create();
+  const playerId = 12;
+  const action = ActionCreator.setCurrentPlayer(playerId);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.currentPlayerId, playerId);
+});
+
 QUnit.test("setInitiativePlayer()", assert => {
   // Setup.
   const state = AppState.create();
@@ -213,6 +255,20 @@ QUnit.test("setPlayers()", assert => {
   assert.equal(playerInstances[id2], wolfPlayer);
 });
 
+QUnit.test("setRound()", assert => {
+  // Setup.
+  const state = AppState.create();
+  const round = 123;
+  const action = ActionCreator.setRound(round);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.round, round);
+});
+
 QUnit.test("setUnit()", assert => {
   // Setup.
   const state = AppState.create();
@@ -246,6 +302,7 @@ QUnit.test("setUnit() 2", assert => {
   assert.equal(result.anToTokens[an].join(), "knight,knight");
 });
 
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 QUnit.test("bagToHand()", assert => {
   // Setup.
   const state0 = AppState.create();

@@ -1,4 +1,5 @@
 import Board from "../artifact/Board.js";
+import Resolver from "../artifact/Resolver.js";
 
 const Selector = {};
 
@@ -17,6 +18,12 @@ Selector.controlANs = (teamKey, state) => {
 
   return R.filter(filterFunction, allControlANs);
 };
+
+Selector.currentPaymentCoin = state => Resolver.coin(state.currentPaymentCoinKey);
+
+Selector.currentPhase = state => Resolver.phase(state.currentPhaseKey);
+
+Selector.currentPlayer = state => Selector.player(state.currentPlayerId, state);
 
 Selector.initiativeChangedThisRound = state => state.initiativeChangedThisRound;
 
@@ -100,6 +107,8 @@ Selector.possibleControlANs = (teamKey, state) => {
 
   return R.filter(filterFunction, allControlANs);
 };
+
+Selector.round = state => state.round;
 
 Selector.unit = (an, state) => state.anToTokens[an];
 

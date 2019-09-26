@@ -2,8 +2,9 @@ import Phase from "../artifact/Phase.js";
 
 import Selector from "../state/Selector.js";
 
+import TestData from "../model/TestData.js";
+
 import PhaseFunction from "./PhaseFunction.js";
-import TestData from "./TestData.js";
 
 QUnit.module("PhaseFunction");
 
@@ -34,8 +35,8 @@ QUnit.test("playCoins() ", assert => {
   const callback = () => {
     assert.ok(true, "test resumed from async operation");
     // Verify.
-    assert.equal(Selector.hand(1, store.getState()).length, 2);
-    assert.equal(Selector.hand(2, store.getState()).length, 2);
+    assert.equal(Selector.hand(1, store.getState()).length, 0);
+    assert.equal(Selector.hand(2, store.getState()).length, 0);
     done();
   };
   phase.execute(store).then(callback);

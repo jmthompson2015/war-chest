@@ -32,6 +32,15 @@ ActionCreator.removeFromPlayerArray = (arrayName, playerId, coinKey) => {
 
 ActionCreator.setControl = makeActionCreator(ActionType.SET_CONTROL, "an", "controlKey");
 
+ActionCreator.setCurrentPaymentCoin = makeActionCreator(
+  ActionType.SET_CURRENT_PAYMENT_COIN,
+  "coinKey"
+);
+
+ActionCreator.setCurrentPhase = makeActionCreator(ActionType.SET_CURRENT_PHASE, "phaseKey");
+
+ActionCreator.setCurrentPlayer = makeActionCreator(ActionType.SET_CURRENT_PLAYER, "playerId");
+
 ActionCreator.setInitiativeChangedThisRound = makeActionCreator(
   ActionType.SET_INITIATIVE_CHANGED_THIS_ROUND,
   "isChanged"
@@ -40,6 +49,8 @@ ActionCreator.setInitiativeChangedThisRound = makeActionCreator(
 ActionCreator.setInitiativePlayer = makeActionCreator(ActionType.SET_INITIATIVE_PLAYER, "playerId");
 
 ActionCreator.setPlayers = makeActionCreator(ActionType.SET_PLAYERS, "players");
+
+ActionCreator.setRound = makeActionCreator(ActionType.SET_ROUND, "round");
 
 ActionCreator.setUnit = makeActionCreator(ActionType.SET_UNIT, "an", "coinKey");
 
