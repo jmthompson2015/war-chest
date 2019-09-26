@@ -95,7 +95,14 @@ class BoardUI extends React.PureComponent {
     };
     const myANToTokens2 = R.reduce(reduceFunction2, {}, Object.keys(anToTokens));
 
-    const myANToTokens = R.merge(myANToTokens1, myANToTokens2);
+    // Merge.
+    const myANs = R.uniq(R.concat(Object.keys(myANToTokens1), Object.keys(myANToTokens2)));
+    const reduceFunction3 = (accum, an) => {
+      const tokens1 = myANToTokens1[an] || [];
+      const tokens2 = myANToTokens2[an] || [];
+      return R.assoc(an, R.concat(tokens1, tokens2), accum);
+    };
+    const myANToTokens = R.reduce(reduceFunction3, {}, myANs);
 
     return React.createElement(ReactGameBoard, {
       anToTokens: myANToTokens,
