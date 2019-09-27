@@ -11,10 +11,6 @@ store.dispatch(ActionCreator.setUnit("e2", UnitCoin.SWORDSMAN));
 store.dispatch(ActionCreator.setUnit("d7", UnitCoin.ARCHER));
 store.dispatch(ActionCreator.setUnit("d7", UnitCoin.ARCHER));
 
-const createContainer = () => {
-  const container = GamePanelContainer(store.getState());
-
-  ReactDOM.render(container, document.getElementById("panel"));
-};
-
-createContainer();
+const connector = ReactRedux.connect(GamePanelContainer.mapStateToProps)(GamePanelContainer);
+const element = React.createElement(ReactRedux.Provider, { store }, React.createElement(connector));
+ReactDOM.render(element, document.getElementById("panel"));

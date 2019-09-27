@@ -95,6 +95,17 @@ QUnit.test("controlLocations()", assert => {
   assert.equal(result[1], "h1");
 });
 
+QUnit.test("delay()", assert => {
+  // Setup.
+  const state = AppState.create();
+
+  // Run.
+  const result = Selector.delay(state);
+
+  // Verify.
+  assert.equal(result, 1000);
+});
+
 QUnit.test("morgue()", assert => {
   // Setup.
   const state0 = AppState.create();

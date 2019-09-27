@@ -162,12 +162,12 @@ class PlayerPanel extends React.Component {
 PlayerPanel.propTypes = {
   player: PropTypes.shape().isRequired,
 
-  discardFaceup: PropTypes.arrayOf().isRequired,
-  discardFacedown: PropTypes.arrayOf().isRequired,
-  hand: PropTypes.arrayOf().isRequired,
-  morgue: PropTypes.arrayOf().isRequired,
-  supply: PropTypes.arrayOf().isRequired,
-  tableau: PropTypes.arrayOf().isRequired,
+  discardFaceup: PropTypes.arrayOf(PropTypes.string).isRequired,
+  discardFacedown: PropTypes.arrayOf(PropTypes.string).isRequired,
+  hand: PropTypes.arrayOf(PropTypes.string).isRequired,
+  morgue: PropTypes.arrayOf(PropTypes.string).isRequired,
+  supply: PropTypes.arrayOf(PropTypes.string).isRequired,
+  tableau: PropTypes.arrayOf(PropTypes.string).isRequired,
 
   className: PropTypes.string,
   customKey: PropTypes.string,

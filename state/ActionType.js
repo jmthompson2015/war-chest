@@ -9,6 +9,7 @@ ActionType.HAND_TO_BOARD = "handToBoard"; // Deploy or bolster.
 ActionType.MOVE_A_UNIT = "moveAUnit";
 ActionType.REMOVE_FROM_PLAYER_ARRAY = "removeFromPlayerArray";
 ActionType.SET_CONTROL = "setControl";
+ActionType.SET_DELAY = "setDelay";
 ActionType.SET_INITIATIVE_CHANGED_THIS_ROUND = "setInitiativeChangedThisRound";
 ActionType.SET_INITIATIVE_PLAYER = "setInitiativePlayer";
 ActionType.SET_PLAYERS = "setPlayers";

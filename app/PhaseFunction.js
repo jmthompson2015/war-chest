@@ -40,6 +40,11 @@ const drawThreeCoins = (playerId, store) => {
       ActionCreator.transferBetweenPlayerArrays("playerToBag", "playerToHand", playerId, coinKey)
     );
   }
+  // console.log(
+  //   `drawThreeCoins() playerId = ${playerId} hand = ${JSON.stringify(
+  //     Selector.hand(playerId, store.getState())
+  //   )}`
+  // );
 };
 
 const executeDrawThreeCoins = (resolve, store) => {
@@ -52,12 +57,12 @@ const executeDrawThreeCoins = (resolve, store) => {
   resolve();
 };
 
-const hasCoinsInHand = store => {
+const hasCoinsInHand = state => {
   const reduceFunction = (accum, player) => {
-    const hand = Selector.hand(player.id, store.getState());
+    const hand = Selector.hand(player.id, state);
     return accum || hand.length > 0;
   };
-  const players = Selector.playersInOrder(store.getState());
+  const players = Selector.playersInOrder(state);
 
   return R.reduce(reduceFunction, false, players);
 };
@@ -65,42 +70,45 @@ const hasCoinsInHand = store => {
 const executePlayCoins = (resolve, store) => {
   advanceCurrentPlayer(store);
 
-  const hasCoins = hasCoinsInHand(store);
-  const currentPlayer = Selector.currentPlayer(store.getState());
+  const hasCoins = hasCoinsInHand(store.getState());
+  // console.log(`executePlayCoins() hasCoins ? ${hasCoins}`);
 
   if (!hasCoins) {
     resolve();
   } else {
+    const currentPlayer = Selector.currentPlayer(store.getState());
     const strategy = StrategyResolver.resolve(currentPlayer.strategy);
+    // console.log(`currentPlayer.id = ${currentPlayer.id}`);
     const hand = Selector.hand(currentPlayer.id, store.getState());
 
+    // console.log(`hand.length = ${hand.length}`);
     if (hand.length > 0) {
-      strategy.choosePaymentCoin(hand).then(paymentCoinKey => {
+      const delay = Selector.delay(store.getState());
+      strategy.choosePaymentCoin(hand, delay).then(paymentCoinKey => {
+        // console.log(`currentPlayer ID = ${currentPlayer.id} paymentCoinKey = ${paymentCoinKey}`);
         if (!R.isNil(paymentCoinKey)) {
-          const paymentCoin = Resolver.coin(paymentCoinKey);
           store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinKey));
+          const paymentCoin = Resolver.coin(paymentCoinKey);
           const moveStates = MoveGenerator.generateForCoin(
             currentPlayer,
             paymentCoin,
             store.getState()
           );
 
-          strategy
-            .chooseMove(moveStates)
-            .then(moveState => {
-              if (!R.isNil(moveState)) {
-                MoveFunction.execute(moveState, store);
-              } else {
+          if (!R.isEmpty(moveStates)) {
+            strategy
+              .chooseMove(moveStates, delay)
+              .then(moveState => {
+                if (!R.isNil(moveState)) {
+                  MoveFunction.execute(moveState, store);
+                }
+              })
+              .then(() => {
                 executePlayCoins(resolve, store);
-              }
-            })
-            .then(executePlayCoins(resolve, store));
-        } else {
-          executePlayCoins(resolve, store);
+              });
+          }
         }
       });
-    } else {
-      executePlayCoins(resolve, store);
     }
   }
 };

@@ -2,16 +2,22 @@ import ArrayUtils from "../util/ArrayUtilities.js";
 
 const SimplePlayerStrategy = {};
 
-SimplePlayerStrategy.choosePaymentCoin = coinKeys =>
+const DELAY = 1000;
+
+SimplePlayerStrategy.choosePaymentCoin = (coinKeys, delay = DELAY) =>
   new Promise(resolve => {
     const coinKey = ArrayUtils.randomElement(coinKeys);
-    resolve(coinKey);
+    setTimeout(() => {
+      resolve(coinKey);
+    }, delay);
   });
 
-SimplePlayerStrategy.chooseMove = moveStates =>
+SimplePlayerStrategy.chooseMove = (moveStates, delay = DELAY) =>
   new Promise(resolve => {
     const moveState = ArrayUtils.randomElement(moveStates);
-    resolve(moveState);
+    setTimeout(() => {
+      resolve(moveState);
+    }, delay);
   });
 
 Object.freeze(SimplePlayerStrategy);

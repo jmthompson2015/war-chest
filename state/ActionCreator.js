@@ -41,6 +41,8 @@ ActionCreator.setCurrentPhase = makeActionCreator(ActionType.SET_CURRENT_PHASE, 
 
 ActionCreator.setCurrentPlayer = makeActionCreator(ActionType.SET_CURRENT_PLAYER, "playerId");
 
+ActionCreator.setDelay = makeActionCreator(ActionType.SET_DELAY, "delay");
+
 ActionCreator.setInitiativeChangedThisRound = makeActionCreator(
   ActionType.SET_INITIATIVE_CHANGED_THIS_ROUND,
   "isChanged"

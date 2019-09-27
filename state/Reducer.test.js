@@ -219,6 +219,20 @@ QUnit.test("setCurrentPlayer()", assert => {
   assert.equal(result.currentPlayerId, playerId);
 });
 
+QUnit.test("setDelay()", assert => {
+  // Setup.
+  const state = AppState.create();
+  const delay = 12;
+  const action = ActionCreator.setDelay(delay);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.delay, delay);
+});
+
 QUnit.test("setInitiativePlayer()", assert => {
   // Setup.
   const state = AppState.create();

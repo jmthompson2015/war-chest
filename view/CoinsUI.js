@@ -24,7 +24,8 @@ class CoinsUI extends React.PureComponent {
     const mapFunction = (coinState, i) => {
       const { coinKey, count, isFaceup, isHighlighted } = coinState;
       const coin = Resolver.coin(coinKey);
-      const customKey2 = `${customKey}${coin.key}-${coin.name}-${count}-${isFaceup}-${i}`;
+      const customKeySuffix = `${coin.key}-${coin.name}-${count}-${isFaceup}-${i}`;
+      const customKey2 = `${customKey}${customKeySuffix}`;
       const element = React.createElement(CoinUI, {
         coin,
         count,
@@ -37,7 +38,7 @@ class CoinsUI extends React.PureComponent {
         width
       });
 
-      return ReactUtils.createCell(element, `coinCell${coin.name}`, "alignTop pa1 v-top");
+      return ReactUtils.createCell(element, `coinCell${customKeySuffix}`, "alignTop pa1 v-top");
     };
 
     const coinCells = mapIndexed(mapFunction, coinStates);
@@ -48,7 +49,7 @@ class CoinsUI extends React.PureComponent {
 }
 
 CoinsUI.propTypes = {
-  coinStates: PropTypes.arrayOf().isRequired,
+  coinStates: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 
   customKey: PropTypes.string,
   eventSource: PropTypes.string,

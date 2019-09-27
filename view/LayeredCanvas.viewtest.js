@@ -56,6 +56,7 @@ const mapFunction = (coin, i) => {
     customKey: `layeredCanvas${i}`,
     height: size,
     images: [image],
+    isVerbose: true,
     onClick: myOnClick,
     title: coin.name,
     width: size

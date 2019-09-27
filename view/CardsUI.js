@@ -20,7 +20,7 @@ class CardsUI extends React.PureComponent {
 }
 
 CardsUI.propTypes = {
-  cards: PropTypes.arrayOf().isRequired,
+  cards: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 
   resourceBase: PropTypes.string,
   width: PropTypes.number

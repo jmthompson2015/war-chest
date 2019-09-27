@@ -1,10 +1,12 @@
 /* eslint no-console: ["error", { allow: ["log"] }] */
 
-const loadImage = src =>
+const loadImage = (src, isVerbose) =>
   new Promise((resolve, reject) => {
     const img = new Image();
     img.addEventListener("load", () => {
-      console.log(`Loaded image: ${src} ${img.width}x${img.height}`);
+      if (isVerbose) {
+        console.log(`Loaded image: ${src} ${img.width}x${img.height}`);
+      }
       resolve(img);
     });
     img.addEventListener("error", err => reject(err));
@@ -39,10 +41,10 @@ class LayeredCanvas extends React.PureComponent {
   }
 
   loadImages() {
-    const { images } = this.props;
+    const { images, isVerbose } = this.props;
 
     for (let i = 0; i < images.length; i += 1) {
-      loadImage(images[i]).then(img => {
+      loadImage(images[i], isVerbose).then(img => {
         const { imageMap: oldImageMap } = this.state;
         this.setState({ imageMap: R.assoc(images[i], img, oldImageMap) });
       });
@@ -89,6 +91,7 @@ LayeredCanvas.propTypes = {
   customKey: PropTypes.string,
   height: PropTypes.number,
   images: PropTypes.arrayOf(PropTypes.string),
+  isVerbose: PropTypes.bool,
   onClick: PropTypes.func,
   title: PropTypes.string,
   width: PropTypes.number
@@ -100,6 +103,7 @@ LayeredCanvas.defaultProps = {
   customKey: "hexBoardCanvas",
   height: 480,
   images: [],
+  isVerbose: false,
   onClick: () => {},
   title: undefined,
   width: 640

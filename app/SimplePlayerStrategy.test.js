@@ -12,6 +12,7 @@ QUnit.module("SimplePlayerStrategy");
 QUnit.test("chooseManeuvers() 1", assert => {
   // Setup.
   const store = TestData.createStore();
+  const delay = 0;
   const playerId = 1;
   const player = Selector.player(playerId, store.getState());
   const hand = Selector.hand(playerId, store.getState());
@@ -31,7 +32,7 @@ QUnit.test("chooseManeuvers() 1", assert => {
     done();
   };
 
-  SimplePlayerStrategy.chooseMove(moveStates).then(callback);
+  SimplePlayerStrategy.chooseMove(moveStates, delay).then(callback);
 });
 
 const SimplePlayerStrategyTest = {};

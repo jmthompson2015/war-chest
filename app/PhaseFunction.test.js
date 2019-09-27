@@ -1,5 +1,6 @@
 import Phase from "../artifact/Phase.js";
 
+import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
 
 import TestData from "../model/TestData.js";
@@ -29,6 +30,7 @@ QUnit.test("playCoins() ", assert => {
   // Setup.
   const store = TestData.createStore();
   const phase = PhaseFunction[Phase.PLAY_COINS];
+  store.dispatch(ActionCreator.setDelay(0));
 
   // Run.
   const done = assert.async();

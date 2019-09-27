@@ -114,6 +114,9 @@ Reducer.root = (state, action) => {
     case ActionType.SET_CURRENT_PLAYER:
       console.log(`Reducer SET_CURRENT_PLAYER playerId = ${action.playerId}`);
       return assoc("currentPlayerId", action.playerId, state);
+    case ActionType.SET_DELAY:
+      console.log(`Reducer SET_DELAY delay = ${action.delay}`);
+      return assoc("delay", action.delay, state);
     case ActionType.SET_INITIATIVE_CHANGED_THIS_ROUND:
       return assoc("initiativeChangedThisRound", action.isChanged, state);
     case ActionType.SET_INITIATIVE_PLAYER:

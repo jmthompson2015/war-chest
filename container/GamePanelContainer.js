@@ -1,5 +1,7 @@
 import GamePanel from "../view/GamePanel.js";
 
-const GamePanelContainer = state => React.createElement(GamePanel, { state });
+function mapStateToProps(state) {
+  return { state };
+}
 
-export default GamePanelContainer;
+export default ReactRedux.connect(mapStateToProps)(GamePanel);

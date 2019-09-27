@@ -43,7 +43,9 @@ const executePhase = (resolve, store) => {
     resolve();
   } else {
     const phaseFunction = PhaseFunction[phaseKey];
-    phaseFunction.execute(store).then(executePhase(resolve, store));
+    phaseFunction.execute(store).then(() => {
+      executePhase(resolve, store);
+    });
   }
 };
 

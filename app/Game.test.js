@@ -1,15 +1,14 @@
 import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
 
-import TestData from "../model/TestData.js";
+import Game from "./Game.js";
 
-import Round from "./Round.js";
-
-QUnit.module("Round");
+QUnit.module("Game");
 
 QUnit.test("execute() ", assert => {
   // Setup.
-  const store = TestData.createStore(true, false);
+  const game = new Game();
+  const { store } = game;
   store.dispatch(ActionCreator.setDelay(0));
 
   // Run.
@@ -22,8 +21,8 @@ QUnit.test("execute() ", assert => {
     done();
   };
 
-  Round.execute(store).then(callback);
+  game.execute().then(callback);
 });
 
-const RoundTest = {};
-export default RoundTest;
+const GameTest = {};
+export default GameTest;
