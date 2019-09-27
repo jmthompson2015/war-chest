@@ -15,9 +15,18 @@ const createBoardUI = state =>
     resourceBase: Endpoint.LOCAL_RESOURCE
   });
 
+const isCurrentPlayer = (playerId, state) => {
+  const currentPlayer = Selector.currentPlayer(state);
+
+  return currentPlayer && playerId === currentPlayer.id;
+};
+
 const createPlayerPanel = (player, state, onClick) => {
   const initiativePlayer = Selector.initiativePlayer(state);
   const isInitiativePlayer = player.id === initiativePlayer.id;
+  const paymentCoin = isCurrentPlayer(player.id, state)
+    ? Selector.currentPaymentCoin(state)
+    : undefined;
 
   return React.createElement(PlayerPanel, {
     myKey: `playerPanel${player.id}`,
@@ -27,6 +36,7 @@ const createPlayerPanel = (player, state, onClick) => {
     hand: Selector.hand(player.id, state),
     isInitiativePlayer,
     morgue: Selector.morgue(player.id, state),
+    paymentCoin,
     supply: Selector.supply(player.id, state),
     tableau: Selector.tableau(player.id, state),
     onClick,
