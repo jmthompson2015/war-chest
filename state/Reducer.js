@@ -53,12 +53,19 @@ Reducer.root = (state, action) => {
 
   let newAnToControl;
   let newANToTokens;
+  let newBag;
   let newMorgue;
   let newHand;
   let newPlayers;
+  let newPlayerToBag;
+  let newPlayerToDiscardFacedown;
+  let newPlayerToDiscardFaceup;
   let newPlayerToMorgue;
   let newPlayerToHand;
   let newUnit;
+  let oldBag;
+  let oldDiscardFacedown;
+  let oldDiscardFaceup;
   let oldHand;
   let oldUnit;
   let unit;
@@ -100,6 +107,21 @@ Reducer.root = (state, action) => {
       newANToTokens = assoc(action.fromAN, undefined, state.anToTokens);
       newANToTokens = assoc(action.toAN, unit, newANToTokens);
       return assoc("anToTokens", newANToTokens, state);
+    case ActionType.REFILL_BAG:
+      oldDiscardFacedown = state.playerToDiscardFacedown[action.playerId] || [];
+      oldDiscardFaceup = state.playerToDiscardFaceup[action.playerId] || [];
+      oldBag = state.playerToBag[action.playerId] || [];
+      newBag = R.concat(R.concat(oldDiscardFacedown, oldDiscardFaceup), oldBag);
+      newPlayerToDiscardFacedown = assoc(action.playerId, [], state.playerToDiscardFacedown);
+      newPlayerToDiscardFaceup = assoc(action.playerId, [], state.playerToDiscardFaceup);
+      newPlayerToBag = assoc(action.playerId, newBag, state.playerToBag);
+      return Immutable(
+        R.pipe(
+          R.assoc("playerToDiscardFacedown", newPlayerToDiscardFacedown),
+          R.assoc("playerToDiscardFaceup", newPlayerToDiscardFaceup),
+          R.assoc("playerToBag", newPlayerToBag)
+        )(state)
+      );
     case ActionType.REMOVE_FROM_PLAYER_ARRAY:
       return removeFromArray(state, action.arrayName, action.playerId, action.coinKey);
     case ActionType.SET_CONTROL:

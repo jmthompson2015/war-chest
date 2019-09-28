@@ -26,6 +26,8 @@ ActionCreator.handToBoard = makeActionCreator(
 
 ActionCreator.moveAUnit = makeActionCreator(ActionType.MOVE_A_UNIT, "playerId", "fromAN", "toAN");
 
+ActionCreator.refillBag = makeActionCreator(ActionType.REFILL_BAG, "playerId");
+
 ActionCreator.removeFromPlayerArray = (arrayName, playerId, coinKey) => {
   return { type: ActionType.REMOVE_FROM_PLAYER_ARRAY, arrayName, playerId, coinKey };
 };

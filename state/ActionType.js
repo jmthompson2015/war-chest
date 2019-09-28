@@ -7,6 +7,7 @@ ActionType.SET_CURRENT_PHASE = "setCurrentPhase";
 ActionType.SET_CURRENT_PLAYER = "setCurrentPlayer";
 ActionType.HAND_TO_BOARD = "handToBoard"; // Deploy or bolster.
 ActionType.MOVE_A_UNIT = "moveAUnit";
+ActionType.REFILL_BAG = "refillBag";
 ActionType.REMOVE_FROM_PLAYER_ARRAY = "removeFromPlayerArray";
 ActionType.SET_CONTROL = "setControl";
 ActionType.SET_DELAY = "setDelay";

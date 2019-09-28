@@ -34,7 +34,13 @@ const advanceCurrentPlayer = store => {
 
 const drawThreeCoins = (playerId, store) => {
   for (let i = 0; i < 3; i += 1) {
-    const bag = Selector.bag(playerId, store.getState());
+    let bag = Selector.bag(playerId, store.getState());
+
+    if (R.isEmpty(bag)) {
+      store.dispatch(ActionCreator.refillBag(playerId));
+      bag = Selector.bag(playerId, store.getState());
+    }
+
     const coinKey = ArrayUtils.randomElement(bag);
     store.dispatch(
       ActionCreator.transferBetweenPlayerArrays("playerToBag", "playerToHand", playerId, coinKey)

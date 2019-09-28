@@ -142,6 +142,32 @@ QUnit.test("moveAUnit()", assert => {
   assert.equal(anToTokens[toAN].join(","), coinKey);
 });
 
+QUnit.test("refillBag()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const playerId = 1;
+  const coinKey0 = "knight";
+  const action0 = ActionCreator.addToPlayerArray("playerToDiscardFacedown", playerId, coinKey0);
+  const state1 = Reducer.root(state0, action0);
+  const state2 = Reducer.root(state1, action0);
+  const coinKey3 = "marshall";
+  const action3 = ActionCreator.addToPlayerArray("playerToDiscardFaceup", playerId, coinKey3);
+  const state = Reducer.root(state2, action3);
+  const action = ActionCreator.refillBag(playerId);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  const discardFacedown = result.playerToDiscardFacedown[playerId];
+  assert.equal(discardFacedown.length, 0);
+  const discardFaceup = result.playerToDiscardFaceup[playerId];
+  assert.equal(discardFaceup.length, 0);
+  const bag = result.playerToBag[playerId];
+  assert.equal(bag.length, 3);
+});
+
 QUnit.test("removeFromPlayerHand()", assert => {
   // Setup.
   const state0 = AppState.create();
