@@ -1,11 +1,13 @@
 /* eslint no-console: ["error", { allow: ["log"] }] */
+/* eslint class-methods-use-this: ["error", { "exceptMethods": ["inputCallbackFunction"] }] */
 
 import Selector from "../state/Selector.js";
 
 import BoardUI from "./BoardUI.js";
 import Endpoint from "./Endpoint.js";
 import PlayerPanel from "./PlayerPanel.js";
-import ReactUtils from "./ReactUtilities.js";
+
+const { ReactUtilities: RU } = ReactComponent;
 
 const createBoardUI = state =>
   React.createElement(BoardUI, {
@@ -21,7 +23,7 @@ const isCurrentPlayer = (playerId, state) => {
   return currentPlayer && playerId === currentPlayer.id;
 };
 
-const createPlayerPanel = (player, state, onClick) => {
+const createPlayerPanel = (player, state, handOnClick, inputCallback) => {
   const initiativePlayer = Selector.initiativePlayer(state);
   const isInitiativePlayer = player.id === initiativePlayer.id;
   const paymentCoin = isCurrentPlayer(player.id, state)
@@ -31,15 +33,18 @@ const createPlayerPanel = (player, state, onClick) => {
   return React.createElement(PlayerPanel, {
     myKey: `playerPanel${player.id}`,
     player,
+
     discardFacedown: Selector.discardFacedown(player.id, state),
     discardFaceup: Selector.discardFaceup(player.id, state),
     hand: Selector.hand(player.id, state),
-    isInitiativePlayer,
     morgue: Selector.morgue(player.id, state),
-    paymentCoin,
     supply: Selector.supply(player.id, state),
     tableau: Selector.tableau(player.id, state),
-    onClick,
+
+    handOnClick,
+    inputCallback,
+    isInitiativePlayer,
+    paymentCoin,
     resourceBase: Endpoint.LOCAL_RESOURCE
   });
 };
@@ -49,10 +54,11 @@ class GamePanel extends React.Component {
   constructor(props) {
     super(props);
 
-    this.handleOnClick = this.handleOnClickFunction.bind(this);
+    this.handOnClick = this.handOnClickFunction.bind(this);
+    this.inputCallback = this.inputCallbackFunction.bind(this);
   }
 
-  handleOnClickFunction(event) {
+  handOnClickFunction(event) {
     const { state } = this.props;
 
     if (!R.isNil(state)) {
@@ -68,23 +74,31 @@ class GamePanel extends React.Component {
     }
   }
 
+  inputCallbackFunction({ playerId, moveState }) {
+    console.log(
+      `GamePanel.inputCallbackFunction() playerId = ${playerId} moveState = ${JSON.stringify(
+        moveState
+      )}`
+    );
+  }
+
   render() {
     const { className, state } = this.props;
 
     const player1 = Selector.player(1, state);
     const player2 = Selector.player(2, state);
 
-    const playerPanel1 = createPlayerPanel(player1, state, this.handleOnClick);
+    const playerPanel1 = createPlayerPanel(player1, state, this.handOnClick, this.inputCallback);
     const boardUI = createBoardUI(state);
-    const playerPanel2 = createPlayerPanel(player2, state, this.handleOnClick);
+    const playerPanel2 = createPlayerPanel(player2, state, this.handOnClick, this.inputCallback);
 
     const rows = [
-      ReactUtils.createRow(playerPanel1, "PlayerPanel1Row"),
-      ReactUtils.createRow(boardUI, "BoardUIRow"),
-      ReactUtils.createRow(playerPanel2, "PlayerPanel2Row")
+      RU.createRow(playerPanel1, "PlayerPanel1Row"),
+      RU.createRow(boardUI, "BoardUIRow"),
+      RU.createRow(playerPanel2, "PlayerPanel2Row")
     ];
 
-    return ReactUtils.createTable(rows, "GameTable", className);
+    return RU.createTable(rows, "GameTable", className);
   }
 }
 

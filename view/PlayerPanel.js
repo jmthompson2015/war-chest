@@ -6,9 +6,8 @@ import CardsUI from "./CardsUI.js";
 import CoinsUI from "./CoinsUI.js";
 import Endpoint from "./Endpoint.js";
 import MoveOptionDialog from "./MoveOptionDialog.js";
-import TitledElement from "./TitledElement.js";
 
-const RU = ReactComponent.ReactUtilities;
+const { ReactUtilities: RU, TitledElement } = ReactComponent;
 
 const createCoinStates = coinKeys => {
   const reduceFunction = (accum, coinKey) => {

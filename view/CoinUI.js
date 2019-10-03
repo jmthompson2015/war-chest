@@ -1,7 +1,8 @@
 import Resolver from "../artifact/Resolver.js";
 
 import Endpoint from "./Endpoint.js";
-import LayeredCanvas from "./LayeredCanvas.js";
+
+const { LayeredCanvas } = ReactComponent;
 
 const TWO_PI = 2.0 * Math.PI;
 

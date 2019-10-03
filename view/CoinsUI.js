@@ -2,7 +2,8 @@ import Resolver from "../artifact/Resolver.js";
 
 import CoinUI from "./CoinUI.js";
 import Endpoint from "./Endpoint.js";
-import ReactUtils from "./ReactUtilities.js";
+
+const { ReactUtilities: RU } = ReactComponent;
 
 class CoinsUI extends React.PureComponent {
   constructor(props) {
@@ -38,13 +39,13 @@ class CoinsUI extends React.PureComponent {
         width
       });
 
-      return ReactUtils.createCell(element, `coinCell${customKeySuffix}`, "alignTop pa1 v-top");
+      return RU.createCell(element, `coinCell${customKeySuffix}`, "alignTop pa1 v-top");
     };
 
     const coinCells = mapIndexed(mapFunction, coinStates);
-    const row = ReactUtils.createRow(coinCells);
+    const row = RU.createRow(coinCells);
 
-    return ReactUtils.createTable(row, "coinsUITable", "center");
+    return RU.createTable(row, "coinsUITable", "center");
   }
 }
 

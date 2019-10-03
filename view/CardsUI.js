@@ -1,6 +1,7 @@
 import CardImage from "./CardImage.js";
 import Endpoint from "./Endpoint.js";
-import ReactUtils from "./ReactUtilities.js";
+
+const { ReactUtilities: RU } = ReactComponent;
 
 class CardsUI extends React.PureComponent {
   render() {
@@ -9,13 +10,13 @@ class CardsUI extends React.PureComponent {
     const mapFunction = card => {
       const element = React.createElement(CardImage, { card, resourceBase, width });
 
-      return ReactUtils.createCell(element, `cardCell${card.name}`, "alignTop v-top");
+      return RU.createCell(element, `cardCell${card.name}`, "alignTop v-top");
     };
 
     const cardCells = R.map(mapFunction, cards);
-    const row = ReactUtils.createRow(cardCells);
+    const row = RU.createRow(cardCells);
 
-    return ReactUtils.createTable(row, "cardsUITable", "center");
+    return RU.createTable(row, "cardsUITable", "center");
   }
 }
 

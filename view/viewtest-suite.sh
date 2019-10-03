@@ -8,6 +8,4 @@ open ${BASE}/CardsUI.viewtest.html
 open ${BASE}/CoinsUI.viewtest.html
 open ${BASE}/CoinUI.viewtest.html
 open ${BASE}/GamePanel.viewtest.html
-open ${BASE}/LayeredCanvas.viewtest.html
 open ${BASE}/PlayerPanel.viewtest.html
-open ${BASE}/TitledElement.viewtest.html

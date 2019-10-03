@@ -2,7 +2,8 @@ import UnitCard from "../artifact/UnitCard.js";
 
 import CardImage from "./CardImage.js";
 import Endpoint from "./Endpoint.js";
-import ReactUtils from "./ReactUtilities.js";
+
+const { ReactUtilities: RU } = ReactComponent;
 
 function addCardImage(cells, card) {
   const element = React.createElement(CardImage, {
@@ -28,4 +29,4 @@ R.forEach(card => {
   addCardImage(cells, card);
 }, cards);
 
-ReactDOM.render(ReactUtils.createFlexboxWrap(cells), document.getElementById("panel"));
+ReactDOM.render(RU.createFlexboxWrap(cells), document.getElementById("panel"));
