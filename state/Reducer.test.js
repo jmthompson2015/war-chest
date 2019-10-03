@@ -203,6 +203,20 @@ QUnit.test("setControl()", assert => {
   assert.equal(result.anToControl[an], controlKey);
 });
 
+QUnit.test("setCurrentMoveStates()", assert => {
+  // Setup.
+  const state = AppState.create();
+  const moveStates = 12;
+  const action = ActionCreator.setCurrentMoveStates(moveStates);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.currentMoveStates, moveStates);
+});
+
 QUnit.test("setCurrentPaymentCoin()", assert => {
   // Setup.
   const state = AppState.create();

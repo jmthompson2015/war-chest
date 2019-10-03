@@ -187,7 +187,7 @@ PlayerPanel.propTypes = {
   handOnClick: PropTypes.func,
   inputCallback: PropTypes.func,
   isInitiativePlayer: PropTypes.bool,
-  moveStates: PropTypes.arrayOf(),
+  moveStates: PropTypes.arrayOf(PropTypes.shape()),
   paymentCoin: PropTypes.shape(),
   resourceBase: PropTypes.string
 };

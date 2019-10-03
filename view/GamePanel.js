@@ -23,9 +23,13 @@ const isCurrentPlayer = (playerId, state) => {
   return currentPlayer && playerId === currentPlayer.id;
 };
 
-const createPlayerPanel = (player, state, handOnClick, inputCallback) => {
+const isInitiativePlayer = (playerId, state) => {
   const initiativePlayer = Selector.initiativePlayer(state);
-  const isInitiativePlayer = player.id === initiativePlayer.id;
+
+  return initiativePlayer && playerId === initiativePlayer.id;
+};
+
+const createPlayerPanel = (moveStates, player, state, handOnClick, inputCallback) => {
   const paymentCoin = isCurrentPlayer(player.id, state)
     ? Selector.currentPaymentCoin(state)
     : undefined;
@@ -43,7 +47,8 @@ const createPlayerPanel = (player, state, handOnClick, inputCallback) => {
 
     handOnClick,
     inputCallback,
-    isInitiativePlayer,
+    isInitiativePlayer: isInitiativePlayer(player.id, state),
+    moveStates,
     paymentCoin,
     resourceBase: Endpoint.LOCAL_RESOURCE
   });
@@ -87,10 +92,38 @@ class GamePanel extends React.Component {
 
     const player1 = Selector.player(1, state);
     const player2 = Selector.player(2, state);
+    const currentPlayer = Selector.currentPlayer(state);
+    let moveStates1 = [];
+    let moveStates2 = [];
 
-    const playerPanel1 = createPlayerPanel(player1, state, this.handOnClick, this.inputCallback);
+    if (currentPlayer && !currentPlayer.isComputer) {
+      switch (currentPlayer.id) {
+        case 1:
+          moveStates1 = Selector.currentMoveStates(state);
+          break;
+        case 2:
+          moveStates2 = Selector.currentMoveStates(state);
+          break;
+        default:
+        // Nothing to do.
+      }
+    }
+
+    const playerPanel1 = createPlayerPanel(
+      moveStates1,
+      player1,
+      state,
+      this.handOnClick,
+      this.inputCallback
+    );
     const boardUI = createBoardUI(state);
-    const playerPanel2 = createPlayerPanel(player2, state, this.handOnClick, this.inputCallback);
+    const playerPanel2 = createPlayerPanel(
+      moveStates2,
+      player2,
+      state,
+      this.handOnClick,
+      this.inputCallback
+    );
 
     const rows = [
       RU.createRow(playerPanel1, "PlayerPanel1Row"),

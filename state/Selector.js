@@ -19,6 +19,8 @@ Selector.controlANs = (teamKey, state) => {
   return R.filter(filterFunction, allControlANs);
 };
 
+Selector.currentMoveStates = state => state.currentMoveStates || [];
+
 Selector.currentPaymentCoin = state => Resolver.coin(state.currentPaymentCoinKey);
 
 Selector.currentPhase = state => Resolver.phase(state.currentPhaseKey);

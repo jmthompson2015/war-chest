@@ -127,6 +127,11 @@ Reducer.root = (state, action) => {
     case ActionType.SET_CONTROL:
       newAnToControl = assoc(action.an, action.controlKey, state.anToControl);
       return assoc("anToControl", newAnToControl, state);
+    case ActionType.SET_CURRENT_MOVE_STATES:
+      console.log(
+        `Reducer SET_CURRENT_MOVE_STATES moveStates = ${JSON.stringify(action.moveStates)}`
+      );
+      return assoc("currentMoveStates", action.moveStates, state);
     case ActionType.SET_CURRENT_PAYMENT_COIN:
       console.log(`Reducer SET_CURRENT_PAYMENT_COIN coinKey = ${action.coinKey}`);
       return assoc("currentPaymentCoinKey", action.coinKey, state);

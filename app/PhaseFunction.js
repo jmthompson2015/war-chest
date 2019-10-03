@@ -30,6 +30,8 @@ const advanceCurrentPlayer = store => {
   }
 
   store.dispatch(ActionCreator.setCurrentPlayer(newPlayerId));
+  store.dispatch(ActionCreator.setCurrentPaymentCoin(null));
+  store.dispatch(ActionCreator.setCurrentMoveStates([]));
 };
 
 const drawThreeCoins = (playerId, store) => {
@@ -100,6 +102,7 @@ const executePlayCoins = (resolve, store) => {
             paymentCoin,
             store.getState()
           );
+          store.dispatch(ActionCreator.setCurrentMoveStates(moveStates));
 
           if (!R.isEmpty(moveStates)) {
             strategy
