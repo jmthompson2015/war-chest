@@ -10,11 +10,11 @@ const myOnClick = event => {
   console.log(`myOnClick()`);
 
   const element = event.currentTarget;
-  const { coinkey, count, isfaceup } = element.dataset;
+  const { coinKey, count, isFaceup } = element.dataset;
 
-  console.log(`coinkey = ${coinkey}`);
+  console.log(`coinKey = ${coinKey}`);
   console.log(`count = ${count}`);
-  console.log(`isfaceup = ${isfaceup}`);
+  console.log(`isFaceup ? ${isFaceup}`);
 };
 
 const coin1 = Resolver.coin(UnitCoin.ARCHER);

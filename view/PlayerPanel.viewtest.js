@@ -12,15 +12,19 @@ import TestData from "../model/TestData.js";
 import Endpoint from "./Endpoint.js";
 import PlayerPanel from "./PlayerPanel.js";
 
-const myOnClick = event => {
-  console.log(`myOnClick()`);
+const handOnClick = event => {
+  console.log(`handOnClick()`);
 
   const element = event.currentTarget;
-  const { coinkey, count, isfaceup } = element.dataset;
+  const { coinKey, count, isFaceup } = element.dataset;
 
-  console.log(`coinkey = ${coinkey}`);
+  console.log(`coinKey = ${coinKey}`);
   console.log(`count = ${count}`);
-  console.log(`isfaceup = ${isfaceup}`);
+  console.log(`isFaceup ? ${isFaceup}`);
+};
+
+const inputCallback = ({ playerId, moveState }) => {
+  console.log(`inputCallback() playerId = ${playerId} moveState = ${JSON.stringify(moveState)}`);
 };
 
 const store = TestData.createStore();
@@ -60,9 +64,10 @@ const element = React.createElement(PlayerPanel, {
   supply,
   tableau,
 
+  handOnClick,
+  inputCallback,
   isInitiativePlayer,
   moveStates,
-  onClick: myOnClick,
   paymentCoin,
   resourceBase: Endpoint.LOCAL_RESOURCE
 });

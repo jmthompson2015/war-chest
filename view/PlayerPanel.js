@@ -5,9 +5,10 @@ import CoinState from "../state/CoinState.js";
 import CardsUI from "./CardsUI.js";
 import CoinsUI from "./CoinsUI.js";
 import Endpoint from "./Endpoint.js";
-import MoveOptionUI from "./MoveOptionUI.js";
-import ReactUtils from "./ReactUtilities.js";
+import MoveOptionDialog from "./MoveOptionDialog.js";
 import TitledElement from "./TitledElement.js";
+
+const RU = ReactComponent.ReactUtilities;
 
 const createCoinStates = coinKeys => {
   const reduceFunction = (accum, coinKey) => {
@@ -68,19 +69,30 @@ const createInitiativeUI = (initiativeTeamKey, resourceBase) => {
   return React.createElement(TitledElement, { key: "initiative", element, title: "Initiative" });
 };
 
+const createInputArea = (callback, moveStates, paymentCoin, player) => {
+  const myKey = `inputArea${player.id}`;
+  let element;
+
+  if (!R.isEmpty(moveStates)) {
+    const customKey = "move";
+    element = React.createElement(MoveOptionDialog, {
+      callback,
+      moveStates,
+      paymentCoin,
+      player,
+      customKey
+    });
+  }
+
+  return ReactDOMFactories.div({ key: myKey, id: myKey }, element);
+};
+
 const createMorgueUI = (morgue, resourceBase) => {
   const coinStates = createCoinStates(morgue);
   const customKey = "morgue";
   const element = React.createElement(CoinsUI, { coinStates, customKey, resourceBase });
 
   return React.createElement(TitledElement, { key: "morgue", element, title: "Morgue" });
-};
-
-const createMoveUI = moveStates => {
-  const customKey = "move";
-  const element = React.createElement(MoveOptionUI, { moveStates, customKey });
-
-  return React.createElement(TitledElement, { key: "move", element, title: "Move" });
 };
 
 const createSupplyUI = (supply, resourceBase) => {
@@ -104,6 +116,7 @@ class PlayerPanel extends React.Component {
   render() {
     const {
       player,
+
       discardFacedown,
       discardFaceup,
       hand,
@@ -113,9 +126,10 @@ class PlayerPanel extends React.Component {
 
       className,
       customKey,
+      handOnClick,
+      inputCallback,
       isInitiativePlayer,
       moveStates,
-      onClick,
       paymentCoin,
       resourceBase
     } = this.props;
@@ -133,7 +147,7 @@ class PlayerPanel extends React.Component {
     }
 
     if (!R.isEmpty(hand)) {
-      const handUI = createHandUI(hand, paymentCoin, resourceBase, onClick);
+      const handUI = createHandUI(hand, paymentCoin, resourceBase, handOnClick);
       cells = R.append(handUI, cells);
     }
 
@@ -150,12 +164,12 @@ class PlayerPanel extends React.Component {
     const tableauUI = createTableauUI(tableau, resourceBase);
     cells = R.append(tableauUI, cells);
 
-    if (!R.isNil(moveStates) && !R.isEmpty(moveStates)) {
-      const moveUI = createMoveUI(moveStates);
-      cells = R.append(moveUI, cells);
+    if (!R.isNil(paymentCoin)) {
+      const inputArea = createInputArea(inputCallback, moveStates, paymentCoin, player);
+      cells = R.append(inputArea, cells);
     }
 
-    return ReactUtils.createFlexboxWrap(cells, customKey, className);
+    return RU.createFlexboxWrap(cells, customKey, className);
   }
 }
 
@@ -171,9 +185,10 @@ PlayerPanel.propTypes = {
 
   className: PropTypes.string,
   customKey: PropTypes.string,
+  handOnClick: PropTypes.func,
+  inputCallback: PropTypes.func,
   isInitiativePlayer: PropTypes.bool,
   moveStates: PropTypes.arrayOf(),
-  onClick: PropTypes.func,
   paymentCoin: PropTypes.shape(),
   resourceBase: PropTypes.string
 };
@@ -181,9 +196,10 @@ PlayerPanel.propTypes = {
 PlayerPanel.defaultProps = {
   className: undefined,
   customKey: "playerPanel",
+  handOnClick: () => {},
+  inputCallback: () => {},
   isInitiativePlayer: false,
   moveStates: undefined,
-  onClick: () => {},
   paymentCoin: undefined,
   resourceBase: Endpoint.NETWORK_RESOURCE
 };

@@ -9,6 +9,7 @@ module.exports = {
     QUnit: true,
     R: true,
     React: true,
+    ReactComponent: true,
     ReactDOM: true,
     ReactDOMFactories: true,
     ReactGameBoard: true,
