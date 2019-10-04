@@ -12,15 +12,15 @@ import TestData from "../model/TestData.js";
 import Endpoint from "./Endpoint.js";
 import PlayerPanel from "./PlayerPanel.js";
 
-const handOnClick = event => {
+const handOnClick = ({ coinKey, count, eventSource, isFaceup, isHighlighted, playerId }) => {
   console.log(`handOnClick()`);
-
-  const element = event.currentTarget;
-  const { coinKey, count, isFaceup } = element.dataset;
 
   console.log(`coinKey = ${coinKey}`);
   console.log(`count = ${count}`);
+  console.log(`eventSource = ${eventSource}`);
   console.log(`isFaceup ? ${isFaceup}`);
+  console.log(`isHighlighted ? ${isHighlighted}`);
+  console.log(`playerId = ${playerId}`);
 };
 
 const inputCallback = ({ playerId, moveState }) => {

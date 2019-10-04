@@ -5,23 +5,12 @@ import Endpoint from "./Endpoint.js";
 
 const { ReactUtilities: RU } = ReactComponent;
 
+const mapIndexed = R.addIndex(R.map);
+
 class CoinsUI extends React.PureComponent {
-  constructor(props) {
-    super(props);
-
-    this.handleOnClick = this.handleOnClickFunction.bind(this);
-  }
-
-  handleOnClickFunction(event) {
-    const { onClick } = this.props;
-
-    onClick(event);
-  }
-
   render() {
-    const { coinStates, customKey, eventSource, resourceBase, width } = this.props;
+    const { coinStates, customKey, eventSource, onClick, resourceBase, width } = this.props;
 
-    const mapIndexed = R.addIndex(R.map);
     const mapFunction = (coinState, i) => {
       const { coinKey, count, isFaceup, isHighlighted } = coinState;
       const coin = Resolver.coin(coinKey);
@@ -34,7 +23,7 @@ class CoinsUI extends React.PureComponent {
         isHighlighted,
         customKey: customKey2,
         eventSource,
-        onClick: this.handleOnClick,
+        onClick,
         resourceBase,
         width
       });

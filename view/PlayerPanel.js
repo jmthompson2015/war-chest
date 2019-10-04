@@ -69,21 +69,20 @@ const createInitiativeUI = (initiativeTeamKey, resourceBase) => {
 };
 
 const createInputArea = (callback, moveStates, paymentCoin, player) => {
-  const myKey = `inputArea${player.id}`;
+  const customKey = `inputArea${player.id}`;
   let element;
 
   if (!R.isEmpty(moveStates)) {
-    const customKey = "move";
     element = React.createElement(MoveOptionDialog, {
       callback,
       moveStates,
       paymentCoin,
       player,
-      customKey
+      customKey: "move"
     });
   }
 
-  return ReactDOMFactories.div({ key: myKey, id: myKey }, element);
+  return ReactDOMFactories.div({ key: customKey, id: customKey }, element);
 };
 
 const createMorgueUI = (morgue, resourceBase) => {
@@ -112,6 +111,18 @@ const createTableauUI = (tableau, resourceBase) => {
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 class PlayerPanel extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.handOnClick = this.handOnClickFunction.bind(this);
+  }
+
+  handOnClickFunction(props) {
+    const { handOnClick, player } = this.props;
+
+    handOnClick(R.merge(props, { playerId: player.id }));
+  }
+
   render() {
     const {
       player,
@@ -125,7 +136,6 @@ class PlayerPanel extends React.Component {
 
       className,
       customKey,
-      handOnClick,
       inputCallback,
       isInitiativePlayer,
       moveStates,
@@ -146,7 +156,7 @@ class PlayerPanel extends React.Component {
     }
 
     if (!R.isEmpty(hand)) {
-      const handUI = createHandUI(hand, paymentCoin, resourceBase, handOnClick);
+      const handUI = createHandUI(hand, paymentCoin, resourceBase, this.handOnClick);
       cells = R.append(handUI, cells);
     }
 

@@ -6,15 +6,14 @@ import UnitCoin from "../artifact/UnitCoin.js";
 import CoinUI from "./CoinUI.js";
 import Endpoint from "./Endpoint.js";
 
-const myOnClick = event => {
+const myOnClick = ({ coinKey, count, eventSource, isFaceup, isHighlighted }) => {
   console.log(`myOnClick()`);
-
-  const element = event.currentTarget;
-  const { coinKey, count, isFaceup } = element.dataset;
 
   console.log(`coinKey = ${coinKey}`);
   console.log(`count = ${count}`);
+  console.log(`eventSource = ${eventSource}`);
   console.log(`isFaceup ? ${isFaceup}`);
+  console.log(`isHighlighted ? ${isHighlighted}`);
 };
 
 const coin1 = Resolver.coin(UnitCoin.ARCHER);

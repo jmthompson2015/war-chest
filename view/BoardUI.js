@@ -69,7 +69,7 @@ const isCellUsedFunction = isTwoPlayer => an => {
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 class BoardUI extends React.PureComponent {
   render() {
-    const { anToControl, anToTokens, isTwoPlayer, myKey, resourceBase } = this.props;
+    const { anToControl, anToTokens, customKey, isTwoPlayer, resourceBase } = this.props;
 
     const images0 = R.map(c => `${resourceBase}${R.prop("image")(c)}`, UnitCoin.values());
     const images1 = R.map(c => `${resourceBase}${R.prop("image")(c)}`, ControlMarker.values());
@@ -117,7 +117,7 @@ class BoardUI extends React.PureComponent {
       gridLineWidth: 3,
       images,
       isCellUsedFunction: isCellUsedFunction(isTwoPlayer),
-      myKey
+      myKey: customKey
     });
   }
 }
@@ -126,14 +126,14 @@ BoardUI.propTypes = {
   anToControl: PropTypes.shape().isRequired,
   anToTokens: PropTypes.shape().isRequired,
 
+  customKey: PropTypes.string,
   isTwoPlayer: PropTypes.bool,
-  myKey: PropTypes.string,
   resourceBase: PropTypes.string
 };
 
 BoardUI.defaultProps = {
+  customKey: "hexBoardCanvas",
   isTwoPlayer: true,
-  myKey: "hexBoardCanvas",
   resourceBase: Endpoint.NETWORK_RESOURCE
 };
 

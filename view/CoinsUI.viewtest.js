@@ -7,15 +7,14 @@ import CoinState from "../state/CoinState.js";
 import CoinsUI from "./CoinsUI.js";
 import Endpoint from "./Endpoint.js";
 
-const myOnClick = event => {
+const myOnClick = ({ coinKey, count, eventSource, isFaceup, isHighlighted }) => {
   console.log(`myOnClick()`);
-
-  const element = event.currentTarget;
-  const { coinKey, count, isFaceup } = element.dataset;
 
   console.log(`coinKey = ${coinKey}`);
   console.log(`count = ${count}`);
+  console.log(`eventSource = ${eventSource}`);
   console.log(`isFaceup ? ${isFaceup}`);
+  console.log(`isHighlighted ? ${isHighlighted}`);
 };
 
 const coinStates = [

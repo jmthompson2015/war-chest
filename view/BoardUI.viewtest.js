@@ -20,7 +20,7 @@ const anToTokens1 = Selector.anToTokens(state1);
 const element1 = React.createElement(BoardUI, {
   anToControl: anToControl1,
   anToTokens: anToTokens1,
-  myKey: "hexBoardCanvas1",
+  customKey: "hexBoardCanvas1",
   resourceBase: Endpoint.LOCAL_RESOURCE
 });
 
@@ -36,7 +36,7 @@ const element2 = React.createElement(BoardUI, {
   anToControl: anToControl2,
   anToTokens: anToTokens2,
   isTwoPlayer: false,
-  myKey: "hexBoardCanvas2",
+  customKey: "hexBoardCanvas2",
   resourceBase: Endpoint.LOCAL_RESOURCE
 });
 

@@ -49,18 +49,20 @@ const drawFunction4 = (context0, width, height) => {
 };
 
 class CoinUI extends React.PureComponent {
+  constructor(props) {
+    super(props);
+
+    this.handleOnClick = this.handleOnClickFunction.bind(this);
+  }
+
+  handleOnClickFunction() {
+    const { coin, count, eventSource, isFaceup, isHighlighted, onClick } = this.props;
+
+    onClick({ coinKey: coin.key, count, eventSource, isFaceup, isHighlighted });
+  }
+
   render() {
-    const {
-      coin,
-      count,
-      eventSource,
-      isFaceup,
-      isHighlighted,
-      customKey,
-      onClick,
-      resourceBase,
-      width
-    } = this.props;
+    const { coin, count, customKey, isFaceup, isHighlighted, resourceBase, width } = this.props;
 
     const imageSrc = Resolver.coinImage(coin.key, isFaceup);
     const image = `${resourceBase}${imageSrc}`;
@@ -70,21 +72,13 @@ class CoinUI extends React.PureComponent {
       drawLayerFunctions = R.append(drawFunction4, drawLayerFunctions);
     }
 
-    const clientProps = {
-      "data-source": eventSource,
-      "data-coin-key": coin.key,
-      "data-count": count,
-      "data-is-faceup": isFaceup
-    };
-
     return React.createElement(LayeredCanvas, {
       drawLayerFunctions,
 
-      clientProps,
       height: width,
       images: [image],
       customKey,
-      onClick,
+      onClick: this.handleOnClick,
       title: coin.name,
       width
     });
@@ -95,10 +89,10 @@ CoinUI.propTypes = {
   coin: PropTypes.shape().isRequired,
 
   count: PropTypes.number,
+  customKey: PropTypes.string,
   eventSource: PropTypes.string,
   isFaceup: PropTypes.bool,
   isHighlighted: PropTypes.bool,
-  customKey: PropTypes.string,
   onClick: PropTypes.func,
   resourceBase: PropTypes.string,
   width: PropTypes.number
@@ -106,10 +100,10 @@ CoinUI.propTypes = {
 
 CoinUI.defaultProps = {
   count: 1,
+  customKey: "CoinUI",
   eventSource: "CoinUI",
   isFaceup: true,
   isHighlighted: false,
-  customKey: undefined,
   onClick: () => {},
   resourceBase: Endpoint.NETWORK_RESOURCE,
   width: 50
