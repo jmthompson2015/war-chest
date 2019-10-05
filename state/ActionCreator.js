@@ -34,10 +34,19 @@ ActionCreator.removeFromPlayerArray = (arrayName, playerId, coinKey) => {
 
 ActionCreator.setControl = makeActionCreator(ActionType.SET_CONTROL, "an", "controlKey");
 
-ActionCreator.setCurrentMoveStates = makeActionCreator(
-  ActionType.SET_CURRENT_MOVE_STATES,
-  "moveStates"
+ActionCreator.setCurrentHandCallback = makeActionCreator(
+  ActionType.SET_CURRENT_HAND_CALLBACK,
+  "callback"
 );
+
+ActionCreator.setCurrentInputCallback = makeActionCreator(
+  ActionType.SET_CURRENT_INPUT_CALLBACK,
+  "callback"
+);
+
+ActionCreator.setCurrentMove = makeActionCreator(ActionType.SET_CURRENT_MOVE, "moveState");
+
+ActionCreator.setCurrentMoves = makeActionCreator(ActionType.SET_CURRENT_MOVES, "moveStates");
 
 ActionCreator.setCurrentPaymentCoin = makeActionCreator(
   ActionType.SET_CURRENT_PAYMENT_COIN,

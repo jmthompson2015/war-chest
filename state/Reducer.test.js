@@ -203,18 +203,60 @@ QUnit.test("setControl()", assert => {
   assert.equal(result.anToControl[an], controlKey);
 });
 
-QUnit.test("setCurrentMoveStates()", assert => {
+QUnit.test("setCurrentHandCallback()", assert => {
   // Setup.
   const state = AppState.create();
-  const moveStates = 12;
-  const action = ActionCreator.setCurrentMoveStates(moveStates);
+  const callback = 12;
+  const action = ActionCreator.setCurrentHandCallback(callback);
 
   // Run.
   const result = Reducer.root(state, action);
 
   // Verify.
   assert.ok(result);
-  assert.equal(result.currentMoveStates, moveStates);
+  assert.equal(result.currentHandCallback, callback);
+});
+
+QUnit.test("setCurrentInputCallback()", assert => {
+  // Setup.
+  const state = AppState.create();
+  const callback = 12;
+  const action = ActionCreator.setCurrentInputCallback(callback);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.currentInputCallback, callback);
+});
+
+QUnit.test("setCurrentMove()", assert => {
+  // Setup.
+  const state = AppState.create();
+  const moveState = 12;
+  const action = ActionCreator.setCurrentMove(moveState);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.currentMove, moveState);
+});
+
+QUnit.test("setCurrentMoves()", assert => {
+  // Setup.
+  const state = AppState.create();
+  const moveStates = 12;
+  const action = ActionCreator.setCurrentMoves(moveStates);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.currentMoves, moveStates);
 });
 
 QUnit.test("setCurrentPaymentCoin()", assert => {

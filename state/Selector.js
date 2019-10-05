@@ -19,7 +19,13 @@ Selector.controlANs = (teamKey, state) => {
   return R.filter(filterFunction, allControlANs);
 };
 
-Selector.currentMoveStates = state => state.currentMoveStates || [];
+Selector.currentHandCallback = state => state.currentHandCallback;
+
+Selector.currentInputCallback = state => state.currentInputCallback;
+
+Selector.currentMove = state => state.currentMove;
+
+Selector.currentMoves = state => state.currentMoves || [];
 
 Selector.currentPaymentCoin = state => Resolver.coin(state.currentPaymentCoinKey);
 

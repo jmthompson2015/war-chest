@@ -14,7 +14,10 @@ AppState.create = ({
   currentPhaseKey = null,
   currentPlayerId = null,
   currentPaymentCoinKey = null,
-  currentMoveStates = [],
+  currentHandCallback = null,
+  currentMoves = [],
+  currentMove = null,
+  currentInputCallback = null,
 
   playerToBag = {},
   playerToDiscardFacedown = {},
@@ -40,7 +43,10 @@ AppState.create = ({
     currentPhaseKey,
     currentPlayerId,
     currentPaymentCoinKey,
-    currentMoveStates,
+    currentHandCallback,
+    currentMoves,
+    currentMove,
+    currentInputCallback,
 
     playerToBag,
     playerToDiscardFacedown,

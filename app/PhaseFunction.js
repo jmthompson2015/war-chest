@@ -31,7 +31,10 @@ const advanceCurrentPlayer = store => {
 
   store.dispatch(ActionCreator.setCurrentPlayer(newPlayerId));
   store.dispatch(ActionCreator.setCurrentPaymentCoin(null));
-  store.dispatch(ActionCreator.setCurrentMoveStates([]));
+  store.dispatch(ActionCreator.setCurrentHandCallback(null));
+  store.dispatch(ActionCreator.setCurrentMoves([]));
+  store.dispatch(ActionCreator.setCurrentMove(null));
+  store.dispatch(ActionCreator.setCurrentInputCallback(null));
 };
 
 const drawThreeCoins = (playerId, store) => {
@@ -102,12 +105,13 @@ const executePlayCoins = (resolve, store) => {
             paymentCoin,
             store.getState()
           );
-          store.dispatch(ActionCreator.setCurrentMoveStates(moveStates));
+          store.dispatch(ActionCreator.setCurrentMoves(moveStates));
 
           if (!R.isEmpty(moveStates)) {
             strategy
               .chooseMove(moveStates, delay)
               .then(moveState => {
+                store.dispatch(ActionCreator.setCurrentMove(moveState));
                 if (!R.isNil(moveState)) {
                   MoveFunction.execute(moveState, store);
                 }

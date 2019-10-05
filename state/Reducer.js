@@ -127,11 +127,20 @@ Reducer.root = (state, action) => {
     case ActionType.SET_CONTROL:
       newAnToControl = assoc(action.an, action.controlKey, state.anToControl);
       return assoc("anToControl", newAnToControl, state);
-    case ActionType.SET_CURRENT_MOVE_STATES:
+    case ActionType.SET_CURRENT_HAND_CALLBACK:
+      console.log(`Reducer SET_CURRENT_HAND_CALLBACK callback isNil ? ${R.isNil(action.callback)}`);
+      return assoc("currentHandCallback", action.callback, state);
+    case ActionType.SET_CURRENT_INPUT_CALLBACK:
       console.log(
-        `Reducer SET_CURRENT_MOVE_STATES moveStates = ${JSON.stringify(action.moveStates)}`
+        `Reducer SET_CURRENT_INPUT_CALLBACK callback isNil ? ${R.isNil(action.callback)}`
       );
-      return assoc("currentMoveStates", action.moveStates, state);
+      return assoc("currentInputCallback", action.callback, state);
+    case ActionType.SET_CURRENT_MOVE:
+      console.log(`Reducer SET_CURRENT_MOVE moveState = ${JSON.stringify(action.moveState)}`);
+      return assoc("currentMove", action.moveState, state);
+    case ActionType.SET_CURRENT_MOVES:
+      console.log(`Reducer SET_CURRENT_MOVES moveStates = ${JSON.stringify(action.moveStates)}`);
+      return assoc("currentMoves", action.moveStates, state);
     case ActionType.SET_CURRENT_PAYMENT_COIN:
       console.log(`Reducer SET_CURRENT_PAYMENT_COIN coinKey = ${action.coinKey}`);
       return assoc("currentPaymentCoinKey", action.coinKey, state);
