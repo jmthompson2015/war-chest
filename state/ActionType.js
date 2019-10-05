@@ -20,6 +20,7 @@ ActionType.SET_INITIATIVE_PLAYER = "setInitiativePlayer";
 ActionType.SET_PLAYERS = "setPlayers";
 ActionType.SET_ROUND = "setRound";
 ActionType.SET_UNIT = "setUnit";
+ActionType.SET_USER_MESSAGE = "setUserMessage";
 ActionType.TRANSFER_BETWEEN_PLAYER_ARRAYS = "transferBetweenPlayerArrays";
 
 Object.freeze(ActionType);

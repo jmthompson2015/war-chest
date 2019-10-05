@@ -122,6 +122,8 @@ Selector.round = state => state.round;
 
 Selector.unit = (an, state) => state.anToTokens[an];
 
+Selector.userMessage = state => state.userMessage;
+
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 // Player collections.
 Selector.bag = (playerId, state) => state.playerToBag[playerId] || [];

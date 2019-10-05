@@ -72,6 +72,8 @@ ActionCreator.setRound = makeActionCreator(ActionType.SET_ROUND, "round");
 
 ActionCreator.setUnit = makeActionCreator(ActionType.SET_UNIT, "an", "coinKey");
 
+ActionCreator.setUserMessage = makeActionCreator(ActionType.SET_USER_MESSAGE, "userMessage");
+
 ActionCreator.transferBetweenPlayerArrays = (fromArrayName, toArrayName, playerId, coinKey) => {
   return {
     type: ActionType.TRANSFER_BETWEEN_PLAYER_ARRAYS,

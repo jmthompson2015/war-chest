@@ -169,6 +169,9 @@ Reducer.root = (state, action) => {
       newUnit = R.append(action.coinKey, oldUnit);
       newANToTokens = assoc(action.an, newUnit, state.anToTokens);
       return assoc("anToTokens", newANToTokens, state);
+    case ActionType.SET_USER_MESSAGE:
+      console.log(`Reducer SET_USER_MESSAGE userMessage = ${action.userMessage}`);
+      return assoc("userMessage", action.userMessage, state);
     case ActionType.TRANSFER_BETWEEN_PLAYER_ARRAYS:
       return transferBetweenArrays(
         state,

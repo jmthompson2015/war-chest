@@ -5,6 +5,7 @@ import Selector from "../state/Selector.js";
 import BoardUI from "./BoardUI.js";
 import Endpoint from "./Endpoint.js";
 import PlayerPanel from "./PlayerPanel.js";
+import StatusBarUI from "./StatusBarUI.js";
 
 const { ReactUtilities: RU } = ReactComponent;
 
@@ -54,14 +55,26 @@ const createPlayerPanel = (moveStates, player, state, handOnClickIn, inputCallba
   });
 };
 
+const createStatusBar = (round, phase, player, userMessage) => {
+  return React.createElement(StatusBarUI, {
+    phaseName: phase ? phase.name : undefined,
+    playerName: player ? player.name : undefined,
+    round,
+    userMessage
+  });
+};
+
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 class GamePanel extends React.Component {
   render() {
     const { className, handOnClick, inputCallback, state } = this.props;
 
+    const round = Selector.round(state);
+    const currentPhase = Selector.currentPhase(state);
     const player1 = Selector.player(1, state);
     const player2 = Selector.player(2, state);
     const currentPlayer = Selector.currentPlayer(state);
+    const userMessage = Selector.userMessage(state);
     let moveStates1 = [];
     let moveStates2 = [];
 
@@ -78,11 +91,13 @@ class GamePanel extends React.Component {
       }
     }
 
+    const statusBar = createStatusBar(round, currentPhase, currentPlayer, userMessage);
     const playerPanel1 = createPlayerPanel(moveStates1, player1, state, handOnClick, inputCallback);
     const boardUI = createBoardUI(state);
     const playerPanel2 = createPlayerPanel(moveStates2, player2, state, handOnClick, inputCallback);
 
     const rows = [
+      RU.createRow(statusBar, "StatusBarRow"),
       RU.createRow(playerPanel1, "PlayerPanel1Row"),
       RU.createRow(boardUI, "BoardUIRow"),
       RU.createRow(playerPanel2, "PlayerPanel2Row")

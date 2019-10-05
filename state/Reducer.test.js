@@ -398,6 +398,20 @@ QUnit.test("setUnit() 2", assert => {
   assert.equal(result.anToTokens[an].join(), "knight,knight");
 });
 
+QUnit.test("setUserMessage()", assert => {
+  // Setup.
+  const state = AppState.create();
+  const userMessage = "bogus";
+  const action = ActionCreator.setUserMessage(userMessage);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.userMessage, userMessage);
+});
+
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 QUnit.test("bagToHand()", assert => {
   // Setup.

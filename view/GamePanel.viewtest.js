@@ -1,5 +1,6 @@
 /* eslint no-console: ["error", { allow: ["log"] }] */
 
+import Phase from "../artifact/Phase.js";
 import UnitCoin from "../artifact/UnitCoin.js";
 
 import ActionCreator from "../state/ActionCreator.js";
@@ -12,7 +13,10 @@ const store = TestData.createStore();
 store.dispatch(ActionCreator.setUnit("e2", UnitCoin.SWORDSMAN));
 store.dispatch(ActionCreator.setUnit("d7", UnitCoin.ARCHER));
 store.dispatch(ActionCreator.setUnit("d7", UnitCoin.ARCHER));
+store.dispatch(ActionCreator.setRound(3));
+store.dispatch(ActionCreator.setCurrentPhase(Phase.PLAY_COINS));
 store.dispatch(ActionCreator.setCurrentPlayer(2));
+store.dispatch(ActionCreator.setUserMessage("Choose a coin from your hand."));
 const state = store.getState();
 
 const handOnClick = ({ coinKey, count, eventSource, isFaceup, isHighlighted, playerId }) => {
