@@ -1,13 +1,34 @@
+import Team from "../artifact/Team.js";
+
 import ActionCreator from "../state/ActionCreator.js";
+import PlayerState from "../state/PlayerState.js";
 import Selector from "../state/Selector.js";
 
 import Game from "./Game.js";
 
 QUnit.module("Game");
 
+const createPlayers = () => {
+  const ravenPlayer = PlayerState.create({
+    id: 1,
+    name: "Alfred",
+    teamKey: Team.RAVEN
+  });
+  const wolfPlayer = PlayerState.create({
+    id: 2,
+    name: "Bruce",
+    teamKey: Team.WOLF
+  });
+
+  return [ravenPlayer, wolfPlayer];
+};
+
 QUnit.test("execute() ", assert => {
   // Setup.
-  const game = new Game();
+  const isTwoPlayer = true;
+  const players = createPlayers(isTwoPlayer);
+  const roundLimit = 1;
+  const game = new Game(players, roundLimit);
   const { store } = game;
   store.dispatch(ActionCreator.setDelay(0));
 

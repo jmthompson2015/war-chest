@@ -1,9 +1,8 @@
-/* eslint no-underscore-dangle: ["error", { "allow": ["_store"] }] */
+/* eslint no-underscore-dangle: ["error", { "allow": ["_roundLimit", "_store"] }] */
 
 import Team from "../artifact/Team.js";
 
 import ActionCreator from "../state/ActionCreator.js";
-import PlayerState from "../state/PlayerState.js";
 import Reducer from "../state/Reducer.js";
 import Selector from "../state/Selector.js";
 
@@ -11,41 +10,7 @@ import Setup from "../model/Setup.js";
 
 import Round from "./Round.js";
 
-const createPlayers = isTwoPlayer => {
-  const ravenPlayer = PlayerState.create({
-    id: 1,
-    name: "Alfred",
-    teamKey: Team.RAVEN
-  });
-  const wolfPlayer = PlayerState.create({
-    id: 2,
-    name: "Bruce",
-    teamKey: Team.WOLF
-    // isComputer: false,
-    // strategy: "HumanPlayerStrategy"
-  });
-
-  const answer = [ravenPlayer, wolfPlayer];
-
-  if (!isTwoPlayer) {
-    const ravenPlayer2 = PlayerState.create({
-      id: 3,
-      name: "Clark",
-      teamKey: Team.RAVEN
-    });
-    const wolfPlayer2 = PlayerState.create({
-      id: 4,
-      name: "Diana",
-      teamKey: Team.WOLF
-    });
-
-    answer.push([ravenPlayer2, wolfPlayer2]);
-  }
-
-  return answer;
-};
-
-const isGameOver = store => {
+const isGameOver = (roundLimit, store) => {
   const state = store.getState();
   const isTwoPlayer = Selector.isTwoPlayer(state);
   const isFourPlayer = Selector.isFourPlayer(state);
@@ -73,28 +38,31 @@ const isGameOver = store => {
     store.dispatch(ActionCreator.setWinner(winner));
   }
 
-  return !R.isNil(winner) || Selector.round(store.getState()) > 0;
+  return !R.isNil(winner) || Selector.round(store.getState()) >= roundLimit;
 };
 
-const executeGame = (resolve, store) => {
-  if (isGameOver(store)) {
+const executeGame = (roundLimit, resolve, store) => {
+  if (isGameOver(roundLimit, store)) {
     resolve();
   } else {
     Round.execute(store).then(() => {
-      executeGame(resolve, store);
+      executeGame(roundLimit, resolve, store);
     });
   }
 };
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 class Game {
-  constructor() {
-    const isTwoPlayer = true;
+  constructor(players, roundLimit = 100) {
     this._store = Redux.createStore(Reducer.root);
-    const players = createPlayers(isTwoPlayer);
     this._store.dispatch(ActionCreator.setPlayers(players));
+    this._roundLimit = roundLimit;
 
     Setup.execute(this._store);
+  }
+
+  get roundLimit() {
+    return this._roundLimit;
   }
 
   get state() {
@@ -107,7 +75,7 @@ class Game {
 
   execute() {
     return new Promise(resolve => {
-      executeGame(resolve, this.store);
+      executeGame(this.roundLimit, resolve, this.store);
     });
   }
 }
