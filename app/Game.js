@@ -21,6 +21,8 @@ const createPlayers = isTwoPlayer => {
     id: 2,
     name: "Bruce",
     teamKey: Team.WOLF
+    // isComputer: false,
+    // strategy: "HumanPlayerStrategy"
   });
 
   const answer = [ravenPlayer, wolfPlayer];

@@ -1,9 +1,11 @@
+import HumanPlayerStrategy from "./HumanPlayerStrategy.js";
 import SimplePlayerStrategy from "./SimplePlayerStrategy.js";
 import StrategyResolver from "./StrategyResolver.js";
 
 QUnit.module("StrategyResolver");
 
 QUnit.test("resolve()", assert => {
+  assert.equal(StrategyResolver.resolve("HumanPlayerStrategy"), HumanPlayerStrategy);
   assert.equal(StrategyResolver.resolve("SimplePlayerStrategy"), SimplePlayerStrategy);
 
   assert.equal(StrategyResolver.resolve("ReallyStupidStrategy"), undefined);

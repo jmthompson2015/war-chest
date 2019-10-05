@@ -5,11 +5,11 @@ import Selector from "../state/Selector.js";
 import MoveGenerator from "../model/MoveGenerator.js";
 import TestData from "../model/TestData.js";
 
-import SimplePlayerStrategy from "./SimplePlayerStrategy.js";
+import HumanPlayerStrategy from "./HumanPlayerStrategy.js";
 
-QUnit.module("SimplePlayerStrategy");
+QUnit.module("HumanPlayerStrategy");
 
-QUnit.test("choosePaymentCoin()", assert => {
+QUnit.skip("choosePaymentCoin()", assert => {
   // Setup.
   const store = TestData.createStore();
   const delay = 0;
@@ -26,10 +26,10 @@ QUnit.test("choosePaymentCoin()", assert => {
     done();
   };
 
-  SimplePlayerStrategy.choosePaymentCoin(hand, store, delay).then(callback);
+  HumanPlayerStrategy.choosePaymentCoin(hand, store, delay).then(callback);
 });
 
-QUnit.test("chooseMove()", assert => {
+QUnit.skip("chooseMove()", assert => {
   // Setup.
   const store = TestData.createStore();
   const delay = 0;
@@ -52,8 +52,8 @@ QUnit.test("chooseMove()", assert => {
     done();
   };
 
-  SimplePlayerStrategy.chooseMove(moveStates, store, delay).then(callback);
+  HumanPlayerStrategy.chooseMove(moveStates, store, delay).then(callback);
 });
 
-const SimplePlayerStrategyTest = {};
-export default SimplePlayerStrategyTest;
+const HumanPlayerStrategyTest = {};
+export default HumanPlayerStrategyTest;

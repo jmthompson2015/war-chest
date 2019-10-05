@@ -4,7 +4,7 @@ const SimplePlayerStrategy = {};
 
 const DELAY = 1000;
 
-SimplePlayerStrategy.choosePaymentCoin = (coinKeys, delay = DELAY) =>
+SimplePlayerStrategy.choosePaymentCoin = (coinKeys, store, delay = DELAY) =>
   new Promise(resolve => {
     const coinKey = ArrayUtils.randomElement(coinKeys);
     setTimeout(() => {
@@ -12,7 +12,7 @@ SimplePlayerStrategy.choosePaymentCoin = (coinKeys, delay = DELAY) =>
     }, delay);
   });
 
-SimplePlayerStrategy.chooseMove = (moveStates, delay = DELAY) =>
+SimplePlayerStrategy.chooseMove = (moveStates, store, delay = DELAY) =>
   new Promise(resolve => {
     const moveState = ArrayUtils.randomElement(moveStates);
     setTimeout(() => {

@@ -68,10 +68,10 @@ class GamePanel extends React.Component {
     if (currentPlayer && !currentPlayer.isComputer) {
       switch (currentPlayer.id) {
         case 1:
-          moveStates1 = Selector.currentMoveStates(state);
+          moveStates1 = Selector.currentMoves(state);
           break;
         case 2:
-          moveStates2 = Selector.currentMoveStates(state);
+          moveStates2 = Selector.currentMoves(state);
           break;
         default:
         // Nothing to do.

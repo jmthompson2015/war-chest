@@ -95,7 +95,7 @@ const executePlayCoins = (resolve, store) => {
     // console.log(`hand.length = ${hand.length}`);
     if (hand.length > 0) {
       const delay = Selector.delay(store.getState());
-      strategy.choosePaymentCoin(hand, delay).then(paymentCoinKey => {
+      strategy.choosePaymentCoin(hand, store, delay).then(paymentCoinKey => {
         // console.log(`currentPlayer ID = ${currentPlayer.id} paymentCoinKey = ${paymentCoinKey}`);
         if (!R.isNil(paymentCoinKey)) {
           store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinKey));
@@ -109,7 +109,7 @@ const executePlayCoins = (resolve, store) => {
 
           if (!R.isEmpty(moveStates)) {
             strategy
-              .chooseMove(moveStates, delay)
+              .chooseMove(moveStates, store, delay)
               .then(moveState => {
                 store.dispatch(ActionCreator.setCurrentMove(moveState));
                 if (!R.isNil(moveState)) {
