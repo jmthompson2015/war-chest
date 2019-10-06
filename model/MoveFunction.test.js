@@ -6,6 +6,7 @@ import Move from "../artifact/Move.js";
 import Resolver from "../artifact/Resolver.js";
 
 import ActionCreator from "../state/ActionCreator.js";
+import MoveState from "../state/MoveState.js";
 import Selector from "../state/Selector.js";
 
 import MoveFunction from "./MoveFunction.js";
@@ -27,21 +28,19 @@ QUnit.test("attack execute() ", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
-  const player = Selector.player(playerId, store.getState());
   const hand = Selector.hand(playerId, store.getState());
   const paymentCoinKey = randomUnitCoinKey(hand);
-  const paymentCoin = Resolver.coin(paymentCoinKey);
   const hand2 = Selector.hand(2, store.getState());
   const victimCoinKey = ArrayUtils.randomElement(hand2);
   const fromAN = "e2"; // Raven control location.
   const toAN = "d2";
   store.dispatch(ActionCreator.setUnit(fromAN, paymentCoinKey));
   store.dispatch(ActionCreator.setUnit(toAN, victimCoinKey));
-  const move = MoveFunction[Move.ATTACK];
-  const myMove = move.execute(player, paymentCoin, fromAN, toAN);
+  const moveKey = Move.ATTACK;
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinKey, fromAN, toAN });
 
   // Run.
-  myMove(store);
+  MoveFunction[moveKey].execute(moveState, store);
 
   // Verify.
   const resultHand = Selector.hand(playerId, store.getState());
@@ -83,17 +82,15 @@ QUnit.test("bolster execute() ", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
-  const player = Selector.player(playerId, store.getState());
   const hand = Selector.hand(playerId, store.getState());
-  const coinKey = randomUnitCoinKey(hand);
-  const coin = Resolver.coin(coinKey);
+  const paymentCoinKey = randomUnitCoinKey(hand);
   const an = "e2"; // Raven control location.
-  store.dispatch(ActionCreator.setUnit(an, coinKey));
-  const move = MoveFunction[Move.BOLSTER];
-  const myMove = move.execute(player, coin, an);
+  store.dispatch(ActionCreator.setUnit(an, paymentCoinKey));
+  const moveKey = Move.BOLSTER;
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinKey, an });
 
   // Run.
-  myMove(store);
+  MoveFunction[moveKey].execute(moveState, store);
 
   // Verify.
   const resultHand = Selector.hand(playerId, store.getState());
@@ -104,8 +101,8 @@ QUnit.test("bolster execute() ", assert => {
   assert.ok(resultUnit);
   assert.equal(Array.isArray(resultUnit), true);
   assert.equal(resultUnit.length, 2);
-  assert.equal(resultUnit[0], coinKey);
-  assert.equal(resultUnit[1], coinKey);
+  assert.equal(resultUnit[0], paymentCoinKey);
+  assert.equal(resultUnit[1], paymentCoinKey);
 });
 
 QUnit.test("bolster isLegal() true", assert => {
@@ -131,28 +128,20 @@ QUnit.test("claimInitiative execute() ", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
-  const player = Selector.player(playerId, store.getState());
   store.dispatch(ActionCreator.setInitiativePlayer(2));
   const hand = Selector.hand(playerId, store.getState());
   const paymentCoinKey = ArrayUtils.randomElement(hand);
-  const paymentCoin = Resolver.coin(paymentCoinKey);
-  const move = MoveFunction[Move.CLAIM_INITIATIVE];
-  const myMove = move.execute(player, paymentCoin);
-  console.log(
-    `Selector.isInitiativePlayer(player, store.getState()) ? ${Selector.isInitiativePlayer(
-      player,
-      store.getState()
-    )}`
-  );
+  const moveKey = Move.CLAIM_INITIATIVE;
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinKey });
 
   // Run.
-  myMove(store);
+  MoveFunction[moveKey].execute(moveState, store);
 
   // Verify.
   const resultHand = Selector.hand(playerId, store.getState());
   assert.ok(resultHand);
   assert.equal(resultHand.length, 2);
-  assert.equal(Selector.initiativePlayer(store.getState()).id, player.id);
+  assert.equal(Selector.initiativePlayer(store.getState()).id, playerId);
   assert.equal(Selector.initiativeChangedThisRound(store.getState()), true);
 });
 
@@ -181,14 +170,13 @@ QUnit.test("control execute() ", assert => {
   const player = Selector.player(playerId, store.getState());
   const hand = Selector.hand(playerId, store.getState());
   const paymentCoinKey = randomUnitCoinKey(hand);
-  const paymentCoin = Resolver.coin(paymentCoinKey);
   const an = "e5"; // Neutral control location.
   store.dispatch(ActionCreator.setUnit(an, paymentCoinKey));
-  const move = MoveFunction[Move.CONTROL];
-  const myMove = move.execute(player, paymentCoin, an);
+  const moveKey = Move.CONTROL;
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinKey, an });
 
   // Run.
-  myMove(store);
+  MoveFunction[moveKey].execute(moveState, store);
 
   // Verify.
   const resultHand = Selector.hand(playerId, store.getState());
@@ -222,16 +210,14 @@ QUnit.test("deploy execute() ", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
-  const player = Selector.player(playerId, store.getState());
   const hand = Selector.hand(playerId, store.getState());
-  const coinKey = randomUnitCoinKey(hand);
-  const coin = Resolver.coin(coinKey);
+  const paymentCoinKey = randomUnitCoinKey(hand);
   const an = "e2"; // Raven control location.
-  const move = MoveFunction[Move.DEPLOY];
-  const myMove = move.execute(player, coin, an);
+  const moveKey = Move.DEPLOY;
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinKey, an });
 
   // Run.
-  myMove(store);
+  MoveFunction[moveKey].execute(moveState, store);
 
   // Verify.
   const resultHand = Selector.hand(playerId, store.getState());
@@ -241,7 +227,7 @@ QUnit.test("deploy execute() ", assert => {
   assert.ok(resultUnit);
   assert.equal(Array.isArray(resultUnit), true);
   assert.equal(resultUnit.length, 1);
-  assert.equal(resultUnit[0], coinKey);
+  assert.equal(resultUnit[0], paymentCoinKey);
 });
 
 QUnit.test("deploy isLegal() true", assert => {
@@ -266,18 +252,16 @@ QUnit.test("moveAUnit execute() ", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
-  const player = Selector.player(playerId, store.getState());
   const hand = Selector.hand(playerId, store.getState());
   const paymentCoinKey = randomUnitCoinKey(hand);
-  const paymentCoin = Resolver.coin(paymentCoinKey);
   const fromAN = "e2"; // Raven control location.
   const toAN = "d2";
   store.dispatch(ActionCreator.setUnit(fromAN, paymentCoinKey));
-  const move = MoveFunction[Move.MOVE_A_UNIT];
-  const myMove = move.execute(player, paymentCoin, fromAN, toAN);
+  const moveKey = Move.MOVE_A_UNIT;
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinKey, fromAN, toAN });
 
   // Run.
-  myMove(store);
+  MoveFunction[moveKey].execute(moveState, store);
 
   // Verify.
   const resultHand = Selector.hand(playerId, store.getState());
@@ -314,15 +298,13 @@ QUnit.test("pass execute() ", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
-  const player = Selector.player(playerId, store.getState());
   const hand = Selector.hand(playerId, store.getState());
   const paymentCoinKey = ArrayUtils.randomElement(hand);
-  const paymentCoin = Resolver.coin(paymentCoinKey);
-  const move = MoveFunction[Move.PASS];
-  const myMove = move.execute(player, paymentCoin);
+  const moveKey = Move.PASS;
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinKey });
 
   // Run.
-  myMove(store);
+  MoveFunction[moveKey].execute(moveState, store);
 
   // Verify.
   const resultHand = Selector.hand(playerId, store.getState());
@@ -351,19 +333,16 @@ QUnit.test("recruit execute() ", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
-  const player = Selector.player(playerId, store.getState());
   store.dispatch(ActionCreator.setInitiativePlayer(2));
   const hand = Selector.hand(playerId, store.getState());
   const paymentCoinKey = ArrayUtils.randomElement(hand);
-  const paymentCoin = Resolver.coin(paymentCoinKey);
   const supply = Selector.hand(playerId, store.getState());
   const recruitCoinKey = randomUnitCoinKey(supply);
-  const recruitCoin = Resolver.coin(recruitCoinKey);
-  const move = MoveFunction[Move.RECRUIT];
-  const myMove = move.execute(player, paymentCoin, recruitCoin);
+  const moveKey = Move.RECRUIT;
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinKey, recruitCoinKey });
 
   // Run.
-  myMove(store);
+  MoveFunction[moveKey].execute(moveState, store);
 
   // Verify.
   const resultHand = Selector.hand(playerId, store.getState());

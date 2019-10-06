@@ -13,6 +13,9 @@ const MoveGenerator = {};
 MoveGenerator.generateForCoin = (player, paymentCoin, state) => {
   const moves = Move.values();
 
+  const playerId = player.id;
+  const paymentCoinKey = paymentCoin.key;
+
   let controlANs;
   let possibleControlANs;
   let supply;
@@ -20,19 +23,14 @@ MoveGenerator.generateForCoin = (player, paymentCoin, state) => {
 
   const reduceFunction = (accum, m) => {
     const newAccum = accum;
-    const mm = MoveFunction[m.key];
+    const moveKey = m.key;
+    const mm = MoveFunction[moveKey];
 
-    switch (m.key) {
+    switch (moveKey) {
       case Move.CLAIM_INITIATIVE:
       case Move.PASS:
         if (mm.isLegal(player, paymentCoin, state)) {
-          newAccum.push(
-            MoveState.create({
-              moveKey: m.key,
-              playerId: player.id,
-              paymentCoinKey: paymentCoin.key
-            })
-          );
+          newAccum.push(MoveState.create({ moveKey, playerId, paymentCoinKey }));
         }
         break;
       case Move.RECRUIT:
@@ -41,14 +39,7 @@ MoveGenerator.generateForCoin = (player, paymentCoin, state) => {
         R.forEach(recruitCoinKey => {
           const recruitCoin = Resolver.coin(recruitCoinKey);
           if (mm.isLegal(player, paymentCoin, recruitCoin, state)) {
-            newAccum.push(
-              MoveState.create({
-                moveKey: m.key,
-                playerId: player.id,
-                paymentCoinKey: paymentCoin.key,
-                recruitCoinKey: recruitCoin.key
-              })
-            );
+            newAccum.push(MoveState.create({ moveKey, playerId, paymentCoinKey, recruitCoinKey }));
           }
         }, uniqueSupply);
         break;
@@ -57,14 +48,7 @@ MoveGenerator.generateForCoin = (player, paymentCoin, state) => {
         controlANs = Selector.controlANs(player.teamKey, state);
         R.forEach(an => {
           if (mm.isLegal(player, paymentCoin, an, state)) {
-            newAccum.push(
-              MoveState.create({
-                moveKey: m.key,
-                playerId: player.id,
-                paymentCoinKey: paymentCoin.key,
-                an
-              })
-            );
+            newAccum.push(MoveState.create({ moveKey, playerId, paymentCoinKey, an }));
           }
         }, controlANs);
         break;
@@ -75,14 +59,7 @@ MoveGenerator.generateForCoin = (player, paymentCoin, state) => {
         possibleControlANs = Selector.possibleControlANs(player.id, state);
         R.forEach(an => {
           if (mm.isLegal(player, paymentCoin, an, state)) {
-            newAccum.push(
-              MoveState.create({
-                moveKey: m.key,
-                playerId: player.id,
-                paymentCoinKey: paymentCoin.key,
-                an
-              })
-            );
+            newAccum.push(MoveState.create({ moveKey, playerId, paymentCoinKey, an }));
           }
         }, possibleControlANs);
         break;
@@ -92,7 +69,7 @@ MoveGenerator.generateForCoin = (player, paymentCoin, state) => {
       case Move.TACTIC:
         break;
       default:
-        console.warn(`Unknown move.key: ${m.key}`);
+        console.warn(`Unknown move.key: ${moveKey}`);
     }
 
     return newAccum;
