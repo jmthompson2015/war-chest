@@ -1,3 +1,5 @@
+const { BoardCalculator, CoordinateCalculator, HexBoardUtilities } = ReactGameBoard;
+
 const Board = {};
 
 Board.IS_SQUARE = false;
@@ -47,8 +49,22 @@ Board.WOLF_STARTER_CONTROL_POINTS_4P = Immutable(
   Board.WOLF_STARTER_CONTROL_POINTS_2P.concat(["j3"])
 );
 
-Board.boardCalculator = new ReactGameBoard.BoardCalculator(Board.IS_SQUARE, Board.IS_FLAT);
-Board.coordinateCalculator = new ReactGameBoard.CoordinateCalculator(11, 7);
+Board.boardCalculator = new BoardCalculator(Board.IS_SQUARE, Board.IS_FLAT);
+Board.coordinateCalculator = new CoordinateCalculator(11, 7);
+
+Board.isNeighbor = (fromAN, toAN) => Board.neighbors(fromAN).includes(toAN);
+
+Board.neighbors = (an, isTwoPlayer = true) => {
+  const q = Board.coordinateCalculator.anToFile(an);
+  const r = Board.coordinateCalculator.anToRank(an);
+  const hex = { q, r };
+  const hexNeighbors = HexBoardUtilities.hexNeighbors(hex);
+  const mapFunction = n => Board.coordinateCalculator.fileRankToAN(n.q, n.r);
+  const neighbors = R.map(mapFunction, hexNeighbors);
+  const unused = isTwoPlayer ? Board.UNUSED_2P : Board.UNUSED_4P;
+
+  return R.without(unused, neighbors).sort();
+};
 
 Object.freeze(Board);
 

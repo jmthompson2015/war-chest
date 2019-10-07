@@ -103,8 +103,9 @@ Reducer.root = (state, action) => {
         )(state)
       );
     case ActionType.MOVE_A_UNIT:
+      console.log(`Reducer MOVE_A_UNIT fromAN = ${action.fromAN} toAN = ${action.toAN}`);
       unit = state.anToTokens[action.fromAN];
-      newANToTokens = assoc(action.fromAN, undefined, state.anToTokens);
+      newANToTokens = R.dissoc(action.fromAN, state.anToTokens);
       newANToTokens = assoc(action.toAN, unit, newANToTokens);
       return assoc("anToTokens", newANToTokens, state);
     case ActionType.REFILL_BAG:

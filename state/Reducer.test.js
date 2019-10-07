@@ -139,7 +139,7 @@ QUnit.test("moveAUnit()", assert => {
   const { anToTokens } = result;
   assert.ok(anToTokens);
   assert.equal(anToTokens[fromAN], undefined);
-  assert.equal(anToTokens[toAN].join(","), coinKey);
+  assert.equal(anToTokens[toAN].join(), coinKey);
 });
 
 QUnit.test("refillBag()", assert => {

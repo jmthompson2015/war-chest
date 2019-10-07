@@ -1,5 +1,6 @@
 /* eslint no-console: ["error", { allow: ["warn"] }] */
 
+import Board from "../artifact/Board.js";
 import Move from "../artifact/Move.js";
 import Resolver from "../artifact/Resolver.js";
 
@@ -17,6 +18,8 @@ MoveGenerator.generateForCoin = (player, paymentCoin, state) => {
   const paymentCoinKey = paymentCoin.key;
 
   let controlANs;
+  let neighbors;
+  let playerUnitANs;
   let possibleControlANs;
   let supply;
   let uniqueSupply;
@@ -53,7 +56,15 @@ MoveGenerator.generateForCoin = (player, paymentCoin, state) => {
         }, controlANs);
         break;
       case Move.MOVE_A_UNIT:
-        // FIXME: need adjacent locations.
+        playerUnitANs = Selector.playerUnitANs(player.id, state);
+        R.forEach(fromAN => {
+          neighbors = Board.neighbors(fromAN, Selector.isTwoPlayer(state));
+          R.forEach(toAN => {
+            if (mm.isLegal(player, paymentCoin, fromAN, toAN, state)) {
+              newAccum.push(MoveState.create({ moveKey, playerId, paymentCoinKey, fromAN, toAN }));
+            }
+          }, neighbors);
+        }, playerUnitANs);
         break;
       case Move.CONTROL:
         possibleControlANs = Selector.possibleControlANs(player.id, state);

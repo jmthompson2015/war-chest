@@ -1,3 +1,4 @@
+import Board from "../artifact/Board.js";
 import Resolver from "../artifact/Resolver.js";
 
 import ActionCreator from "../state/ActionCreator.js";
@@ -139,8 +140,8 @@ const MoveFunction = {
   recruit: {
     execute: executeRecruit,
     isLegal: (player, paymentCoin, recruitCoin, state) =>
-      Resolver.isUnitCoin(recruitCoin.key) &&
       Selector.isInHand(player.id, paymentCoin.key, state) &&
+      Resolver.isUnitCoin(recruitCoin.key) &&
       Selector.isInSupply(player.id, recruitCoin.key, state),
     key: "recruit"
   },
@@ -151,19 +152,19 @@ const MoveFunction = {
   },
   deploy: {
     execute: executeDeploy,
-    isLegal: (player, coin, an, state) =>
-      Resolver.isUnitCoin(coin.key) &&
-      Selector.isInHand(player.id, coin.key, state) &&
+    isLegal: (player, paymentCoin, an, state) =>
+      Selector.isInHand(player.id, paymentCoin.key, state) &&
+      Resolver.isUnitCoin(paymentCoin.key) &&
       Selector.isControlledBy(an, player.teamKey, state) &&
       Selector.isUnoccupied(an, state),
     key: "deploy"
   },
   bolster: {
     execute: executeBolster,
-    isLegal: (player, coin, an, state) =>
-      Resolver.isUnitCoin(coin.key) &&
-      Selector.isInHand(player.id, coin.key, state) &&
-      Selector.isUnitType(an, coin.key, state),
+    isLegal: (player, paymentCoin, an, state) =>
+      Selector.isInHand(player.id, paymentCoin.key, state) &&
+      Resolver.isUnitCoin(paymentCoin.key) &&
+      Selector.isUnitType(an, paymentCoin.key, state),
     key: "bolster"
   },
   moveAUnit: {
@@ -171,15 +172,15 @@ const MoveFunction = {
     isLegal: (player, paymentCoin, fromAN, toAN, state) =>
       Selector.isInHand(player.id, paymentCoin.key, state) &&
       Selector.isUnitType(fromAN, paymentCoin.key, state) &&
-      // && Board.isAdjacent(fromAN, toAN)
+      Board.isNeighbor(fromAN, toAN) &&
       Selector.isUnoccupied(toAN, state),
     key: "moveAUnit"
   },
   control: {
     execute: executeControl,
     isLegal: (player, paymentCoin, an, state) =>
-      Resolver.isUnitCoin(paymentCoin.key) &&
       Selector.isInHand(player.id, paymentCoin.key, state) &&
+      Resolver.isUnitCoin(paymentCoin.key) &&
       Selector.isUnitType(an, paymentCoin.key, state) &&
       Selector.isControlLocation(an, state) &&
       !Selector.isControlledBy(an, player.teamKey, state),

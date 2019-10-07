@@ -324,6 +324,28 @@ QUnit.test("playersInOrder() 4", assert => {
   assert.equal(result[3].id, 3);
 });
 
+QUnit.test("playerUnitANs()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const playerId = 1;
+  const coinKey = "knight";
+  const action0 = ActionCreator.addToPlayerArray("playerToHand", playerId, coinKey);
+  const state1 = Reducer.root(state0, action0);
+  const action1 = ActionCreator.addToPlayerArray("playerToTableau", playerId, coinKey);
+  const state2 = Reducer.root(state1, action1);
+  const an = "e2";
+  const action2 = ActionCreator.setUnit(an, coinKey);
+  const state = Reducer.root(state2, action2);
+
+  // Run.
+  const result = Selector.playerUnitANs(playerId, state);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.length, 1);
+  assert.equal(result[0], an);
+});
+
 QUnit.test("possibleControlANs()", assert => {
   // Setup.
   let state = AppState.create();

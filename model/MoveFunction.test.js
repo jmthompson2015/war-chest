@@ -255,7 +255,7 @@ QUnit.test("moveAUnit execute() ", assert => {
   const hand = Selector.hand(playerId, store.getState());
   const paymentCoinKey = randomUnitCoinKey(hand);
   const fromAN = "e2"; // Raven control location.
-  const toAN = "d2";
+  const toAN = "f2";
   store.dispatch(ActionCreator.setUnit(fromAN, paymentCoinKey));
   const moveKey = Move.MOVE_A_UNIT;
   const moveState = MoveState.create({ moveKey, playerId, paymentCoinKey, fromAN, toAN });
@@ -283,7 +283,7 @@ QUnit.test("moveAUnit isLegal() true", assert => {
   const paymentCoinKey = randomUnitCoinKey(hand);
   const paymentCoin = Resolver.coin(paymentCoinKey);
   const fromAN = "e2"; // Raven control location.
-  const toAN = "d2";
+  const toAN = "f2";
   store.dispatch(ActionCreator.setUnit(fromAN, paymentCoinKey));
   const move = MoveFunction[Move.MOVE_A_UNIT];
 

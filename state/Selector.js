@@ -108,6 +108,17 @@ Selector.playersInOrder = state => {
   return R.concat(first, second);
 };
 
+Selector.playerUnitANs = (playerId, state) => {
+  const tableau = Selector.tableau(playerId, state);
+  const ans = Object.keys(state.anToTokens);
+  const filterFunction = an => {
+    const unit = Selector.unit(an, state);
+    return tableau.includes(unit[0]);
+  };
+
+  return R.filter(filterFunction, ans);
+};
+
 Selector.possibleControlANs = (teamKey, state) => {
   const allControlANs = Object.keys(state.anToControl);
   const filterFunction = an => {
