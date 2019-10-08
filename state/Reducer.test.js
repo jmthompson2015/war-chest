@@ -494,7 +494,7 @@ QUnit.test("discardFaceupToBag()", assert => {
   assert.equal(bag[0], coinKey);
 });
 
-QUnit.test("boardToMorgue()", assert => {
+QUnit.test("boardToMorgue() 1", assert => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
@@ -510,7 +510,32 @@ QUnit.test("boardToMorgue()", assert => {
   // Verify.
   assert.ok(result);
   const resultUnit = result.anToTokens[an];
-  assert.equal(resultUnit.join(""), "");
+  assert.equal(resultUnit, undefined);
+  const resultMorgue = result.playerToMorgue[playerId];
+  assert.ok(resultMorgue);
+  assert.equal(Array.isArray(resultMorgue), true);
+  assert.equal(resultMorgue.length, 1);
+  assert.equal(resultMorgue[0], coinKey);
+});
+
+QUnit.test("boardToMorgue() 2", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const playerId = 3;
+  const coinKey = "knight";
+  const an = "e2";
+  const action0 = ActionCreator.setUnit(an, coinKey);
+  const state1 = Reducer.root(state0, action0);
+  const state = Reducer.root(state1, action0);
+  const action = ActionCreator.boardToMorgue(playerId, an);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  const resultUnit = result.anToTokens[an];
+  assert.equal(resultUnit.join(), coinKey);
   const resultMorgue = result.playerToMorgue[playerId];
   assert.ok(resultMorgue);
   assert.equal(Array.isArray(resultMorgue), true);

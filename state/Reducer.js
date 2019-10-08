@@ -77,15 +77,20 @@ Reducer.root = (state, action) => {
       // );
       return addToArray(state, action.arrayName, action.playerId, action.coinKey);
     case ActionType.BOARD_TO_MORGUE:
-      oldUnit = state.anToTokens[action.an] || [];
-      newUnit = ArrayUtils.remove(oldUnit[0], oldUnit);
+      console.log(`Reducer BOARD_TO_MORGUE playerId = ${action.playerId} an = ${action.an}`);
+      oldUnit = state.anToTokens[action.an];
+      if (oldUnit.length === 1) {
+        newANToTokens = R.dissoc(action.an, state.anToTokens);
+      } else {
+        newUnit = ArrayUtils.remove(oldUnit[0], oldUnit);
+        newANToTokens = assoc(action.an, newUnit, state.anToTokens);
+      }
       newMorgue = state.playerToMorgue[action.playerId] || [];
       newMorgue = R.append(oldUnit[0], newMorgue);
       newPlayerToMorgue = assoc(action.playerId, newMorgue, state.playerToMorgue);
-      newANToTokens = assoc(action.an, newUnit, state.anToTokens);
       return Immutable(
         R.pipe(
-          R.assoc("anToTokens", newANToTokens),
+          R.assoc("anToTokens", newANToTokens || {}),
           R.assoc("playerToMorgue", newPlayerToMorgue)
         )(state)
       );

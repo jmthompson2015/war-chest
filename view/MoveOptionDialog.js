@@ -3,6 +3,8 @@
 import Move from "../artifact/Move.js";
 import Resolver from "../artifact/Resolver.js";
 
+import Selector from "../state/Selector.js";
+
 const RU = ReactComponent.ReactUtilities;
 
 const createButtons = (cancelOnClick, okOnClick) => {
@@ -20,6 +22,8 @@ const labelFunction = moveState => {
   const paymentCoin = Resolver.coin(moveState.paymentCoinKey);
 
   let recruitCoin;
+  let victimCoin;
+  let victimCoinKey;
   let answer;
 
   switch (moveState.moveKey) {
@@ -42,7 +46,10 @@ const labelFunction = moveState => {
       answer = `${move.name}: ${moveState.an}`;
       break;
     case Move.ATTACK:
-      answer = `${move.name}: ${paymentCoin.name} at ${moveState.fromAN} attack ${moveState.toAN}`;
+      [victimCoinKey] = Selector.unit(moveState.toAN);
+      victimCoin = Resolver.coin(victimCoinKey);
+      answer = `${move.name}: ${paymentCoin.name} at ${moveState.fromAN}'+
+        ' attack ${victimCoin.name} at ${moveState.toAN}`;
       break;
     default:
       console.warn(`Unknown moveState.moveKey: ${moveState.moveKey}`);

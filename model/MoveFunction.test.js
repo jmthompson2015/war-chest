@@ -29,11 +29,11 @@ QUnit.test("attack execute() ", assert => {
   const store = TestData.createStore();
   const playerId = 1;
   const hand = Selector.hand(playerId, store.getState());
-  const paymentCoinKey = randomUnitCoinKey(hand);
+  const paymentCoinKey = hand[1];
   const hand2 = Selector.hand(2, store.getState());
-  const victimCoinKey = ArrayUtils.randomElement(hand2);
+  const victimCoinKey = hand2[1];
   const fromAN = "e2"; // Raven control location.
-  const toAN = "d2";
+  const toAN = "f2";
   store.dispatch(ActionCreator.setUnit(fromAN, paymentCoinKey));
   store.dispatch(ActionCreator.setUnit(toAN, victimCoinKey));
   const moveKey = Move.ATTACK;
@@ -49,10 +49,13 @@ QUnit.test("attack execute() ", assert => {
   const resultFromUnit = Selector.unit(fromAN, store.getState());
   assert.ok(resultFromUnit);
   console.log(`resultFromUnit = ${JSON.stringify(resultFromUnit)}`);
-  assert.equal(resultFromUnit.join(""), paymentCoinKey);
+  assert.equal(resultFromUnit.join(), paymentCoinKey);
   const resultToUnit = Selector.unit(toAN, store.getState());
-  assert.ok(resultToUnit);
-  assert.equal(resultToUnit.join(""), "");
+  assert.equal(resultToUnit, undefined);
+  const resultMorgue = Selector.morgue(2, store.getState());
+  assert.ok(resultMorgue);
+  assert.equal(resultMorgue.length, 1);
+  assert.equal(resultMorgue.join(), victimCoinKey);
 });
 
 QUnit.test("attack isLegal() true", assert => {
@@ -66,7 +69,7 @@ QUnit.test("attack isLegal() true", assert => {
   const hand2 = Selector.hand(2, store.getState());
   const victimCoinKey = ArrayUtils.randomElement(hand2);
   const fromAN = "e2"; // Raven control location.
-  const toAN = "d2";
+  const toAN = "f2";
   store.dispatch(ActionCreator.setUnit(fromAN, paymentCoinKey));
   store.dispatch(ActionCreator.setUnit(toAN, victimCoinKey));
   const move = MoveFunction[Move.ATTACK];

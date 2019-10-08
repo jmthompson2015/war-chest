@@ -75,7 +75,15 @@ MoveGenerator.generateForCoin = (player, paymentCoin, state) => {
         }, possibleControlANs);
         break;
       case Move.ATTACK:
-        // FIXME: need adjacent locations.
+        playerUnitANs = Selector.playerUnitANs(player.id, state);
+        R.forEach(fromAN => {
+          neighbors = Board.neighbors(fromAN, Selector.isTwoPlayer(state));
+          R.forEach(toAN => {
+            if (mm.isLegal(player, paymentCoin, fromAN, toAN, state)) {
+              newAccum.push(MoveState.create({ moveKey, playerId, paymentCoinKey, fromAN, toAN }));
+            }
+          }, neighbors);
+        }, playerUnitANs);
         break;
       case Move.TACTIC:
         break;

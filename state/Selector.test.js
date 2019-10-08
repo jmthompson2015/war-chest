@@ -1,6 +1,8 @@
 import Board from "../artifact/Board.js";
 import ControlMarker from "../artifact/ControlMarker.js";
 import Team from "../artifact/Team.js";
+import UnitCard from "../artifact/UnitCard.js";
+import UnitCoin from "../artifact/UnitCoin.js";
 
 import AppState from "./AppState.js";
 import ActionCreator from "./ActionCreator.js";
@@ -194,6 +196,52 @@ QUnit.test("isControlLocation()", assert => {
   assert.equal(Selector.isControlLocation("e2", state), true);
 });
 
+QUnit.test("isEnemyUnit()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers4();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const coinKey1 = UnitCoin.SWORDSMAN;
+  const action1 = ActionCreator.addToPlayerArray("playerToTableau", 1, coinKey1);
+  const state2 = Reducer.root(state1, action1);
+  const coinKey2 = UnitCoin.ARCHER;
+  const action2 = ActionCreator.addToPlayerArray("playerToTableau", 2, coinKey2);
+  const state = Reducer.root(state2, action2);
+
+  // Run / Verify.
+  assert.equal(Selector.isEnemyUnit(1, coinKey1, state), false);
+  assert.equal(Selector.isEnemyUnit(1, coinKey2, state), true);
+  assert.equal(Selector.isEnemyUnit(2, coinKey1, state), true);
+  assert.equal(Selector.isEnemyUnit(2, coinKey2, state), false);
+});
+
+QUnit.test("isEnemyUnitAt()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers4();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const an1 = "e2";
+  const coinKey1 = UnitCoin.SWORDSMAN;
+  const action1 = ActionCreator.setUnit(an1, coinKey1);
+  const state2 = Reducer.root(state1, action1);
+  const action2 = ActionCreator.addToPlayerArray("playerToTableau", 1, coinKey1);
+  const state3 = Reducer.root(state2, action2);
+  const an2 = "f2";
+  const coinKey2 = UnitCoin.ARCHER;
+  const action3 = ActionCreator.setUnit(an2, coinKey2);
+  const state4 = Reducer.root(state3, action3);
+  const action4 = ActionCreator.addToPlayerArray("playerToTableau", 2, coinKey2);
+  const state = Reducer.root(state4, action4);
+
+  // Run / Verify.
+  assert.equal(Selector.isEnemyUnitAt(1, an1, state), false);
+  assert.equal(Selector.isEnemyUnitAt(1, an2, state), true);
+  assert.equal(Selector.isEnemyUnitAt(2, an1, state), true);
+  assert.equal(Selector.isEnemyUnitAt(2, an2, state), false);
+});
+
 QUnit.test("isFourPlayer()", assert => {
   // Setup.
   const state0 = AppState.create();
@@ -204,6 +252,53 @@ QUnit.test("isFourPlayer()", assert => {
   // Run / Verify.
   assert.equal(Selector.isTwoPlayer(state), false);
   assert.equal(Selector.isFourPlayer(state), true);
+});
+
+QUnit.test("isFriendlyUnit()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers4();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const coinKey1 = UnitCoin.SWORDSMAN;
+  const action1 = ActionCreator.addToPlayerArray("playerToTableau", 1, coinKey1);
+  const state2 = Reducer.root(state1, action1);
+  const coinKey2 = UnitCoin.ARCHER;
+  const action2 = ActionCreator.addToPlayerArray("playerToTableau", 2, coinKey2);
+  const state = Reducer.root(state2, action2);
+
+  // Run / Verify.
+  assert.equal(Selector.isFriendlyUnit(1, coinKey1, state), true);
+  assert.equal(Selector.isFriendlyUnit(1, coinKey2, state), false);
+  assert.equal(Selector.isFriendlyUnit(2, coinKey1, state), false);
+  assert.equal(Selector.isFriendlyUnit(2, coinKey2, state), true);
+});
+
+QUnit.test("isFriendlyUnitAt()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers4();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+
+  const an1 = "e2";
+  const coinKey1 = UnitCoin.SWORDSMAN;
+  const action1 = ActionCreator.setUnit(an1, coinKey1);
+  const state2 = Reducer.root(state1, action1);
+  const action2 = ActionCreator.addToPlayerArray("playerToTableau", 1, coinKey1);
+  const state3 = Reducer.root(state2, action2);
+  const an2 = "f2";
+  const coinKey2 = UnitCoin.ARCHER;
+  const action3 = ActionCreator.setUnit(an2, coinKey2);
+  const state4 = Reducer.root(state3, action3);
+  const action4 = ActionCreator.addToPlayerArray("playerToTableau", 2, coinKey2);
+  const state = Reducer.root(state4, action4);
+
+  // Run / Verify.
+  assert.equal(Selector.isFriendlyUnitAt(1, an1, state), true);
+  assert.equal(Selector.isFriendlyUnitAt(1, an2, state), false);
+  assert.equal(Selector.isFriendlyUnitAt(2, an1, state), false);
+  assert.equal(Selector.isFriendlyUnitAt(2, an2, state), true);
 });
 
 QUnit.test("isTwoPlayer()", assert => {
@@ -234,6 +329,43 @@ QUnit.test("isUnitType()", assert => {
 
   // Verify.
   assert.equal(result, true);
+});
+
+QUnit.test("playerForCard() 1", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers4();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const playerId = 1;
+  const cardKey = "knight";
+  const action1 = ActionCreator.addToPlayerArray("playerToTableau", playerId, cardKey);
+  const state = Reducer.root(state1, action1);
+
+  // Run.
+  const result = Selector.playerForCard(cardKey, state);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.id, playerId);
+});
+
+QUnit.test("playerForCard() none", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers4();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const playerId = 1;
+  const cardKey = "knight";
+  const action1 = ActionCreator.addToPlayerArray("playerToTableau", playerId, UnitCard.ARCHER);
+  const state = Reducer.root(state1, action1);
+
+  // Run.
+  const result = Selector.playerForCard(cardKey, state);
+
+  // Verify.
+  assert.equal(result, undefined);
 });
 
 QUnit.test("playersInOrder() 1", assert => {

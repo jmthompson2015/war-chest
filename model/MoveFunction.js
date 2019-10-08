@@ -109,6 +109,9 @@ const executeControl = (moveState, store) => {
 const executeAttack = (moveState, store) => {
   const { paymentCoinKey, playerId, toAN } = moveState;
   const player = Selector.player(playerId, store.getState());
+  const victimUnit = Selector.unit(toAN, store.getState());
+  const victimCoinKey = victimUnit[0];
+  const victimPlayer = Selector.playerForCard(victimCoinKey, store.getState());
   store.dispatch(
     ActionCreator.setUserMessage(
       `Player ${player.name} uses his ${paymentCoinKey} to attack ${toAN}.`
@@ -122,7 +125,7 @@ const executeAttack = (moveState, store) => {
       paymentCoinKey
     )
   );
-  store.dispatch(ActionCreator.boardToMorgue(playerId, toAN));
+  store.dispatch(ActionCreator.boardToMorgue(victimPlayer.id, toAN));
 };
 
 const executeTactic = (/* player, paymentCoin, fromAN, toAN, store */) => {};
@@ -189,11 +192,10 @@ const MoveFunction = {
   attack: {
     execute: executeAttack,
     isLegal: (player, paymentCoin, fromAN, toAN, state) =>
-      Resolver.isUnitCoin(paymentCoin.key) &&
       Selector.isInHand(player.id, paymentCoin.key, state) &&
-      // && Board.isAdjacent(fromAN, toAN)
-      // && Selector.isEnemyUnitType(toAN, state)
-      Selector.isUnitType(fromAN, paymentCoin.key, state),
+      Selector.isUnitType(fromAN, paymentCoin.key, state) &&
+      Board.isNeighbor(fromAN, toAN) &&
+      Selector.isEnemyUnitAt(player.id, toAN, state),
     key: "attack"
   },
   tactic: {

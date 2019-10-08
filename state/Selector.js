@@ -56,7 +56,31 @@ Selector.isControlledBy = (an, teamKey, state) => {
   return !R.isNil(controlKey) && controlKey === teamKey;
 };
 
+Selector.isEnemyUnit = (playerId, coinKey, state) => {
+  const tableau = Selector.tableau(playerId, state);
+
+  return !R.isNil(tableau) && !R.isEmpty(tableau) && !tableau.includes(coinKey);
+};
+
+Selector.isEnemyUnitAt = (playerId, an, state) => {
+  const unit = Selector.unit(an, state);
+
+  return !R.isNil(unit) && !R.isEmpty(unit) && Selector.isEnemyUnit(playerId, unit[0], state);
+};
+
 Selector.isFourPlayer = state => Object.keys(state.playerInstances).length === 4;
+
+Selector.isFriendlyUnit = (playerId, coinKey, state) => {
+  const tableau = Selector.tableau(playerId, state);
+
+  return !R.isNil(tableau) && !R.isEmpty(tableau) && tableau.includes(coinKey);
+};
+
+Selector.isFriendlyUnitAt = (playerId, an, state) => {
+  const unit = Selector.unit(an, state);
+
+  return !R.isNil(unit) && !R.isEmpty(unit) && Selector.isFriendlyUnit(playerId, unit[0], state);
+};
 
 Selector.isInHand = (playerId, coinKey, state) => {
   const hand = Selector.hand(playerId, state);
@@ -95,6 +119,16 @@ Selector.isUnoccupied = (an, state) => {
 Selector.player = (playerId, state) => state.playerInstances[playerId];
 
 Selector.playerCount = state => Object.keys(state.playerInstances).length;
+
+Selector.playerForCard = (cardKey, state) => {
+  const filterFunction = player => {
+    const tableau = Selector.tableau(player.id, state);
+    return tableau.includes(cardKey);
+  };
+  const players = R.filter(filterFunction, Selector.players(state));
+
+  return players.length > 0 ? players[0] : undefined;
+};
 
 Selector.players = state => Object.values(state.playerInstances);
 
