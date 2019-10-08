@@ -34,7 +34,7 @@ class CoinsUI extends React.PureComponent {
     const coinCells = mapIndexed(mapFunction, coinStates);
     const row = RU.createRow(coinCells);
 
-    return RU.createTable(row, "coinsUITable", "center");
+    return RU.createTable(row, "coinsUITable", "bg-wc-medium center");
   }
 }
 

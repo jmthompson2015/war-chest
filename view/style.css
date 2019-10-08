@@ -1,0 +1,21 @@
+body {
+  font-family: "San Francisco", "Helvetica Neue", Helvetica, sans-serif;
+}
+
+.bg-wc-dark {
+  background-color: #964b00;
+}
+
+.bg-wc-light {
+  /* Tachyons light-yellow */
+  background-color: #fbf1a9;
+}
+
+.bg-wc-medium {
+  background-color: hsl(40, 30%, 75%);
+}
+
+.wc-light {
+  /* Tachyons light-yellow */
+  color: #fbf1a9;
+}

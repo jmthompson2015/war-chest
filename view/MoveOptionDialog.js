@@ -130,14 +130,15 @@ class MoveOptionDialog extends React.Component {
       this.selectionChanged
     );
     const buttons = createButtons(this.cancel, this.ok);
-    const panelClass = "bg-light-yellow f6";
+    const panelClass = "bg-wc-medium f6";
 
     return React.createElement(ReactComponent.OptionPane, {
       panelClass,
       title: "Select Action",
       message,
       initialInput,
-      buttons
+      buttons,
+      titleClass: "b bg-wc-dark f6 tc wc-light"
     });
   }
 }

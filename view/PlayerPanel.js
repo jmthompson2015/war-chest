@@ -7,7 +7,9 @@ import CoinsUI from "./CoinsUI.js";
 import Endpoint from "./Endpoint.js";
 import MoveOptionDialog from "./MoveOptionDialog.js";
 
-const { ReactUtilities: RU, TitledElement } = ReactComponent;
+const { CollapsiblePane, ReactUtilities: RU, TitledElement } = ReactComponent;
+
+const titleClass = "b bg-wc-dark f6 tc wc-light";
 
 const createCoinStates = coinKeys => {
   const reduceFunction = (accum, coinKey) => {
@@ -37,7 +39,12 @@ const createDiscardUI = (player, discardFacedown, discardFaceup, resourceBase) =
   const customKey = "discard";
   const element = React.createElement(CoinsUI, { coinStates, customKey, resourceBase });
 
-  return React.createElement(TitledElement, { key: "discard", element, title: "Discard" });
+  return React.createElement(TitledElement, {
+    key: "discard",
+    element,
+    title: "Discard",
+    titleClass
+  });
 };
 
 const createHandUI = (hand, paymentCoin, resourceBase, onClick) => {
@@ -57,7 +64,7 @@ const createHandUI = (hand, paymentCoin, resourceBase, onClick) => {
     resourceBase
   });
 
-  return React.createElement(TitledElement, { key: "hand", element, title: "Hand" });
+  return React.createElement(TitledElement, { key: "hand", element, title: "Hand", titleClass });
 };
 
 const createInitiativeUI = (initiativeTeamKey, resourceBase) => {
@@ -65,7 +72,12 @@ const createInitiativeUI = (initiativeTeamKey, resourceBase) => {
   const customKey = "initiative";
   const element = React.createElement(CoinsUI, { coinStates, customKey, resourceBase });
 
-  return React.createElement(TitledElement, { key: "initiative", element, title: "Initiative" });
+  return React.createElement(TitledElement, {
+    key: "initiative",
+    element,
+    title: "Initiative",
+    titleClass
+  });
 };
 
 const createInputArea = (callback, moveStates, paymentCoin, player) => {
@@ -90,7 +102,12 @@ const createMorgueUI = (morgue, resourceBase) => {
   const customKey = "morgue";
   const element = React.createElement(CoinsUI, { coinStates, customKey, resourceBase });
 
-  return React.createElement(TitledElement, { key: "morgue", element, title: "Morgue" });
+  return React.createElement(TitledElement, {
+    key: "morgue",
+    element,
+    title: "Morgue",
+    titleClass
+  });
 };
 
 const createSupplyUI = (supply, resourceBase) => {
@@ -98,7 +115,12 @@ const createSupplyUI = (supply, resourceBase) => {
   const customKey = "supply";
   const element = React.createElement(CoinsUI, { coinStates, customKey, resourceBase });
 
-  return React.createElement(TitledElement, { key: "supply", element, title: "Supply" });
+  return React.createElement(TitledElement, {
+    key: "supply",
+    element,
+    title: "Supply",
+    titleClass
+  });
 };
 
 const createTableauUI = (tableau, resourceBase) => {
@@ -106,7 +128,13 @@ const createTableauUI = (tableau, resourceBase) => {
   const customKey = "tableau";
   const element = React.createElement(CardsUI, { cards, customKey, resourceBase, width: 125 });
 
-  return React.createElement(TitledElement, { key: "tableau", element, title: "Tableau" });
+  return React.createElement(CollapsiblePane, {
+    key: "tableau",
+    element,
+    className: "bg-wc-medium ma1",
+    header: "Tableau",
+    headerClass: titleClass
+  });
 };
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,7 +206,15 @@ class PlayerPanel extends React.Component {
       cells = R.append(inputArea, cells);
     }
 
-    return RU.createFlexboxWrap(cells, customKey, className);
+    const element = RU.createFlexboxWrap(cells, customKey, className);
+    const title = `Player ${player.name}`;
+
+    return React.createElement(TitledElement, {
+      element,
+      title,
+      className: "bg-wc-light",
+      titleClass: `b bg-wc-medium f4 tc`
+    });
   }
 }
 
