@@ -53,6 +53,57 @@ const createPlayers4 = () => {
   return [ravenPlayer1, wolfPlayer1, ravenPlayer2, wolfPlayer2];
 };
 
+QUnit.test("coin()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const coinId = 1;
+  const coinKey = UnitCoin.KNIGHT;
+  const coin = CoinState.create({ id: coinId, coinKey });
+  const action0 = ActionCreator.addCoin(coin);
+  const state = Reducer.root(state0, action0);
+
+  // Run / Verify.
+  const result = Selector.coin(coinId, state);
+
+  // Run / Verify.
+  assert.ok(result);
+  assert.equal(result.id, coinId);
+  assert.equal(result.coinKey, coinKey);
+});
+
+QUnit.test("coins()", assert => {
+  // Setup.
+  let state = AppState.create();
+  const unitCoinKeys = UnitCoin.keys();
+  for (let id = 1; id <= 5; id += 1) {
+    const coinKey = unitCoinKeys[id - 1];
+    const coin = CoinState.create({ id, coinKey });
+    const action = ActionCreator.addCoin(coin);
+    state = Reducer.root(state, action);
+  }
+  const coinIds = [1, 3, 5];
+
+  // Run / Verify.
+  const result = Selector.coins(coinIds, state);
+
+  // Run / Verify.
+  assert.ok(result);
+  assert.equal(Array.isArray(result), true);
+  assert.equal(result.length, coinIds.length);
+  const result0 = result[0];
+  assert.ok(result0);
+  assert.equal(result0.id, 1);
+  assert.equal(result0.coinKey, UnitCoin.ARCHER);
+  const result1 = result[1];
+  assert.ok(result1);
+  assert.equal(result1.id, 3);
+  assert.equal(result1.coinKey, UnitCoin.CAVALRY);
+  const result2 = result[2];
+  assert.ok(result2);
+  assert.equal(result2.id, 5);
+  assert.equal(result2.coinKey, UnitCoin.ENSIGN);
+});
+
 QUnit.test("bag()", assert => {
   // Setup.
   const state0 = AppState.create();

@@ -7,6 +7,14 @@ Selector.anToControl = state => state.anToControl;
 
 Selector.anToTokens = state => state.anToTokens;
 
+Selector.coin = (coinId, state) => state.coinInstances[coinId];
+
+Selector.coins = (coinIds, state) => {
+  const mapFunction = id => state.coinInstances[id];
+
+  return R.map(mapFunction, coinIds);
+};
+
 Selector.control = (an, state) => state.anToControl[an];
 
 Selector.controlANs = (teamKey, state) => {
