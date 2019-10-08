@@ -11,6 +11,8 @@ const makeActionCreator = (type, ...argNames) => (...args) => {
   return action;
 };
 
+ActionCreator.addCoin = makeActionCreator(ActionType.ADD_COIN, "coinState");
+
 ActionCreator.addToPlayerArray = (arrayName, playerId, coinKey) => {
   return { type: ActionType.ADD_TO_PLAYER_ARRAY, arrayName, playerId, coinKey };
 };

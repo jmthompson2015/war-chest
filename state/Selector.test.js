@@ -6,6 +6,7 @@ import UnitCoin from "../artifact/UnitCoin.js";
 
 import AppState from "./AppState.js";
 import ActionCreator from "./ActionCreator.js";
+import CoinState from "./CoinState.js";
 import PlayerState from "./PlayerState.js";
 import Reducer from "./Reducer.js";
 import Selector from "./Selector.js";
@@ -329,6 +330,36 @@ QUnit.test("isUnitType()", assert => {
 
   // Verify.
   assert.equal(result, true);
+});
+
+QUnit.test("nextCoinId()", assert => {
+  // Setup.
+  const state1 = AppState.create();
+
+  // Run / Verify.
+  assert.equal(Selector.nextCoinId(state1), 1);
+
+  const coin = CoinState.create({ id: 12, coinKey: UnitCoin.KNIGHT });
+  const action1 = ActionCreator.addCoin(coin);
+  const state2 = Reducer.root(state1, action1);
+
+  // Run / Verify.
+  assert.equal(Selector.nextCoinId(state2), 13);
+});
+
+QUnit.test("nextPlayerId()", assert => {
+  // Setup.
+  const state1 = AppState.create();
+
+  // Run / Verify.
+  assert.equal(Selector.nextPlayerId(state1), 1);
+
+  const players = createPlayers2();
+  const action1 = ActionCreator.setPlayers(players);
+  const state2 = Reducer.root(state1, action1);
+
+  // Run / Verify.
+  assert.equal(Selector.nextPlayerId(state2), 3);
 });
 
 QUnit.test("playerForCard() 1", assert => {

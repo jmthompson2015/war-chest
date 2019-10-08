@@ -1,8 +1,9 @@
 const CoinState = {};
 
-CoinState.create = ({ coinKey, count = 1, isFaceup = true, isHighlighted = false }) =>
+CoinState.create = ({ id, coinKey, count = 1, isFaceup = true, isHighlighted = false }) =>
   Immutable({
     // Required.
+    id,
     coinKey,
     // Situational.
     count,

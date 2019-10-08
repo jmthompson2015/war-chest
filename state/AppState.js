@@ -28,6 +28,7 @@ AppState.create = ({
   playerToSupply = {},
   playerToTableau = {},
 
+  coinInstances = {},
   playerInstances = {}
 } = {}) =>
   Immutable({
@@ -58,6 +59,7 @@ AppState.create = ({
     playerToSupply,
     playerToTableau,
 
+    coinInstances,
     playerInstances
   });
 

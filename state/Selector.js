@@ -170,6 +170,18 @@ Selector.unit = (an, state) => state.anToTokens[an];
 Selector.userMessage = state => state.userMessage;
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////
+const nextId = instanceMap => {
+  const reduceFunction = (accum, key) => Math.max(accum, key);
+  const maxId = R.reduce(reduceFunction, 0, Object.keys(instanceMap));
+
+  return (maxId !== undefined ? maxId : 0) + 1;
+};
+
+Selector.nextCoinId = state => nextId(state.coinInstances);
+
+Selector.nextPlayerId = state => nextId(state.playerInstances);
+
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 // Player collections.
 Selector.bag = (playerId, state) => state.playerToBag[playerId] || [];
 

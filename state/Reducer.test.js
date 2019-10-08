@@ -1,9 +1,32 @@
 import AppState from "./AppState.js";
 import ActionCreator from "./ActionCreator.js";
+import CoinState from "./CoinState.js";
 import PlayerState from "./PlayerState.js";
 import Reducer from "./Reducer.js";
+import Selector from "./Selector.js";
 
 QUnit.module("Reducer");
+
+QUnit.test("addCoin()", assert => {
+  // Setup.
+  const state = AppState.create();
+  const coinKey = "knight";
+  const coinState = CoinState.create({ id: Selector.nextCoinId(state), coinKey });
+  const action = ActionCreator.addCoin(coinState);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  const coins = result.coinInstances;
+  assert.ok(coins);
+  assert.equal(Object.keys(coins).length, 1);
+  const coin = coins[1];
+  assert.ok(coin);
+  assert.equal(coin.id, 1);
+  assert.equal(coin.coinKey, coinKey);
+});
 
 QUnit.test("addToPlayerBag()", assert => {
   // Setup.

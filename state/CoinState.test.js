@@ -2,9 +2,10 @@ import CoinState from "./CoinState.js";
 
 QUnit.module("CoinState");
 
-const PROPS = ["coinKey", "count", "isFaceup"];
+const PROPS = ["id", "coinKey", "count", "isFaceup", "isHighlighted"];
 
-const createTestData = () => CoinState.create({ coinKey: 1, count: 2, isFaceup: 3 });
+const createTestData = () =>
+  CoinState.create({ id: 1, coinKey: 2, count: 3, isFaceup: 4, isHighlighted: 5 });
 
 QUnit.test("create()", assert => {
   // Run.

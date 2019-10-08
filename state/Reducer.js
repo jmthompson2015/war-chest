@@ -54,6 +54,7 @@ Reducer.root = (state, action) => {
   let newAnToControl;
   let newANToTokens;
   let newBag;
+  let newCoins;
   let newMorgue;
   let newHand;
   let newPlayers;
@@ -71,6 +72,10 @@ Reducer.root = (state, action) => {
   let unit;
 
   switch (action.type) {
+    case ActionType.ADD_COIN:
+      console.log(`Reducer ADD_COIN coinState = ${JSON.stringify(action.coinState)}`);
+      newCoins = assoc(action.coinState.id, action.coinState, state.coinInstances);
+      return assoc("coinInstances", newCoins, state);
     case ActionType.ADD_TO_PLAYER_ARRAY:
       // console.log(
       //   `Reducer ADD_TO_PLAYER_ARRAY arrayName = ${action.arrayName} coinKey = ${action.coinKey}`
