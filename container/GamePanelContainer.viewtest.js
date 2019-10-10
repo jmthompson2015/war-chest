@@ -1,7 +1,5 @@
 /* eslint no-console: ["error", { allow: ["log"] }] */
 
-import UnitCoin from "../artifact/UnitCoin.js";
-
 import ActionCreator from "../state/ActionCreator.js";
 
 import TestData from "../model/TestData.js";
@@ -17,9 +15,9 @@ const myInputCallback = moveState => {
 };
 
 const store = TestData.createStore();
-store.dispatch(ActionCreator.setUnit("e2", UnitCoin.SWORDSMAN));
-store.dispatch(ActionCreator.setUnit("d7", UnitCoin.ARCHER));
-store.dispatch(ActionCreator.setUnit("d7", UnitCoin.ARCHER));
+store.dispatch(ActionCreator.setUnit("e2", 2)); // swordsman
+store.dispatch(ActionCreator.setUnit("d7", 22)); // archer
+store.dispatch(ActionCreator.setUnit("d7", 23)); // archer
 store.dispatch(ActionCreator.setCurrentPlayer(1));
 store.dispatch(ActionCreator.setCurrentHandCallback(myHandOnClick));
 store.dispatch(ActionCreator.setCurrentInputCallback(myInputCallback));

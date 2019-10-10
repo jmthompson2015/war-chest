@@ -9,10 +9,10 @@ import TestData from "../model/TestData.js";
 import Endpoint from "./Endpoint.js";
 import PlayerPanel from "./PlayerPanel.js";
 
-const handOnClick = ({ id, coinKey, eventSource, playerId }) => {
+const handOnClick = ({ coinId, coinKey, eventSource, playerId }) => {
   console.log(`handOnClick()`);
 
-  console.log(`id = ${id}`);
+  console.log(`coinId = ${coinId}`);
   console.log(`coinKey = ${coinKey}`);
   console.log(`eventSource = ${eventSource}`);
   console.log(`playerId = ${playerId}`);

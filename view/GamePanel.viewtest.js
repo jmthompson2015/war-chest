@@ -18,10 +18,10 @@ store.dispatch(ActionCreator.setCurrentPlayer(2));
 store.dispatch(ActionCreator.setUserMessage("Choose a coin from your hand."));
 const state = store.getState();
 
-const handOnClick = ({ id, coinKey, eventSource, playerId }) => {
+const handOnClick = ({ coinId, coinKey, eventSource, playerId }) => {
   console.log(`handOnClick()`);
 
-  console.log(`id = ${id}`);
+  console.log(`coinId = ${coinId}`);
   console.log(`coinKey = ${coinKey}`);
   console.log(`eventSource = ${eventSource}`);
   console.log(`playerId = ${playerId}`);

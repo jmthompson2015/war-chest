@@ -58,7 +58,7 @@ class CoinUI extends React.PureComponent {
   handleOnClickFunction() {
     const { coinState, eventSource, onClick } = this.props;
 
-    onClick({ id: coinState.id, coinKey: coinState.coinKey, eventSource });
+    onClick({ coinId: coinState.id, coinKey: coinState.coinKey, eventSource });
   }
 
   render() {

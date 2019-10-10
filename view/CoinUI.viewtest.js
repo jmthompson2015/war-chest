@@ -7,10 +7,10 @@ import CoinState from "../state/CoinState.js";
 import CoinUI from "./CoinUI.js";
 import Endpoint from "./Endpoint.js";
 
-const myOnClick = ({ id, coinKey, eventSource }) => {
+const myOnClick = ({ coinId, coinKey, eventSource }) => {
   console.log(`myOnClick()`);
 
-  console.log(`id = ${id}`);
+  console.log(`coinId = ${coinId}`);
   console.log(`coinKey = ${coinKey}`);
   console.log(`eventSource = ${eventSource}`);
 };
