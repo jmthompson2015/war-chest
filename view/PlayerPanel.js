@@ -11,14 +11,14 @@ const { CollapsiblePane, ReactUtilities: RU, TitledElement } = ReactComponent;
 
 const titleClass = "b bg-wc-dark f6 tc wc-light";
 
-const createCoinStates = coinKeys => {
-  const reduceFunction = (accum, coinKey) => {
-    const coinState0 = accum[coinKey];
-    const count = coinState0 ? coinState0.count : 0;
-    const coinState = CoinState.create({ coinKey, count: count + 1 });
-    return R.assoc(coinKey, coinState, accum);
+const mergeCoinStates = coinStates => {
+  const reduceFunction = (accum, coinState0) => {
+    const coinState1 = accum[coinState0.coinKey];
+    const count = coinState1 ? coinState1.count : 0;
+    const coinState = CoinState.create({ coinKey: coinState0.coinKey, count: count + 1 });
+    return R.assoc(coinState0.coinKey, coinState, accum);
   };
-  const coinStateMap = R.reduce(reduceFunction, {}, coinKeys);
+  const coinStateMap = R.reduce(reduceFunction, {}, coinStates);
 
   return Object.values(coinStateMap);
 };
@@ -34,7 +34,7 @@ const createDiscardUI = (player, discardFacedown, discardFaceup, resourceBase) =
           })
         ]
       : [];
-  const coinStates2 = createCoinStates(discardFaceup);
+  const coinStates2 = mergeCoinStates(discardFaceup);
   const coinStates = R.concat(coinStates1, coinStates2);
   const customKey = "discard";
   const element = React.createElement(CoinsUI, { coinStates, customKey, resourceBase });
@@ -48,18 +48,13 @@ const createDiscardUI = (player, discardFacedown, discardFaceup, resourceBase) =
 };
 
 const createHandUI = (hand, paymentCoin, resourceBase, onClick) => {
-  const reduceFunction = (accum, coinKey) => {
-    const isHighlighted = !R.isNil(paymentCoin) && coinKey === paymentCoin.key;
-    const coinState = CoinState.create({ coinKey, isHighlighted });
-    return R.append(coinState, accum);
-  };
-  const coinStates = R.reduce(reduceFunction, [], hand);
   const customKey = "hand";
   const eventSource = "hand";
   const element = React.createElement(CoinsUI, {
-    coinStates,
+    coinStates: hand,
     customKey,
     eventSource,
+    highlightedCoin: paymentCoin,
     onClick,
     resourceBase
   });
@@ -80,13 +75,14 @@ const createInitiativeUI = (initiativeTeamKey, resourceBase) => {
   });
 };
 
-const createInputArea = (callback, moveStates, paymentCoin, player) => {
+const createInputArea = (callback, coinInstances, moveStates, paymentCoin, player) => {
   const customKey = `inputArea${player.id}`;
   let element;
 
   if (!R.isEmpty(moveStates)) {
     element = React.createElement(MoveOptionDialog, {
       callback,
+      coinInstances,
       moveStates,
       paymentCoin,
       player,
@@ -98,7 +94,7 @@ const createInputArea = (callback, moveStates, paymentCoin, player) => {
 };
 
 const createMorgueUI = (morgue, resourceBase) => {
-  const coinStates = createCoinStates(morgue);
+  const coinStates = mergeCoinStates(morgue);
   const customKey = "morgue";
   const element = React.createElement(CoinsUI, { coinStates, customKey, resourceBase });
 
@@ -111,7 +107,7 @@ const createMorgueUI = (morgue, resourceBase) => {
 };
 
 const createSupplyUI = (supply, resourceBase) => {
-  const coinStates = createCoinStates(supply);
+  const coinStates = mergeCoinStates(supply);
   const customKey = "supply";
   const element = React.createElement(CoinsUI, { coinStates, customKey, resourceBase });
 
@@ -153,6 +149,7 @@ class PlayerPanel extends React.Component {
 
   render() {
     const {
+      coinInstances,
       player,
 
       discardFacedown,
@@ -202,7 +199,13 @@ class PlayerPanel extends React.Component {
     cells = R.append(tableauUI, cells);
 
     if (!R.isNil(paymentCoin)) {
-      const inputArea = createInputArea(inputCallback, moveStates, paymentCoin, player);
+      const inputArea = createInputArea(
+        inputCallback,
+        coinInstances,
+        moveStates,
+        paymentCoin,
+        player
+      );
       cells = R.append(inputArea, cells);
     }
 
@@ -219,13 +222,14 @@ class PlayerPanel extends React.Component {
 }
 
 PlayerPanel.propTypes = {
+  coinInstances: PropTypes.shape().isRequired,
   player: PropTypes.shape().isRequired,
 
-  discardFaceup: PropTypes.arrayOf(PropTypes.string).isRequired,
-  discardFacedown: PropTypes.arrayOf(PropTypes.string).isRequired,
-  hand: PropTypes.arrayOf(PropTypes.string).isRequired,
-  morgue: PropTypes.arrayOf(PropTypes.string).isRequired,
-  supply: PropTypes.arrayOf(PropTypes.string).isRequired,
+  discardFaceup: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  discardFacedown: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  hand: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  morgue: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  supply: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   tableau: PropTypes.arrayOf(PropTypes.string).isRequired,
 
   className: PropTypes.string,

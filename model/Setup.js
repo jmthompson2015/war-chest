@@ -7,6 +7,7 @@ import RoyalCoin from "../artifact/RoyalCoin.js";
 import UnitCard from "../artifact/UnitCard.js";
 
 import ActionCreator from "../state/ActionCreator.js";
+import CoinState from "../state/CoinState.js";
 import Selector from "../state/Selector.js";
 
 const Setup = {};
@@ -62,7 +63,8 @@ Setup.execute = store => {
   R.forEach(p => {
     // Place Royal Coin in bag.
     const royalCoinKey = p.teamKey === "raven" ? RoyalCoin.RAVEN : RoyalCoin.WOLF;
-    store.dispatch(ActionCreator.addToPlayerArray("playerToBag", p.id, royalCoinKey));
+    const royalCoin = CoinState.create({ coinKey: royalCoinKey, store });
+    store.dispatch(ActionCreator.addToPlayerArray("playerToBag", p.id, royalCoin.id));
 
     // Randomly deal or draft four (2 player) or three (4 player) unit cards.
     for (let i = 0; i < maxCards; i += 1) {
@@ -78,12 +80,14 @@ Setup.execute = store => {
     R.forEach(card => {
       // Fill supply with unit coins.
       for (let j = 0; j < card.initialCount - 2; j += 1) {
-        store.dispatch(ActionCreator.addToPlayerArray("playerToSupply", p.id, card.key));
+        const coin = CoinState.create({ coinKey: card.key, store });
+        store.dispatch(ActionCreator.addToPlayerArray("playerToSupply", p.id, coin.id));
       }
 
       // Move two of each unit coin type into bag.
       for (let j = 0; j < 2; j += 1) {
-        store.dispatch(ActionCreator.addToPlayerArray("playerToBag", p.id, card.key));
+        const coin = CoinState.create({ coinKey: card.key, store });
+        store.dispatch(ActionCreator.addToPlayerArray("playerToBag", p.id, coin.id));
       }
     }, cards);
   }, players);

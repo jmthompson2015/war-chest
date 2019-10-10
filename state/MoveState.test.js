@@ -2,10 +2,9 @@ import MoveState from "./MoveState.js";
 
 QUnit.module("MoveState");
 
-const PROPS = ["moveKey", "playerId", "paymentCoinKey", "an"];
+const PROPS = ["moveKey", "playerId", "paymentCoinId", "an"];
 
-const createTestData = () =>
-  MoveState.create({ moveKey: 1, playerId: 2, paymentCoinKey: 3, an: 4 });
+const createTestData = () => MoveState.create({ moveKey: 1, playerId: 2, paymentCoinId: 3, an: 4 });
 
 QUnit.test("create()", assert => {
   // Run.

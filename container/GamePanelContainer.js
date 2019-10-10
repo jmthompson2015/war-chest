@@ -11,13 +11,11 @@ function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = dispatch => ({
-  handOnClickWithCallback: (coinKey, currentHandCallback) => {
-    // console.log(`handOnClickWithCallback() start`);
-    dispatch(ActionCreator.setCurrentPaymentCoin(coinKey));
-    currentHandCallback(coinKey);
+  handOnClickWithCallback: (coinId, currentHandCallback) => {
+    dispatch(ActionCreator.setCurrentPaymentCoin(coinId));
+    currentHandCallback(coinId);
   },
   inputCallbackWithCallback: (moveState, currentInputCallback) => {
-    // console.log(`inputCallbackWithCallback() start`);
     dispatch(ActionCreator.setCurrentMove(moveState));
     currentInputCallback(moveState);
   }
@@ -28,12 +26,10 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
     ...ownProps,
     ...stateProps,
     ...dispatchProps,
-    handOnClick: ({ coinKey }) => {
-      // console.log(`handOnClick() start`);
-      dispatchProps.handOnClickWithCallback(coinKey, stateProps.currentHandCallback);
+    handOnClick: ({ coinId }) => {
+      dispatchProps.handOnClickWithCallback(coinId, stateProps.currentHandCallback);
     },
     inputCallback: ({ moveState }) => {
-      // console.log(`inputCallback() start`);
       dispatchProps.inputCallbackWithCallback(moveState, stateProps.currentInputCallback);
     }
   };

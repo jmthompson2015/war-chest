@@ -13,25 +13,20 @@ const makeActionCreator = (type, ...argNames) => (...args) => {
 
 ActionCreator.addCoin = makeActionCreator(ActionType.ADD_COIN, "coinState");
 
-ActionCreator.addToPlayerArray = (arrayName, playerId, coinKey) => {
-  return { type: ActionType.ADD_TO_PLAYER_ARRAY, arrayName, playerId, coinKey };
+ActionCreator.addToPlayerArray = (arrayName, playerId, coinId) => {
+  return { type: ActionType.ADD_TO_PLAYER_ARRAY, arrayName, playerId, coinId };
 };
 
 ActionCreator.boardToMorgue = makeActionCreator(ActionType.BOARD_TO_MORGUE, "playerId", "an");
 
-ActionCreator.handToBoard = makeActionCreator(
-  ActionType.HAND_TO_BOARD,
-  "playerId",
-  "coinKey",
-  "an"
-);
+ActionCreator.handToBoard = makeActionCreator(ActionType.HAND_TO_BOARD, "playerId", "coinId", "an");
 
 ActionCreator.moveAUnit = makeActionCreator(ActionType.MOVE_A_UNIT, "playerId", "fromAN", "toAN");
 
 ActionCreator.refillBag = makeActionCreator(ActionType.REFILL_BAG, "playerId");
 
-ActionCreator.removeFromPlayerArray = (arrayName, playerId, coinKey) => {
-  return { type: ActionType.REMOVE_FROM_PLAYER_ARRAY, arrayName, playerId, coinKey };
+ActionCreator.removeFromPlayerArray = (arrayName, playerId, coinId) => {
+  return { type: ActionType.REMOVE_FROM_PLAYER_ARRAY, arrayName, playerId, coinId };
 };
 
 ActionCreator.setControl = makeActionCreator(ActionType.SET_CONTROL, "an", "controlKey");
@@ -52,7 +47,7 @@ ActionCreator.setCurrentMoves = makeActionCreator(ActionType.SET_CURRENT_MOVES, 
 
 ActionCreator.setCurrentPaymentCoin = makeActionCreator(
   ActionType.SET_CURRENT_PAYMENT_COIN,
-  "coinKey"
+  "coinId"
 );
 
 ActionCreator.setCurrentPhase = makeActionCreator(ActionType.SET_CURRENT_PHASE, "phaseKey");
@@ -72,17 +67,17 @@ ActionCreator.setPlayers = makeActionCreator(ActionType.SET_PLAYERS, "players");
 
 ActionCreator.setRound = makeActionCreator(ActionType.SET_ROUND, "round");
 
-ActionCreator.setUnit = makeActionCreator(ActionType.SET_UNIT, "an", "coinKey");
+ActionCreator.setUnit = makeActionCreator(ActionType.SET_UNIT, "an", "coinId");
 
 ActionCreator.setUserMessage = makeActionCreator(ActionType.SET_USER_MESSAGE, "userMessage");
 
-ActionCreator.transferBetweenPlayerArrays = (fromArrayName, toArrayName, playerId, coinKey) => {
+ActionCreator.transferBetweenPlayerArrays = (fromArrayName, toArrayName, playerId, coinId) => {
   return {
     type: ActionType.TRANSFER_BETWEEN_PLAYER_ARRAYS,
     fromArrayName,
     toArrayName,
     playerId,
-    coinKey
+    coinId
   };
 };
 

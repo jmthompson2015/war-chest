@@ -9,15 +9,24 @@ const mapIndexed = R.addIndex(R.map);
 
 class CoinsUI extends React.PureComponent {
   render() {
-    const { coinStates, customKey, eventSource, onClick, resourceBase, width } = this.props;
+    const {
+      coinStates,
+      customKey,
+      eventSource,
+      highlightedCoin,
+      onClick,
+      resourceBase,
+      width
+    } = this.props;
 
     const mapFunction = (coinState, i) => {
-      const { coinKey, count, isFaceup, isHighlighted } = coinState;
+      const { coinKey, count, id, isFaceup } = coinState;
+      const isHighlighted = highlightedCoin && highlightedCoin.id === id;
       const coin = Resolver.coin(coinKey);
       const customKeySuffix = `${coin.key}-${coin.name}-${count}-${isFaceup}-${i}`;
       const customKey2 = `${customKey}${customKeySuffix}`;
       const element = React.createElement(CoinUI, {
-        coin,
+        coinState,
         count,
         isFaceup,
         isHighlighted,
@@ -43,6 +52,7 @@ CoinsUI.propTypes = {
 
   customKey: PropTypes.string,
   eventSource: PropTypes.string,
+  highlightedCoin: PropTypes.shape(),
   onClick: PropTypes.func,
   resourceBase: PropTypes.string,
   width: PropTypes.number
@@ -51,6 +61,7 @@ CoinsUI.propTypes = {
 CoinsUI.defaultProps = {
   customKey: "CoinsUI",
   eventSource: "CoinsUI",
+  highlightedCoin: undefined,
   onClick: () => {},
   resourceBase: Endpoint.NETWORK_RESOURCE,
   width: 50

@@ -7,14 +7,12 @@ import CoinState from "../state/CoinState.js";
 import CoinsUI from "./CoinsUI.js";
 import Endpoint from "./Endpoint.js";
 
-const myOnClick = ({ coinKey, count, eventSource, isFaceup, isHighlighted }) => {
+const myOnClick = ({ id, coinKey, eventSource }) => {
   console.log(`myOnClick()`);
 
+  console.log(`id = ${id}`);
   console.log(`coinKey = ${coinKey}`);
-  console.log(`count = ${count}`);
   console.log(`eventSource = ${eventSource}`);
-  console.log(`isFaceup ? ${isFaceup}`);
-  console.log(`isHighlighted ? ${isHighlighted}`);
 };
 
 const coinStates = [
@@ -22,9 +20,11 @@ const coinStates = [
   CoinState.create({ id: 2, coinKey: UnitCoin.BERSERKER, count: 2, isFaceup: false }),
   CoinState.create({ id: 3, coinKey: UnitCoin.CAVALRY, count: 3, isHighlighted: true })
 ];
+const highlightedCoin = coinStates[1];
 
 const element = React.createElement(CoinsUI, {
   coinStates,
+  highlightedCoin,
   onClick: myOnClick,
   resourceBase: Endpoint.LOCAL_RESOURCE
 });

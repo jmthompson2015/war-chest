@@ -5,7 +5,7 @@ import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
 
 const executeClaimInitiative = (moveState, store) => {
-  const { paymentCoinKey, playerId } = moveState;
+  const { paymentCoinId, playerId } = moveState;
   const player = Selector.player(playerId, store.getState());
   store.dispatch(ActionCreator.setUserMessage(`Player ${player.name} claims initiative.`));
   store.dispatch(
@@ -13,7 +13,7 @@ const executeClaimInitiative = (moveState, store) => {
       "playerToHand",
       "playerToDiscardFacedown",
       playerId,
-      paymentCoinKey
+      paymentCoinId
     )
   );
   store.dispatch(ActionCreator.setInitiativePlayer(playerId));
@@ -21,17 +21,19 @@ const executeClaimInitiative = (moveState, store) => {
 };
 
 const executeRecruit = (moveState, store) => {
-  const { paymentCoinKey, playerId, recruitCoinKey } = moveState;
+  const { paymentCoinId, playerId, recruitCoinId } = moveState;
   const player = Selector.player(playerId, store.getState());
+  const recruitCoinState = Selector.coin(recruitCoinId, store.getState());
+  const recruitCoin = Resolver.coin(recruitCoinState.coinKey);
   store.dispatch(
-    ActionCreator.setUserMessage(`Player ${player.name} recruits a ${recruitCoinKey}.`)
+    ActionCreator.setUserMessage(`Player ${player.name} recruits a ${recruitCoin.name}.`)
   );
   store.dispatch(
     ActionCreator.transferBetweenPlayerArrays(
       "playerToHand",
       "playerToDiscardFacedown",
       playerId,
-      paymentCoinKey
+      paymentCoinId
     )
   );
   store.dispatch(
@@ -39,13 +41,13 @@ const executeRecruit = (moveState, store) => {
       "playerToSupply",
       "playerToDiscardFaceup",
       playerId,
-      recruitCoinKey
+      recruitCoinId
     )
   );
 };
 
 const executePass = (moveState, store) => {
-  const { paymentCoinKey, playerId } = moveState;
+  const { paymentCoinId, playerId } = moveState;
   const player = Selector.player(playerId, store.getState());
   store.dispatch(ActionCreator.setUserMessage(`Player ${player.name} passes.`));
   store.dispatch(
@@ -53,46 +55,54 @@ const executePass = (moveState, store) => {
       "playerToHand",
       "playerToDiscardFacedown",
       playerId,
-      paymentCoinKey
+      paymentCoinId
     )
   );
 };
 
 const executeDeploy = (moveState, store) => {
-  const { an, paymentCoinKey, playerId } = moveState;
+  const { an, paymentCoinId, playerId } = moveState;
   const player = Selector.player(playerId, store.getState());
+  const paymentCoinState = Selector.coin(paymentCoinId, store.getState());
+  const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
   store.dispatch(
-    ActionCreator.setUserMessage(`Player ${player.name} deploys a ${paymentCoinKey}.`)
+    ActionCreator.setUserMessage(`Player ${player.name} deploys a ${paymentCoin.name}.`)
   );
-  store.dispatch(ActionCreator.handToBoard(playerId, paymentCoinKey, an));
+  store.dispatch(ActionCreator.handToBoard(playerId, paymentCoinId, an));
 };
 
 const executeBolster = (moveState, store) => {
-  const { an, paymentCoinKey, playerId } = moveState;
+  const { an, paymentCoinId, playerId } = moveState;
   const player = Selector.player(playerId, store.getState());
+  const paymentCoinState = Selector.coin(paymentCoinId, store.getState());
+  const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
   store.dispatch(
-    ActionCreator.setUserMessage(`Player ${player.name} bolsters a ${paymentCoinKey}.`)
+    ActionCreator.setUserMessage(`Player ${player.name} bolsters a ${paymentCoin.name}.`)
   );
-  store.dispatch(ActionCreator.handToBoard(playerId, paymentCoinKey, an));
+  store.dispatch(ActionCreator.handToBoard(playerId, paymentCoinId, an));
 };
 
 const executeMoveAUnit = (moveState, store) => {
-  const { fromAN, paymentCoinKey, playerId, toAN } = moveState;
+  const { fromAN, paymentCoinId, playerId, toAN } = moveState;
   const player = Selector.player(playerId, store.getState());
-  store.dispatch(ActionCreator.setUserMessage(`Player ${player.name} moves a ${paymentCoinKey}.`));
+  const paymentCoinState = Selector.coin(paymentCoinId, store.getState());
+  const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
+  store.dispatch(
+    ActionCreator.setUserMessage(`Player ${player.name} moves a ${paymentCoin.name}.`)
+  );
   store.dispatch(
     ActionCreator.transferBetweenPlayerArrays(
       "playerToHand",
       "playerToDiscardFaceup",
       playerId,
-      paymentCoinKey
+      paymentCoinId
     )
   );
   store.dispatch(ActionCreator.moveAUnit(playerId, fromAN, toAN));
 };
 
 const executeControl = (moveState, store) => {
-  const { an, paymentCoinKey, playerId } = moveState;
+  const { an, paymentCoinId, playerId } = moveState;
   const player = Selector.player(playerId, store.getState());
   store.dispatch(ActionCreator.setUserMessage(`Player ${player.name} controls ${an}.`));
   store.dispatch(
@@ -100,21 +110,26 @@ const executeControl = (moveState, store) => {
       "playerToHand",
       "playerToDiscardFaceup",
       playerId,
-      paymentCoinKey
+      paymentCoinId
     )
   );
   store.dispatch(ActionCreator.setControl(an, player.teamKey));
 };
 
 const executeAttack = (moveState, store) => {
-  const { paymentCoinKey, playerId, toAN } = moveState;
+  const { paymentCoinId, playerId, toAN } = moveState;
   const player = Selector.player(playerId, store.getState());
+  const paymentCoinState = Selector.coin(paymentCoinId, store.getState());
+  const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
   const victimUnit = Selector.unit(toAN, store.getState());
-  const victimCoinKey = victimUnit[0];
-  const victimPlayer = Selector.playerForCard(victimCoinKey, store.getState());
+  const victimCoinId = victimUnit[0];
+  const victimCoinState = Selector.coin(victimCoinId, store.getState());
+  const victimCoin = Resolver.coin(victimCoinState.coinKey);
+  const victimPlayer = Selector.playerForCard(victimCoinState.coinKey, store.getState());
   store.dispatch(
     ActionCreator.setUserMessage(
-      `Player ${player.name} uses his ${paymentCoinKey} to attack ${toAN}.`
+      `Player ${player.name} uses his ${paymentCoin.name}` +
+        ` to attack ${victimCoin.name} at ${toAN}.`
     )
   );
   store.dispatch(
@@ -122,7 +137,8 @@ const executeAttack = (moveState, store) => {
       "playerToHand",
       "playerToDiscardFaceup",
       playerId,
-      paymentCoinKey
+      paymentCoinId,
+      victimCoinId
     )
   );
   store.dispatch(ActionCreator.boardToMorgue(victimPlayer.id, toAN));
@@ -135,7 +151,7 @@ const MoveFunction = {
   claimInitiative: {
     execute: executeClaimInitiative,
     isLegal: (player, paymentCoin, state) =>
-      Selector.isInHand(player.id, paymentCoin.key, state) &&
+      Selector.isInHand(player.id, paymentCoin.id, state) &&
       !Selector.isInitiativePlayer(player.id, state) &&
       !Selector.initiativeChangedThisRound(state),
     key: "claimInitiative"
@@ -143,21 +159,21 @@ const MoveFunction = {
   recruit: {
     execute: executeRecruit,
     isLegal: (player, paymentCoin, recruitCoin, state) =>
-      Selector.isInHand(player.id, paymentCoin.key, state) &&
-      Resolver.isUnitCoin(recruitCoin.key) &&
-      Selector.isInSupply(player.id, recruitCoin.key, state),
+      Selector.isInHand(player.id, paymentCoin.id, state) &&
+      Resolver.isUnitCoin(recruitCoin.coinKey) &&
+      Selector.isInSupply(player.id, recruitCoin.id, state),
     key: "recruit"
   },
   pass: {
     execute: executePass,
-    isLegal: (player, paymentCoin, state) => Selector.isInHand(player.id, paymentCoin.key, state),
+    isLegal: (player, paymentCoin, state) => Selector.isInHand(player.id, paymentCoin.id, state),
     key: "pass"
   },
   deploy: {
     execute: executeDeploy,
     isLegal: (player, paymentCoin, an, state) =>
-      Selector.isInHand(player.id, paymentCoin.key, state) &&
-      Resolver.isUnitCoin(paymentCoin.key) &&
+      Selector.isInHand(player.id, paymentCoin.id, state) &&
+      Resolver.isUnitCoin(paymentCoin.coinKey) &&
       Selector.isControlledBy(an, player.teamKey, state) &&
       Selector.isUnoccupied(an, state),
     key: "deploy"
@@ -165,16 +181,16 @@ const MoveFunction = {
   bolster: {
     execute: executeBolster,
     isLegal: (player, paymentCoin, an, state) =>
-      Selector.isInHand(player.id, paymentCoin.key, state) &&
-      Resolver.isUnitCoin(paymentCoin.key) &&
-      Selector.isUnitType(an, paymentCoin.key, state),
+      Selector.isInHand(player.id, paymentCoin.id, state) &&
+      Resolver.isUnitCoin(paymentCoin.coinKey) &&
+      Selector.isUnitType(an, paymentCoin.coinKey, state),
     key: "bolster"
   },
   moveAUnit: {
     execute: executeMoveAUnit,
     isLegal: (player, paymentCoin, fromAN, toAN, state) =>
-      Selector.isInHand(player.id, paymentCoin.key, state) &&
-      Selector.isUnitType(fromAN, paymentCoin.key, state) &&
+      Selector.isInHand(player.id, paymentCoin.id, state) &&
+      Selector.isUnitType(fromAN, paymentCoin.coinKey, state) &&
       Board.isNeighbor(fromAN, toAN) &&
       Selector.isUnoccupied(toAN, state),
     key: "moveAUnit"
@@ -182,9 +198,9 @@ const MoveFunction = {
   control: {
     execute: executeControl,
     isLegal: (player, paymentCoin, an, state) =>
-      Selector.isInHand(player.id, paymentCoin.key, state) &&
-      Resolver.isUnitCoin(paymentCoin.key) &&
-      Selector.isUnitType(an, paymentCoin.key, state) &&
+      Selector.isInHand(player.id, paymentCoin.id, state) &&
+      Resolver.isUnitCoin(paymentCoin.coinKey) &&
+      Selector.isUnitType(an, paymentCoin.coinKey, state) &&
       Selector.isControlLocation(an, state) &&
       !Selector.isControlledBy(an, player.teamKey, state),
     key: "control"
@@ -192,8 +208,8 @@ const MoveFunction = {
   attack: {
     execute: executeAttack,
     isLegal: (player, paymentCoin, fromAN, toAN, state) =>
-      Selector.isInHand(player.id, paymentCoin.key, state) &&
-      Selector.isUnitType(fromAN, paymentCoin.key, state) &&
+      Selector.isInHand(player.id, paymentCoin.id, state) &&
+      Selector.isUnitType(fromAN, paymentCoin.coinKey, state) &&
       Board.isNeighbor(fromAN, toAN) &&
       Selector.isEnemyUnitAt(player.id, toAN, state),
     key: "attack"

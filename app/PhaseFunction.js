@@ -1,7 +1,5 @@
 import ArrayUtils from "../util/ArrayUtilities.js";
 
-import Resolver from "../artifact/Resolver.js";
-
 import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
 
@@ -52,11 +50,6 @@ const drawThreeCoins = (playerId, store) => {
       ActionCreator.transferBetweenPlayerArrays("playerToBag", "playerToHand", playerId, coinKey)
     );
   }
-  // console.log(
-  //   `drawThreeCoins() playerId = ${playerId} hand = ${JSON.stringify(
-  //     Selector.hand(playerId, store.getState())
-  //   )}`
-  // );
 };
 
 const executeDrawThreeCoins = (resolve, store) => {
@@ -83,24 +76,20 @@ const executePlayCoins = (resolve, store) => {
   advanceCurrentPlayer(store);
 
   const hasCoins = hasCoinsInHand(store.getState());
-  // console.log(`executePlayCoins() hasCoins ? ${hasCoins}`);
 
   if (!hasCoins) {
     resolve();
   } else {
     const currentPlayer = Selector.currentPlayer(store.getState());
     const strategy = StrategyResolver.resolve(currentPlayer.strategy);
-    // console.log(`currentPlayer.id = ${currentPlayer.id}`);
     const hand = Selector.hand(currentPlayer.id, store.getState());
 
-    // console.log(`hand.length = ${hand.length}`);
     if (hand.length > 0) {
       const delay = Selector.delay(store.getState());
-      strategy.choosePaymentCoin(hand, store, delay).then(paymentCoinKey => {
-        // console.log(`currentPlayer ID = ${currentPlayer.id} paymentCoinKey = ${paymentCoinKey}`);
-        if (!R.isNil(paymentCoinKey)) {
-          store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinKey));
-          const paymentCoin = Resolver.coin(paymentCoinKey);
+      strategy.choosePaymentCoin(hand, store, delay).then(paymentCoinId => {
+        if (!R.isNil(paymentCoinId)) {
+          store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
+          const paymentCoin = Selector.coin(paymentCoinId, store.getState());
           const moveStates = MoveGenerator.generateForCoin(
             currentPlayer,
             paymentCoin,

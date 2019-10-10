@@ -8,8 +8,8 @@ import TestData from "../model/TestData.js";
 
 import GamePanelContainer from "./GamePanelContainer.js";
 
-const myHandOnClick = coinKey => {
-  console.log(`myHandOnClick() coinKey = ${coinKey}`);
+const myHandOnClick = coinId => {
+  console.log(`myHandOnClick() coinId = ${coinId}`);
 };
 
 const myInputCallback = moveState => {

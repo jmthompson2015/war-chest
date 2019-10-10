@@ -1,5 +1,3 @@
-import Resolver from "../artifact/Resolver.js";
-
 import Selector from "../state/Selector.js";
 
 import MoveGenerator from "../model/MoveGenerator.js";
@@ -36,8 +34,8 @@ QUnit.test("chooseMove()", assert => {
   const playerId = 1;
   const player = Selector.player(playerId, store.getState());
   const hand = Selector.hand(playerId, store.getState());
-  const paymentCoinKey = hand[1];
-  const paymentCoin = Resolver.coin(paymentCoinKey);
+  const paymentCoinId = hand[1];
+  const paymentCoin = Selector.coin(paymentCoinId, store.getState());
   const moveStates = MoveGenerator.generateForCoin(player, paymentCoin, store.getState());
 
   // Run.
@@ -48,7 +46,7 @@ QUnit.test("chooseMove()", assert => {
     assert.ok(result);
     assert.equal(["deploy", "pass", "recruit"].includes(result.moveKey), true);
     assert.equal(result.playerId, playerId);
-    assert.equal(result.paymentCoinKey, paymentCoinKey);
+    assert.equal(result.paymentCoinId, paymentCoinId);
     done();
   };
 

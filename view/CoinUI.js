@@ -56,14 +56,23 @@ class CoinUI extends React.PureComponent {
   }
 
   handleOnClickFunction() {
-    const { coin, count, eventSource, isFaceup, isHighlighted, onClick } = this.props;
+    const { coinState, eventSource, onClick } = this.props;
 
-    onClick({ coinKey: coin.key, count, eventSource, isFaceup, isHighlighted });
+    onClick({ id: coinState.id, coinKey: coinState.coinKey, eventSource });
   }
 
   render() {
-    const { coin, count, customKey, isFaceup, isHighlighted, resourceBase, width } = this.props;
+    const {
+      coinState,
+      count,
+      customKey,
+      isFaceup,
+      isHighlighted,
+      resourceBase,
+      width
+    } = this.props;
 
+    const coin = Resolver.coin(coinState.coinKey);
     const imageSrc = Resolver.coinImage(coin.key, isFaceup);
     const image = `${resourceBase}${imageSrc}`;
     let drawLayerFunctions = [drawFunction1(image), drawFunction2(count), drawFunction3(count)];
@@ -86,7 +95,7 @@ class CoinUI extends React.PureComponent {
 }
 
 CoinUI.propTypes = {
-  coin: PropTypes.shape().isRequired,
+  coinState: PropTypes.shape().isRequired,
 
   count: PropTypes.number,
   customKey: PropTypes.string,

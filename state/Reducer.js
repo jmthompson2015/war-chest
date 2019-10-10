@@ -10,29 +10,29 @@ const Reducer = {};
 const assoc = (propertyName, propertyValue, object) =>
   Immutable(R.assoc(propertyName, Immutable(propertyValue), object));
 
-const addToArray = (state, arrayName, playerId, coinKey) => {
+const addToArray = (state, arrayName, playerId, coinId) => {
   const map = state[arrayName] || {};
   const oldArray = map[playerId] || [];
-  const newArray = R.append(coinKey, oldArray);
+  const newArray = R.append(coinId, oldArray);
   const newPlayer2To = assoc(playerId, newArray, map);
 
   return assoc(arrayName, newPlayer2To, state);
 };
 
-const removeFromArray = (state, arrayName, playerId, coinKey) => {
+const removeFromArray = (state, arrayName, playerId, coinId) => {
   const map = state[arrayName] || {};
   const oldArray = map[playerId] || [];
-  const newArray = ArrayUtils.remove(coinKey, oldArray);
+  const newArray = ArrayUtils.remove(coinId, oldArray);
   const newPlayer2From = assoc(playerId, newArray, map);
 
   return assoc(arrayName, newPlayer2From, state);
 };
 
-const transferBetweenArrays = (state, fromKey, toKey, playerId, coinKey) => {
+const transferBetweenArrays = (state, fromKey, toKey, playerId, coinId) => {
   const oldFrom = state[fromKey][playerId] || [];
-  const newFrom = ArrayUtils.remove(coinKey, oldFrom);
+  const newFrom = ArrayUtils.remove(coinId, oldFrom);
   const oldTo = state[toKey][playerId] || [];
-  const newTo = R.append(coinKey, oldTo);
+  const newTo = R.append(coinId, oldTo);
   const newPlayerToFrom = assoc(playerId, newFrom, state[fromKey]);
   const newPlayerToTo = assoc(playerId, newTo, state[toKey]);
 
@@ -73,14 +73,14 @@ Reducer.root = (state, action) => {
 
   switch (action.type) {
     case ActionType.ADD_COIN:
-      console.log(`Reducer ADD_COIN coinState = ${JSON.stringify(action.coinState)}`);
+      // console.log(`Reducer ADD_COIN coinState = ${JSON.stringify(action.coinState)}`);
       newCoins = assoc(action.coinState.id, action.coinState, state.coinInstances);
       return assoc("coinInstances", newCoins, state);
     case ActionType.ADD_TO_PLAYER_ARRAY:
       // console.log(
-      //   `Reducer ADD_TO_PLAYER_ARRAY arrayName = ${action.arrayName} coinKey = ${action.coinKey}`
+      //   `Reducer ADD_TO_PLAYER_ARRAY arrayName = ${action.arrayName} coinId = ${action.coinId}`
       // );
-      return addToArray(state, action.arrayName, action.playerId, action.coinKey);
+      return addToArray(state, action.arrayName, action.playerId, action.coinId);
     case ActionType.BOARD_TO_MORGUE:
       console.log(`Reducer BOARD_TO_MORGUE playerId = ${action.playerId} an = ${action.an}`);
       oldUnit = state.anToTokens[action.an];
@@ -101,9 +101,9 @@ Reducer.root = (state, action) => {
       );
     case ActionType.HAND_TO_BOARD:
       oldHand = state.playerToHand[action.playerId] || [];
-      newHand = ArrayUtils.remove(action.coinKey, oldHand);
+      newHand = ArrayUtils.remove(action.coinId, oldHand);
       oldUnit = state.anToTokens[action.an] || [];
-      newUnit = R.append(action.coinKey, oldUnit);
+      newUnit = R.append(action.coinId, oldUnit);
       newPlayerToHand = assoc(action.playerId, newHand, state.playerToHand);
       newANToTokens = assoc(action.an, newUnit, state.anToTokens);
       return Immutable(
@@ -134,7 +134,7 @@ Reducer.root = (state, action) => {
         )(state)
       );
     case ActionType.REMOVE_FROM_PLAYER_ARRAY:
-      return removeFromArray(state, action.arrayName, action.playerId, action.coinKey);
+      return removeFromArray(state, action.arrayName, action.playerId, action.coinId);
     case ActionType.SET_CONTROL:
       newAnToControl = assoc(action.an, action.controlKey, state.anToControl);
       return assoc("anToControl", newAnToControl, state);
@@ -150,11 +150,12 @@ Reducer.root = (state, action) => {
       console.log(`Reducer SET_CURRENT_MOVE moveState = ${JSON.stringify(action.moveState)}`);
       return assoc("currentMove", action.moveState, state);
     case ActionType.SET_CURRENT_MOVES:
-      console.log(`Reducer SET_CURRENT_MOVES moveStates = ${JSON.stringify(action.moveStates)}`);
+      // console.log(`Reducer SET_CURRENT_MOVES moveStates = ${JSON.stringify(action.moveStates)}`);
+      console.log(`Reducer SET_CURRENT_MOVES moveStates.length = ${action.moveStates.length}`);
       return assoc("currentMoves", action.moveStates, state);
     case ActionType.SET_CURRENT_PAYMENT_COIN:
-      console.log(`Reducer SET_CURRENT_PAYMENT_COIN coinKey = ${action.coinKey}`);
-      return assoc("currentPaymentCoinKey", action.coinKey, state);
+      console.log(`Reducer SET_CURRENT_PAYMENT_COIN coinId = ${action.coinId}`);
+      return assoc("currentPaymentCoinId", action.coinId, state);
     case ActionType.SET_CURRENT_PHASE:
       console.log(`Reducer SET_CURRENT_PHASE phaseKey = ${action.phaseKey}`);
       return assoc("currentPhaseKey", action.phaseKey, state);
@@ -175,9 +176,9 @@ Reducer.root = (state, action) => {
       console.log(`Reducer SET_ROUND round = ${action.round}`);
       return assoc("round", action.round, state);
     case ActionType.SET_UNIT:
-      // console.log(`Reducer SET_UNIT an = ${action.an} coinKey = ${action.coinKey}`);
+      console.log(`Reducer SET_UNIT an = ${action.an} coinId = ${action.coinId}`);
       oldUnit = state.anToTokens[action.an] || [];
-      newUnit = R.append(action.coinKey, oldUnit);
+      newUnit = Immutable(R.append(action.coinId, oldUnit));
       newANToTokens = assoc(action.an, newUnit, state.anToTokens);
       return assoc("anToTokens", newANToTokens, state);
     case ActionType.SET_USER_MESSAGE:
@@ -189,7 +190,7 @@ Reducer.root = (state, action) => {
         action.fromArrayName,
         action.toArrayName,
         action.playerId,
-        action.coinKey
+        action.coinId
       );
     default:
       console.warn(`Reducer.root: Unhandled action type: ${action.type}`);

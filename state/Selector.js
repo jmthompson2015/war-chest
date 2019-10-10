@@ -3,6 +3,15 @@ import Resolver from "../artifact/Resolver.js";
 
 const Selector = {};
 
+const coinsByType = (coinKey, coinIds, state) => {
+  const reduceFunction = (accum, coinId) => {
+    const coin = Selector.coin(coinId, state);
+    return coin && coin.coinKey === coinKey ? R.append(coin, accum) : accum;
+  };
+
+  return R.reduce(reduceFunction, [], coinIds);
+};
+
 Selector.anToControl = state => state.anToControl;
 
 Selector.anToTokens = state => state.anToTokens;
@@ -35,7 +44,7 @@ Selector.currentMove = state => state.currentMove;
 
 Selector.currentMoves = state => state.currentMoves || [];
 
-Selector.currentPaymentCoin = state => Resolver.coin(state.currentPaymentCoinKey);
+Selector.currentPaymentCoin = state => Selector.coin(state.currentPaymentCoinId, state);
 
 Selector.currentPhase = state => Resolver.phase(state.currentPhaseKey);
 
@@ -67,13 +76,14 @@ Selector.isControlledBy = (an, teamKey, state) => {
 Selector.isEnemyUnit = (playerId, coinKey, state) => {
   const tableau = Selector.tableau(playerId, state);
 
-  return !R.isNil(tableau) && !R.isEmpty(tableau) && !tableau.includes(coinKey);
+  return tableau && tableau.length > 0 && !tableau.includes(coinKey);
 };
 
 Selector.isEnemyUnitAt = (playerId, an, state) => {
   const unit = Selector.unit(an, state);
+  const coin0 = unit && unit.length > 0 ? Selector.coin(unit[0], state) : undefined;
 
-  return !R.isNil(unit) && !R.isEmpty(unit) && Selector.isEnemyUnit(playerId, unit[0], state);
+  return coin0 ? Selector.isEnemyUnit(playerId, coin0.coinKey, state) : false;
 };
 
 Selector.isFourPlayer = state => Object.keys(state.playerInstances).length === 4;
@@ -81,27 +91,28 @@ Selector.isFourPlayer = state => Object.keys(state.playerInstances).length === 4
 Selector.isFriendlyUnit = (playerId, coinKey, state) => {
   const tableau = Selector.tableau(playerId, state);
 
-  return !R.isNil(tableau) && !R.isEmpty(tableau) && tableau.includes(coinKey);
+  return tableau && tableau.length > 0 && tableau.includes(coinKey);
 };
 
 Selector.isFriendlyUnitAt = (playerId, an, state) => {
   const unit = Selector.unit(an, state);
+  const coin0 = unit && unit.length > 0 ? Selector.coin(unit[0], state) : undefined;
 
-  return !R.isNil(unit) && !R.isEmpty(unit) && Selector.isFriendlyUnit(playerId, unit[0], state);
+  return coin0 ? Selector.isFriendlyUnit(playerId, coin0.coinKey, state) : false;
 };
 
-Selector.isInHand = (playerId, coinKey, state) => {
+Selector.isInHand = (playerId, coinId, state) => {
   const hand = Selector.hand(playerId, state);
 
-  return R.contains(coinKey, hand);
+  return R.contains(coinId, hand);
 };
 
 Selector.isInitiativePlayer = (playerId, state) => playerId === state.initiativePlayerId;
 
-Selector.isInSupply = (playerId, coinKey, state) => {
+Selector.isInSupply = (playerId, coinId, state) => {
   const supply = Selector.supply(playerId, state);
 
-  return R.contains(coinKey, supply);
+  return R.contains(coinId, supply);
 };
 
 Selector.isOccupied = (an, state) => {
@@ -114,8 +125,9 @@ Selector.isTwoPlayer = state => Object.keys(state.playerInstances).length === 2;
 
 Selector.isUnitType = (an, coinKey, state) => {
   const unit = Selector.unit(an, state);
+  const coin0 = unit && unit.length > 0 ? Selector.coin(unit[0], state) : undefined;
 
-  return !R.isNil(unit) && unit.length > 0 && unit[0] === coinKey;
+  return coin0 ? coin0.coinKey === coinKey : false;
 };
 
 Selector.isUnoccupied = (an, state) => {
@@ -155,7 +167,8 @@ Selector.playerUnitANs = (playerId, state) => {
   const ans = Object.keys(state.anToTokens);
   const filterFunction = an => {
     const unit = Selector.unit(an, state);
-    return tableau.includes(unit[0]);
+    const coin = Selector.coin(unit[0], state);
+    return tableau.includes(coin.coinKey);
   };
 
   return R.filter(filterFunction, ans);
@@ -172,6 +185,10 @@ Selector.possibleControlANs = (teamKey, state) => {
 };
 
 Selector.round = state => state.round;
+
+Selector.supplyCoinsByType = (playerId, coinKey, state) => {
+  return coinsByType(coinKey, Selector.supply(playerId, state), state);
+};
 
 Selector.unit = (an, state) => state.anToTokens[an];
 

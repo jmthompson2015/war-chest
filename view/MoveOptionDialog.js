@@ -3,8 +3,6 @@
 import Move from "../artifact/Move.js";
 import Resolver from "../artifact/Resolver.js";
 
-import Selector from "../state/Selector.js";
-
 const RU = ReactComponent.ReactUtilities;
 
 const createButtons = (cancelOnClick, okOnClick) => {
@@ -17,13 +15,15 @@ const createButtons = (cancelOnClick, okOnClick) => {
   return ReactDOMFactories.span({}, cancelButton, " ", okButton);
 };
 
-const labelFunction = moveState => {
+const labelFunction = (moveState, coinInstances) => {
   const move = Resolver.move(moveState.moveKey);
-  const paymentCoin = Resolver.coin(moveState.paymentCoinKey);
+  const paymentCoinState = coinInstances[moveState.paymentCoinId];
+  const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
 
   let recruitCoin;
+  let recruitCoinState;
   let victimCoin;
-  let victimCoinKey;
+  let victimCoinState;
   let answer;
 
   switch (moveState.moveKey) {
@@ -32,7 +32,8 @@ const labelFunction = moveState => {
       answer = `${move.name}`;
       break;
     case Move.RECRUIT:
-      recruitCoin = Resolver.coin(moveState.recruitCoinKey);
+      recruitCoinState = coinInstances[moveState.recruitCoinId];
+      recruitCoin = Resolver.coin(recruitCoinState.coinKey);
       answer = `${move.name}: ${recruitCoin.name}`;
       break;
     case Move.DEPLOY:
@@ -46,8 +47,8 @@ const labelFunction = moveState => {
       answer = `${move.name}: ${moveState.an}`;
       break;
     case Move.ATTACK:
-      [victimCoinKey] = Selector.unit(moveState.toAN);
-      victimCoin = Resolver.coin(victimCoinKey);
+      victimCoinState = coinInstances[moveState.victimCoinId];
+      victimCoin = Resolver.coin(victimCoinState.coinKey);
       answer = `${move.name}: ${paymentCoin.name} at ${moveState.fromAN}'+
         ' attack ${victimCoin.name} at ${moveState.toAN}`;
       break;
@@ -60,7 +61,7 @@ const labelFunction = moveState => {
 
 const mapIndexed = R.addIndex(R.map);
 
-const createInitialInput = (customKey, clientProps, moveStates, onChange) => {
+const createInitialInput = (coinInstances, customKey, clientProps, moveStates, onChange) => {
   const inputProps = R.merge(
     {
       name: `chooseMove${customKey}`, // needed for radio
@@ -74,7 +75,7 @@ const createInitialInput = (customKey, clientProps, moveStates, onChange) => {
     const input = ReactDOMFactories.input(
       R.merge(inputProps, { key: customKey2, id: i, "data-index": i })
     );
-    const label = labelFunction(moveState);
+    const label = labelFunction(moveState, coinInstances);
     const cells = [];
     cells.push(RU.createCell(input, cells.length, "pa1 v-mid"));
     cells.push(RU.createCell(label, cells.length, "pa1 v-mid"));
@@ -121,9 +122,10 @@ class MoveOptionDialog extends React.Component {
   }
 
   render() {
-    const { clientProps, customKey, moveStates, paymentCoin } = this.props;
+    const { clientProps, coinInstances, customKey, moveStates, paymentCoin } = this.props;
     const message = ReactDOMFactories.div({}, `Select an action for ${paymentCoin.name}`);
     const initialInput = createInitialInput(
+      coinInstances,
       customKey,
       clientProps,
       moveStates,
@@ -145,6 +147,7 @@ class MoveOptionDialog extends React.Component {
 
 MoveOptionDialog.propTypes = {
   callback: PropTypes.func.isRequired,
+  coinInstances: PropTypes.shape().isRequired,
   moveStates: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   paymentCoin: PropTypes.shape().isRequired,
   player: PropTypes.shape().isRequired,

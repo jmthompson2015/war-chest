@@ -9,13 +9,24 @@ import StatusBarUI from "./StatusBarUI.js";
 
 const { ReactUtilities: RU } = ReactComponent;
 
-const createBoardUI = state =>
-  React.createElement(BoardUI, {
+const createBoardUI = state => {
+  const anToTokens = Selector.anToTokens(state);
+  const reduceFunction = (accum, an) => {
+    const coinIds = anToTokens[an];
+    const coinStates = Selector.coins(coinIds, state);
+    const coinKeys = R.map(c => c.coinKey, coinStates);
+
+    return R.assoc(an, coinKeys, accum);
+  };
+  const myANToTokens = R.reduce(reduceFunction, {}, Object.keys(anToTokens));
+
+  return React.createElement(BoardUI, {
     anToControl: Selector.anToControl(state),
-    anToTokens: Selector.anToTokens(state),
+    anToTokens: myANToTokens,
     customKey: "warChestCanvas",
     resourceBase: Endpoint.LOCAL_RESOURCE
   });
+};
 
 const isCurrentPlayer = (playerId, state) => {
   const currentPlayer = Selector.currentPlayer(state);
@@ -29,21 +40,29 @@ const isInitiativePlayer = (playerId, state) => {
   return initiativePlayer && playerId === initiativePlayer.id;
 };
 
-const createPlayerPanel = (moveStates, player, state, handOnClickIn, inputCallbackIn) => {
+const createPlayerPanel = (
+  coinInstances,
+  moveStates,
+  player,
+  state,
+  handOnClickIn,
+  inputCallbackIn
+) => {
   const myIsCurrentPlayer = isCurrentPlayer(player.id, state);
   const handOnClick = myIsCurrentPlayer ? handOnClickIn : undefined;
   const inputCallback = myIsCurrentPlayer ? inputCallbackIn : undefined;
   const paymentCoin = myIsCurrentPlayer ? Selector.currentPaymentCoin(state) : undefined;
 
   return React.createElement(PlayerPanel, {
+    coinInstances,
     customKey: `playerPanel${player.id}`,
     player,
 
-    discardFacedown: Selector.discardFacedown(player.id, state),
-    discardFaceup: Selector.discardFaceup(player.id, state),
-    hand: Selector.hand(player.id, state),
-    morgue: Selector.morgue(player.id, state),
-    supply: Selector.supply(player.id, state),
+    discardFacedown: Selector.coins(Selector.discardFacedown(player.id, state), state),
+    discardFaceup: Selector.coins(Selector.discardFaceup(player.id, state), state),
+    hand: Selector.coins(Selector.hand(player.id, state), state),
+    morgue: Selector.coins(Selector.morgue(player.id, state), state),
+    supply: Selector.coins(Selector.supply(player.id, state), state),
     tableau: Selector.tableau(player.id, state),
 
     handOnClick,
@@ -69,6 +88,7 @@ class GamePanel extends React.Component {
   render() {
     const { className, handOnClick, inputCallback, state } = this.props;
 
+    const { coinInstances } = state;
     const round = Selector.round(state);
     const currentPhase = Selector.currentPhase(state);
     const player1 = Selector.player(1, state);
@@ -92,9 +112,23 @@ class GamePanel extends React.Component {
     }
 
     const statusBar = createStatusBar(round, currentPhase, currentPlayer, userMessage);
-    const playerPanel1 = createPlayerPanel(moveStates1, player1, state, handOnClick, inputCallback);
+    const playerPanel1 = createPlayerPanel(
+      coinInstances,
+      moveStates1,
+      player1,
+      state,
+      handOnClick,
+      inputCallback
+    );
     const boardUI = createBoardUI(state);
-    const playerPanel2 = createPlayerPanel(moveStates2, player2, state, handOnClick, inputCallback);
+    const playerPanel2 = createPlayerPanel(
+      coinInstances,
+      moveStates2,
+      player2,
+      state,
+      handOnClick,
+      inputCallback
+    );
 
     const rows = [
       RU.createRow(statusBar, "StatusBarRow"),

@@ -1,24 +1,23 @@
 /* eslint no-console: ["error", { allow: ["log"] }] */
 
-import Resolver from "../artifact/Resolver.js";
 import UnitCoin from "../artifact/UnitCoin.js";
+
+import CoinState from "../state/CoinState.js";
 
 import CoinUI from "./CoinUI.js";
 import Endpoint from "./Endpoint.js";
 
-const myOnClick = ({ coinKey, count, eventSource, isFaceup, isHighlighted }) => {
+const myOnClick = ({ id, coinKey, eventSource }) => {
   console.log(`myOnClick()`);
 
+  console.log(`id = ${id}`);
   console.log(`coinKey = ${coinKey}`);
-  console.log(`count = ${count}`);
   console.log(`eventSource = ${eventSource}`);
-  console.log(`isFaceup ? ${isFaceup}`);
-  console.log(`isHighlighted ? ${isHighlighted}`);
 };
 
-const coin1 = Resolver.coin(UnitCoin.ARCHER);
+const coinState1 = CoinState.create({ id: 1, coinKey: UnitCoin.ARCHER });
 const element1 = React.createElement(CoinUI, {
-  coin: coin1,
+  coinState: coinState1,
   customKey: "coin1",
   onClick: myOnClick,
   resourceBase: Endpoint.LOCAL_RESOURCE
@@ -26,9 +25,9 @@ const element1 = React.createElement(CoinUI, {
 
 ReactDOM.render(element1, document.getElementById("panel1"));
 
-const coin2 = Resolver.coin(UnitCoin.BERSERKER);
+const coinState2 = CoinState.create({ id: 2, coinKey: UnitCoin.BERSERKER });
 const element2 = React.createElement(CoinUI, {
-  coin: coin2,
+  coinState: coinState2,
   count: 2,
   customKey: "coin2",
   isHighlighted: true,
@@ -38,9 +37,9 @@ const element2 = React.createElement(CoinUI, {
 
 ReactDOM.render(element2, document.getElementById("panel2"));
 
-const coin3 = Resolver.coin(UnitCoin.CAVALRY);
+const coinState3 = CoinState.create({ id: 3, coinKey: UnitCoin.CAVALRY });
 const element3 = React.createElement(CoinUI, {
-  coin: coin3,
+  coinState: coinState3,
   count: 3,
   isFaceup: false,
   customKey: "coin3",

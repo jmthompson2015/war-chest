@@ -1,7 +1,4 @@
 import Move from "../artifact/Move.js";
-import Resolver from "../artifact/Resolver.js";
-import RoyalCoin from "../artifact/RoyalCoin.js";
-import UnitCoin from "../artifact/UnitCoin.js";
 
 import Selector from "../state/Selector.js";
 
@@ -15,19 +12,19 @@ const verifyMoveState = (
   moveState,
   moveKey,
   playerId,
-  paymentCoinKey,
+  paymentCoinId,
   an,
   fromAN,
-  recruitCoinKey,
+  recruitCoinId,
   toAN
 ) => {
   assert.ok(moveState);
   assert.equal(moveState.moveKey, moveKey, "moveKey");
   assert.equal(moveState.playerId, playerId, "playerId");
-  assert.equal(moveState.paymentCoinKey, paymentCoinKey, "paymentCoinKey");
+  assert.equal(moveState.paymentCoinId, paymentCoinId, "paymentCoinId");
   assert.equal(moveState.an, an, "an");
   assert.equal(moveState.fromAN, fromAN, "fromAN");
-  assert.equal(moveState.recruitCoinKey, recruitCoinKey, "recruitCoinKey");
+  assert.equal(moveState.recruitCoinId, recruitCoinId, "recruitCoinId");
   assert.equal(moveState.toAN, toAN, "toAN");
 };
 
@@ -49,14 +46,14 @@ QUnit.test("generate() ", assert => {
     assert,
     move0,
     Move.RECRUIT,
-    1,
-    UnitCoin.PIKEMAN,
-    undefined,
-    undefined,
-    UnitCoin.SWORDSMAN
+    1, // playerId
+    10, // paymentCoinId
+    undefined, // an
+    undefined, // fromAN
+    2 // recruitCoinId
   );
   const moveLast = result[result.length - 1];
-  verifyMoveState(assert, moveLast, Move.PASS, 1, RoyalCoin.RAVEN);
+  verifyMoveState(assert, moveLast, Move.PASS, 1, 1);
 });
 
 QUnit.test("generateForCoin() ", assert => {
@@ -65,11 +62,11 @@ QUnit.test("generateForCoin() ", assert => {
   const playerId = 1;
   const player = Selector.player(playerId, store.getState());
   const hand = Selector.hand(playerId, store.getState());
-  const coinKey = hand[0];
-  const coin = Resolver.coin(coinKey);
+  const paymentCoinId = hand[0];
+  const paymentCoin = Selector.coin(paymentCoinId, store.getState());
 
   // Run.
-  const result = MoveGenerator.generateForCoin(player, coin, store.getState());
+  const result = MoveGenerator.generateForCoin(player, paymentCoin, store.getState());
 
   // Verify.
   assert.ok(result);
@@ -80,14 +77,14 @@ QUnit.test("generateForCoin() ", assert => {
     assert,
     move0,
     Move.RECRUIT,
-    1,
-    RoyalCoin.RAVEN,
-    undefined,
-    undefined,
-    UnitCoin.SWORDSMAN
+    1, // playerId
+    1, // paymentCoinId
+    undefined, // an
+    undefined, // fromAN
+    2 // recruitCoinId
   );
   const moveLast = result[result.length - 1];
-  verifyMoveState(assert, moveLast, Move.PASS, 1, RoyalCoin.RAVEN);
+  verifyMoveState(assert, moveLast, Move.PASS, 1, 1);
 });
 
 const MoveGeneratorTest = {};
