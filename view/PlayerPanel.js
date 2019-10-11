@@ -215,7 +215,7 @@ class PlayerPanel extends React.Component {
     return React.createElement(TitledElement, {
       element,
       title,
-      className: "bg-wc-light",
+      className: "bg-wc-light center",
       titleClass: `b bg-wc-medium f4 tc`
     });
   }
