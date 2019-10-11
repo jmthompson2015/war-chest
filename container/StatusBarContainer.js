@@ -9,7 +9,7 @@ function mapStateToProps(state, ownProps) {
 
   return {
     round: state.round,
-    helpBase: ownProps.helpBase || `${Endpoint.NETWORK_RESOURCE}view`,
+    helpBase: ownProps.helpBase || `${Endpoint.NETWORK_RESOURCE}view/`,
     phaseName: phase ? phase.name : undefined,
     playerName: player ? player.name : undefined,
     userMessage: Selector.userMessage(state)
