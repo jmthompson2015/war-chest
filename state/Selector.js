@@ -50,6 +50,8 @@ Selector.currentPhase = state => Resolver.phase(state.currentPhaseKey);
 
 Selector.currentPlayer = state => Selector.player(state.currentPlayerId, state);
 
+Selector.currentPlayerOrder = state => state.currentPlayerOrder;
+
 Selector.delay = state => state.delay;
 
 Selector.initiativeChangedThisRound = state => state.initiativeChangedThisRound;

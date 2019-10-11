@@ -324,6 +324,20 @@ QUnit.test("setCurrentPlayer()", assert => {
   assert.equal(result.currentPlayerId, playerId);
 });
 
+QUnit.test("setCurrentPlayerOrder()", assert => {
+  // Setup.
+  const state = AppState.create();
+  const playerIds = [4, 3, 2, 1];
+  const action = ActionCreator.setCurrentPlayerOrder(playerIds);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.currentPlayerOrder.join(), playerIds.join());
+});
+
 QUnit.test("setDelay()", assert => {
   // Setup.
   const state = AppState.create();

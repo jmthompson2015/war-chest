@@ -12,6 +12,7 @@ AppState.create = ({
   winner = null,
 
   round = 0,
+  currentPlayerOrder = null,
   currentPhaseKey = null,
   currentPlayerId = null,
   currentPaymentCoinId = null,
@@ -43,6 +44,7 @@ AppState.create = ({
     winner,
 
     round,
+    currentPlayerOrder,
     currentPhaseKey,
     currentPlayerId,
     currentPaymentCoinId,

@@ -12,6 +12,9 @@ QUnit.module("PhaseFunction");
 QUnit.test("drawThreeCoins() ", assert => {
   // Setup.
   const store = TestData.createStore(true, false);
+  const players = Selector.playersInOrder(store.getState());
+  const playerIds = R.map(R.prop("id"), players);
+  store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
   const phase = PhaseFunction[Phase.DRAW_THREE_COINS];
 
   // Run.
@@ -29,6 +32,9 @@ QUnit.test("drawThreeCoins() ", assert => {
 QUnit.test("playCoins() ", assert => {
   // Setup.
   const store = TestData.createStore();
+  const players = Selector.playersInOrder(store.getState());
+  const playerIds = R.map(R.prop("id"), players);
+  store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
   const phase = PhaseFunction[Phase.PLAY_COINS];
   store.dispatch(ActionCreator.setDelay(0));
 

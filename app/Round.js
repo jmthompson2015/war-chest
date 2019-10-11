@@ -32,6 +32,10 @@ const advancePhase = store => {
 const advanceRound = store => {
   const newRound = Selector.round(store.getState()) + 1;
   store.dispatch(ActionCreator.setRound(newRound));
+
+  const players = Selector.playersInOrder(store.getState());
+  const playerIds = R.map(R.prop("id"), players);
+  store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
 };
 
 const executePhase = (resolve, store) => {

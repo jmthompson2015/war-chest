@@ -11,8 +11,7 @@ import StrategyResolver from "./StrategyResolver.js";
 const advanceCurrentPlayer = store => {
   const oldPlayer = Selector.currentPlayer(store.getState());
   const oldPlayerId = oldPlayer ? oldPlayer.id : undefined;
-  const players = Selector.playersInOrder(store.getState());
-  const playerIds = R.map(R.prop("id"), players);
+  const playerIds = Selector.currentPlayerOrder(store.getState());
   let newPlayerId;
 
   if (R.isNil(oldPlayerId)) {
@@ -53,23 +52,23 @@ const drawThreeCoins = (playerId, store) => {
 };
 
 const executeDrawThreeCoins = (resolve, store) => {
-  const players = Selector.playersInOrder(store.getState());
+  const playerIds = Selector.currentPlayerOrder(store.getState());
 
-  R.forEach(p => {
-    drawThreeCoins(p.id, store);
-  }, players);
+  R.forEach(playerId => {
+    drawThreeCoins(playerId, store);
+  }, playerIds);
 
   resolve();
 };
 
 const hasCoinsInHand = state => {
-  const reduceFunction = (accum, player) => {
-    const hand = Selector.hand(player.id, state);
+  const reduceFunction = (accum, playerId) => {
+    const hand = Selector.hand(playerId, state);
     return accum || hand.length > 0;
   };
-  const players = Selector.playersInOrder(state);
+  const playerIds = Selector.currentPlayerOrder(state);
 
-  return R.reduce(reduceFunction, false, players);
+  return R.reduce(reduceFunction, false, playerIds);
 };
 
 const executePlayCoins = (resolve, store) => {
