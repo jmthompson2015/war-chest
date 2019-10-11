@@ -84,7 +84,7 @@ const createInitialInput = (coinInstances, customKey, clientProps, moveStates, o
   };
   const rows = mapIndexed(mapFunction, moveStates);
 
-  return RU.createTable(rows, undefined, "f6");
+  return RU.createTable(rows, undefined, "f6 tl");
 };
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////

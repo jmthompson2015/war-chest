@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>War Chest (local)</title>
+	<title>PlayerPanelContainer</title>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tachyons@4.11/css/tachyons.css" />
 	<link rel="stylesheet" href="../view/style.css" />
 
@@ -14,36 +14,12 @@
 	<script src="https://cdn.jsdelivr.net/npm/react-redux@7.1/dist/react-redux.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/seamless-immutable@7.1/seamless-immutable.development.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/jmthompson2015/react-components/dist/react-components.js"></script>
-	<script src="https://cdn.jsdelivr.net/gh/jmthompson2015/react-game-board@latest/dist/react-game-board.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/jmthompson2015/react-game-board/dist/react-game-board.js"></script>
 
-	<script src="WarChestApp.js" type="module"></script>
+	<script src="PlayerPanelContainer.viewtest.js" type="module"></script>
 </head>
 <body>
-	<div class="dt">
-		<div class="dt-row">
-			<div id="statusBarPanel" class="dtc ma0 tc v-mid">statusPanel</div>
-		</div>
-
-		<div class="dt-row">
-			<div class="dt">
-				<div class="dt-row">
-					<div class="dtc"></div>
-					<div id="playerPanelA" class="dtc ma0 tc v-mid">playerPanelA</div>
-					<div class="dtc"></div>
-				</div>
-				<div class="dt-row">
-					<div id="playerPanelD" class="dtc ma0 tc v-mid">playerPanelD</div>
-					<div id="boardPanel" class="dtc ma0 tc v-mid">boardPanel</div>
-					<div id="playerPanelB" class="dtc ma0 tc v-mid">playerPanelB</div>
-				</div>
-				<div class="dt-row">
-					<div class="dtc"></div>
-					<div id="playerPanelC" class="dtc ma0 tc v-mid">playerPanelC</div>
-					<div class="dtc"></div>
-				</div>
-			</div>
-		</div>
-	</div>
+	<div id="panel"></div>
 </body>
 
 </html>

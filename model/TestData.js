@@ -16,32 +16,32 @@ import Selector from "../state/Selector.js";
 const TestData = {};
 
 const createPlayers = isTwoPlayer => {
-  const ravenPlayer = PlayerState.create({
+  const player1 = PlayerState.create({
     id: 1,
-    name: "Alan",
+    name: "Alfred",
     teamKey: Team.RAVEN
   });
-  const wolfPlayer = PlayerState.create({
+  const player2 = PlayerState.create({
     id: 2,
-    name: "Brian",
+    name: "Bruce",
     teamKey: Team.WOLF
   });
 
-  const answer = [ravenPlayer, wolfPlayer];
+  const answer = [player1, player2];
 
   if (!isTwoPlayer) {
-    const ravenPlayer2 = PlayerState.create({
+    const player3 = PlayerState.create({
       id: 3,
-      name: "Chris",
+      name: "Clark",
       teamKey: Team.RAVEN
     });
-    const wolfPlayer2 = PlayerState.create({
+    const player4 = PlayerState.create({
       id: 4,
-      name: "David",
+      name: "Diana",
       teamKey: Team.WOLF
     });
 
-    answer.push([ravenPlayer2, wolfPlayer2]);
+    answer.push([player3, player4]);
   }
 
   return answer;

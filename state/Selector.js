@@ -59,6 +59,12 @@ Selector.initiativePlayer = state => {
   return state.playerInstances[id];
 };
 
+Selector.isComputerPlayer = (playerId, state) => {
+  const player = Selector.player(playerId, state);
+
+  return player && player.isComputer;
+};
+
 Selector.isControlLocation = (an, state) => {
   const playerInstanceMap = state.playerInstances;
   const isTwoPlayer = Object.keys(playerInstanceMap).length === 2;
@@ -72,6 +78,8 @@ Selector.isControlledBy = (an, teamKey, state) => {
 
   return !R.isNil(controlKey) && controlKey === teamKey;
 };
+
+Selector.isCurrentPlayer = (playerId, state) => playerId === state.currentPlayerId;
 
 Selector.isEnemyUnit = (playerId, coinKey, state) => {
   const tableau = Selector.tableau(playerId, state);
@@ -99,6 +107,12 @@ Selector.isFriendlyUnitAt = (playerId, an, state) => {
   const coin0 = unit && unit.length > 0 ? Selector.coin(unit[0], state) : undefined;
 
   return coin0 ? Selector.isFriendlyUnit(playerId, coin0.coinKey, state) : false;
+};
+
+Selector.isHumanPlayer = (playerId, state) => {
+  const player = Selector.player(playerId, state);
+
+  return player && !player.isComputer;
 };
 
 Selector.isInHand = (playerId, coinId, state) => {

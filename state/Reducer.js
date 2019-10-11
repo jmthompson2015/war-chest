@@ -170,6 +170,7 @@ Reducer.root = (state, action) => {
     case ActionType.SET_INITIATIVE_PLAYER:
       return assoc("initiativePlayerId", action.playerId, state);
     case ActionType.SET_PLAYERS:
+      console.log(`Reducer SET_PLAYERS players.length = ${action.players.length}`);
       newPlayers = R.reduce((accum, p) => assoc(p.id, p, accum), {}, action.players);
       return assoc("playerInstances", newPlayers, state);
     case ActionType.SET_ROUND:
