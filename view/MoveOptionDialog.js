@@ -1,7 +1,6 @@
 /* eslint no-console: ["error", { allow: ["warn"] }] */
 
-import Move from "../artifact/Move.js";
-import Resolver from "../artifact/Resolver.js";
+import MoveFunction from "../model/MoveFunction.js";
 
 const RU = ReactComponent.ReactUtilities;
 
@@ -13,50 +12,6 @@ const createButtons = (cancelOnClick, okOnClick) => {
   const okButton = ReactDOMFactories.button({ key: "okButton", onClick: okOnClick }, "OK");
 
   return ReactDOMFactories.span({}, cancelButton, " ", okButton);
-};
-
-const labelFunction = (moveState, coinInstances) => {
-  const move = Resolver.move(moveState.moveKey);
-  const paymentCoinState = coinInstances[moveState.paymentCoinId];
-  const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
-
-  let recruitCoin;
-  let recruitCoinState;
-  let victimCoin;
-  let victimCoinState;
-  let answer;
-
-  switch (moveState.moveKey) {
-    case Move.CLAIM_INITIATIVE:
-    case Move.PASS:
-      answer = `${move.name}`;
-      break;
-    case Move.RECRUIT:
-      recruitCoinState = coinInstances[moveState.recruitCoinId];
-      recruitCoin = Resolver.coin(recruitCoinState.coinKey);
-      answer = `${move.name}: ${recruitCoin.name}`;
-      break;
-    case Move.DEPLOY:
-    case Move.BOLSTER:
-      answer = `${move.name}: ${paymentCoin.name} to ${moveState.an}`;
-      break;
-    case Move.MOVE_A_UNIT:
-      answer = `${move.name}: ${paymentCoin.name} from ${moveState.fromAN} to ${moveState.toAN}`;
-      break;
-    case Move.CONTROL:
-      answer = `${move.name}: ${moveState.an}`;
-      break;
-    case Move.ATTACK:
-      victimCoinState = coinInstances[moveState.victimCoinId];
-      victimCoin = Resolver.coin(victimCoinState.coinKey);
-      answer = `${move.name}: ${paymentCoin.name} at ${moveState.fromAN}'+
-        ' attack ${victimCoin.name} at ${moveState.toAN}`;
-      break;
-    default:
-      console.warn(`Unknown moveState.moveKey: ${moveState.moveKey}`);
-  }
-
-  return answer;
 };
 
 const mapIndexed = R.addIndex(R.map);
@@ -75,7 +30,7 @@ const createInitialInput = (coinInstances, customKey, clientProps, moveStates, o
     const input = ReactDOMFactories.input(
       R.merge(inputProps, { key: customKey2, id: i, "data-index": i })
     );
-    const label = labelFunction(moveState, coinInstances);
+    const label = MoveFunction[moveState.moveKey].label(moveState, coinInstances);
     const cells = [];
     cells.push(RU.createCell(input, cells.length, "pa1 v-mid"));
     cells.push(RU.createCell(label, cells.length, "pa1 v-mid"));

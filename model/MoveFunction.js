@@ -147,6 +147,19 @@ const executeAttack = (moveState, store) => {
 const executeTactic = (/* player, paymentCoin, fromAN, toAN, store */) => {};
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////
+const labelClaimOrPass = moveState => {
+  const move = Resolver.move(moveState.moveKey);
+  return `${move.name}`;
+};
+
+const labelDeployOrBolster = (moveState, coinInstances) => {
+  const move = Resolver.move(moveState.moveKey);
+  const paymentCoinState = coinInstances[moveState.paymentCoinId];
+  const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
+  return `${move.name}: ${paymentCoin.name} to ${moveState.an}`;
+};
+
+// /////////////////////////////////////////////////////////////////////////////////////////////////
 const MoveFunction = {
   claimInitiative: {
     execute: executeClaimInitiative,
@@ -154,6 +167,7 @@ const MoveFunction = {
       Selector.isInHand(player.id, paymentCoin.id, state) &&
       !Selector.isInitiativePlayer(player.id, state) &&
       !Selector.initiativeChangedThisRound(state),
+    label: labelClaimOrPass,
     key: "claimInitiative"
   },
   recruit: {
@@ -162,11 +176,18 @@ const MoveFunction = {
       Selector.isInHand(player.id, paymentCoin.id, state) &&
       Resolver.isUnitCoin(recruitCoin.coinKey) &&
       Selector.isInSupply(player.id, recruitCoin.id, state),
+    label: (moveState, coinInstances) => {
+      const move = Resolver.move(moveState.moveKey);
+      const recruitCoinState = coinInstances[moveState.recruitCoinId];
+      const recruitCoin = Resolver.coin(recruitCoinState.coinKey);
+      return `${move.name}: ${recruitCoin.name}`;
+    },
     key: "recruit"
   },
   pass: {
     execute: executePass,
     isLegal: (player, paymentCoin, state) => Selector.isInHand(player.id, paymentCoin.id, state),
+    label: labelClaimOrPass,
     key: "pass"
   },
   deploy: {
@@ -176,6 +197,7 @@ const MoveFunction = {
       Resolver.isUnitCoin(paymentCoin.coinKey) &&
       Selector.isControlledBy(an, player.teamKey, state) &&
       Selector.isUnoccupied(an, state),
+    label: labelDeployOrBolster,
     key: "deploy"
   },
   bolster: {
@@ -184,6 +206,7 @@ const MoveFunction = {
       Selector.isInHand(player.id, paymentCoin.id, state) &&
       Resolver.isUnitCoin(paymentCoin.coinKey) &&
       Selector.isUnitType(an, paymentCoin.coinKey, state),
+    label: labelDeployOrBolster,
     key: "bolster"
   },
   moveAUnit: {
@@ -193,6 +216,12 @@ const MoveFunction = {
       Selector.isUnitType(fromAN, paymentCoin.coinKey, state) &&
       Board.isNeighbor(fromAN, toAN) &&
       Selector.isUnoccupied(toAN, state),
+    label: (moveState, coinInstances) => {
+      const move = Resolver.move(moveState.moveKey);
+      const paymentCoinState = coinInstances[moveState.paymentCoinId];
+      const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
+      return `${move.name}: ${paymentCoin.name} from ${moveState.fromAN} to ${moveState.toAN}`;
+    },
     key: "moveAUnit"
   },
   control: {
@@ -203,6 +232,10 @@ const MoveFunction = {
       Selector.isUnitType(an, paymentCoin.coinKey, state) &&
       Selector.isControlLocation(an, state) &&
       !Selector.isControlledBy(an, player.teamKey, state),
+    label: moveState => {
+      const move = Resolver.move(moveState.moveKey);
+      return `${move.name}: ${moveState.an}`;
+    },
     key: "control"
   },
   attack: {
@@ -212,6 +245,15 @@ const MoveFunction = {
       Selector.isUnitType(fromAN, paymentCoin.coinKey, state) &&
       Board.isNeighbor(fromAN, toAN) &&
       Selector.isEnemyUnitAt(player.id, toAN, state),
+    label: (moveState, coinInstances) => {
+      const move = Resolver.move(moveState.moveKey);
+      const paymentCoinState = coinInstances[moveState.paymentCoinId];
+      const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
+      const victimCoinState = coinInstances[moveState.victimCoinId];
+      const victimCoin = Resolver.coin(victimCoinState.coinKey);
+      return `${move.name}: ${paymentCoin.name} at ${moveState.fromAN}'+
+          ' attack ${victimCoin.name} at ${moveState.toAN}`;
+    },
     key: "attack"
   },
   tactic: {
