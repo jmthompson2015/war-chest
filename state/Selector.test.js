@@ -72,9 +72,7 @@ QUnit.test("coin()", assert => {
   const state0 = AppState.create();
   const coinId = 1;
   const coinKey = UnitCoin.KNIGHT;
-  const coin = CoinState.create({ id: coinId, coinKey });
-  const action0 = ActionCreator.addCoin(coin);
-  const state = Reducer.root(state0, action0);
+  const state = addCoin(coinId, coinKey, state0);
 
   // Run / Verify.
   const result = Selector.coin(coinId, state);
@@ -91,9 +89,7 @@ QUnit.test("coins()", assert => {
   const unitCoinKeys = UnitCoin.keys();
   for (let id = 1; id <= 5; id += 1) {
     const coinKey = unitCoinKeys[id - 1];
-    const coin = CoinState.create({ id, coinKey });
-    const action = ActionCreator.addCoin(coin);
-    state = Reducer.root(state, action);
+    state = addCoin(id, coinKey, state);
   }
   const coinIds = [1, 3, 5];
 
@@ -289,18 +285,16 @@ QUnit.test("isEnemyUnitAt()", assert => {
   const action0 = ActionCreator.setPlayers(players);
   const state1 = Reducer.root(state0, action0);
   const an1 = "e2";
-  const coin1 = CoinState.create({ id: Selector.nextCoinId(state1), coinKey: UnitCoin.SWORDSMAN });
-  const action1 = ActionCreator.addCoin(coin1);
-  const state2 = Reducer.root(state1, action1);
+  const state2 = addCoin(Selector.nextCoinId(state1), UnitCoin.SWORDSMAN, state1);
+  const coin1 = Selector.coin(1, state2);
   const action2 = ActionCreator.setUnit(an1, coin1.id);
   const state3 = Reducer.root(state2, action2);
   const action3 = ActionCreator.addToPlayerArray("playerToTableau", 1, coin1.coinKey);
   const state4 = Reducer.root(state3, action3);
 
   const an2 = "f2";
-  const coin2 = CoinState.create({ id: Selector.nextCoinId(state4), coinKey: UnitCoin.ARCHER });
-  const action4 = ActionCreator.addCoin(coin2);
-  const state5 = Reducer.root(state4, action4);
+  const state5 = addCoin(Selector.nextCoinId(state4), UnitCoin.ARCHER, state4);
+  const coin2 = Selector.coin(2, state5);
   const action5 = ActionCreator.setUnit(an2, coin2.id);
   const state6 = Reducer.root(state5, action5);
   const action6 = ActionCreator.addToPlayerArray("playerToTableau", 2, coin2.coinKey);
@@ -353,18 +347,16 @@ QUnit.test("isFriendlyUnitAt()", assert => {
   const state1 = Reducer.root(state0, action0);
 
   const an1 = "e2";
-  const coin1 = CoinState.create({ id: Selector.nextCoinId(state1), coinKey: UnitCoin.SWORDSMAN });
-  const action1 = ActionCreator.addCoin(coin1);
-  const state2 = Reducer.root(state1, action1);
+  const state2 = addCoin(Selector.nextCoinId(state1), UnitCoin.SWORDSMAN, state1);
+  const coin1 = Selector.coin(1, state2);
   const action2 = ActionCreator.setUnit(an1, coin1.id);
   const state3 = Reducer.root(state2, action2);
   const action3 = ActionCreator.addToPlayerArray("playerToTableau", 1, coin1.coinKey);
   const state4 = Reducer.root(state3, action3);
 
   const an2 = "f2";
-  const coin2 = CoinState.create({ id: Selector.nextCoinId(state4), coinKey: UnitCoin.ARCHER });
-  const action4 = ActionCreator.addCoin(coin2);
-  const state5 = Reducer.root(state4, action4);
+  const state5 = addCoin(Selector.nextCoinId(state4), UnitCoin.ARCHER, state4);
+  const coin2 = Selector.coin(2, state5);
   const action5 = ActionCreator.setUnit(an2, coin2.id);
   const state6 = Reducer.root(state5, action5);
   const action6 = ActionCreator.addToPlayerArray("playerToTableau", 2, coin2.coinKey);
@@ -393,9 +385,8 @@ QUnit.test("isUnitType()", assert => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 1;
-  const coin1 = CoinState.create({ id: Selector.nextCoinId(state0), coinKey: UnitCoin.KNIGHT });
-  const action0 = ActionCreator.addCoin(coin1);
-  const state1 = Reducer.root(state0, action0);
+  const state1 = addCoin(Selector.nextCoinId(state0), UnitCoin.KNIGHT, state0);
+  const coin1 = Selector.coin(1, state1);
   const action1 = ActionCreator.addToPlayerArray("playerToHand", playerId, coin1.id);
   const state2 = Reducer.root(state1, action1);
   const an = "e2";
@@ -416,9 +407,7 @@ QUnit.test("nextCoinId()", assert => {
   // Run / Verify.
   assert.equal(Selector.nextCoinId(state1), 1);
 
-  const coin = CoinState.create({ id: 12, coinKey: UnitCoin.KNIGHT });
-  const action1 = ActionCreator.addCoin(coin);
-  const state2 = Reducer.root(state1, action1);
+  const state2 = addCoin(12, UnitCoin.KNIGHT, state1);
 
   // Run / Verify.
   assert.equal(Selector.nextCoinId(state2), 13);
