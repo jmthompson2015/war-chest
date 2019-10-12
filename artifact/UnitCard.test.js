@@ -1,3 +1,5 @@
+/* eslint no-console: ["error", { allow: ["log"] }] */
+
 import UnitCard from "./UnitCard.js";
 
 QUnit.module("UnitCard");
@@ -40,6 +42,33 @@ QUnit.test("UnitCard.keys()", assert => {
   assert.equal(result.length, length);
   assert.equal(result[0], UnitCard.ARCHER);
   assert.equal(result[length - 1], UnitCard.WARRIOR_PRIEST);
+});
+
+QUnit.test("report", assert => {
+  const values = UnitCard.values();
+
+  console.log(`Tactic`);
+  R.forEach(card => {
+    if (card.tactic) {
+      console.log(`${card.name}: ${card.tactic}`);
+    }
+  }, values);
+
+  console.log(`Attribute`);
+  R.forEach(card => {
+    if (card.attribute) {
+      console.log(`${card.name}: ${card.attribute}`);
+    }
+  }, values);
+
+  console.log(`Restriction`);
+  R.forEach(card => {
+    if (card.restriction) {
+      console.log(`${card.name}: ${card.restriction}`);
+    }
+  }, values);
+
+  assert.ok(true);
 });
 
 const UnitCardTest = {};

@@ -31,7 +31,7 @@ const UnitCard = {
       image: "resource/card/Berserker.jpg",
       initialCount: 5,
       attribute:
-        "After the Berserker <b>maneuvers</b>, you may <b>manuever</b> it again by discarding a " +
+        "After the Berserker <b>maneuvers</b>, you may <b>maneuver</b> it again by discarding a " +
         "<b>bolstered</b> coin from the Berserker unit." +
         " You may do this multiple times, but you may not remove the final coin.",
       key: "berserker"
@@ -81,7 +81,7 @@ const UnitCard = {
       image: "resource/card/Lancer.jpg",
       initialCount: 4,
       tactic: "<b>Move</b> one or two spaces and then <b>attack</b>, all in a straight line.",
-      restriction: "The Lancer can only <b>attack</b> by using its tactic.",
+      restriction: "The Lancer can only <b>attack</b> by using its <b>tactic</b>.",
       key: "lancer"
     },
     lightCavalry: {
@@ -105,7 +105,7 @@ const UnitCard = {
       image: "resource/card/Mercenary.jpg",
       initialCount: 5,
       attribute:
-        "After you <b>recruit</b> a Mercenary, you may <b>maneuver</b> you Mercenary unit.",
+        "After you <b>recruit</b> a Mercenary, you may <b>maneuver</b> your Mercenary unit.",
       key: "mercenary"
     },
     pikeman: {
