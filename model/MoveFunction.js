@@ -196,6 +196,7 @@ const MoveFunction = {
     isLegal: (player, paymentCoin, an, state) =>
       Selector.isInHand(player.id, paymentCoin.id, state) &&
       Resolver.isUnitCoin(paymentCoin.coinKey) &&
+      Selector.canDeploy(paymentCoin.coinKey, state) &&
       Selector.isControlledBy(an, player.teamKey, state) &&
       Selector.isUnoccupied(an, state),
     label: labelDeployOrBolster,

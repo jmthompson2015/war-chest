@@ -1,5 +1,6 @@
 import Board from "../artifact/Board.js";
 import Resolver from "../artifact/Resolver.js";
+import UnitCoin from "../artifact/UnitCoin.js";
 
 const Selector = {};
 
@@ -15,6 +16,23 @@ const coinsByType = (coinKey, coinIds, state) => {
 Selector.anToControl = state => state.anToControl;
 
 Selector.anToTokens = state => state.anToTokens;
+
+Selector.ansByType = (coinKey, state) => {
+  const filterFunction = an => {
+    const unit = Selector.unit(an, state);
+    const coin = unit && unit.length > 0 ? Selector.coin(unit[0], state) : undefined;
+    return coin && coin.coinKey === coinKey;
+  };
+
+  return R.filter(filterFunction, Object.keys(state.anToTokens));
+};
+
+Selector.canDeploy = (coinKey, state) => {
+  const ans = Selector.ansByType(coinKey, state);
+
+  // Not already deployed.
+  return coinKey === UnitCoin.FOOTMAN ? ans.length < 2 : ans.length < 1;
+};
 
 Selector.coin = (coinId, state) => state.coinInstances[coinId];
 

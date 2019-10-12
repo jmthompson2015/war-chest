@@ -67,6 +67,138 @@ const createPlayers4 = () => {
   return [ravenPlayer1, wolfPlayer1, ravenPlayer2, wolfPlayer2];
 };
 
+// /////////////////////////////////////////////////////////////////////////////////////////////////
+QUnit.test("ansByType()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers4();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const an1 = "e2";
+  const state2 = addCoin(Selector.nextCoinId(state1), UnitCoin.SWORDSMAN, state1);
+  const coin1 = Selector.coin(1, state2);
+  const action2 = ActionCreator.setUnit(an1, coin1.id);
+  const state3 = Reducer.root(state2, action2);
+
+  const an2 = "f2";
+  const state4 = addCoin(Selector.nextCoinId(state3), UnitCoin.ARCHER, state3);
+  const coin2 = Selector.coin(2, state4);
+  const action4 = ActionCreator.setUnit(an2, coin2.id);
+  const state = Reducer.root(state4, action4);
+
+  // Run.
+  const result1 = Selector.ansByType(UnitCoin.SWORDSMAN, state);
+
+  // Verify.
+  assert.ok(result1);
+  assert.equal(Array.isArray(result1), true);
+  assert.equal(result1.length, 1);
+  assert.equal(result1.join(), "e2");
+
+  // Run.
+  const result2 = Selector.ansByType(UnitCoin.ARCHER, state);
+
+  // Verify.
+  assert.ok(result2);
+  assert.equal(Array.isArray(result2), true);
+  assert.equal(result2.length, 1);
+  assert.equal(result2.join(), "f2");
+
+  // Run.
+  const result3 = Selector.ansByType(UnitCoin.BERSERKER, state);
+
+  // Verify.
+  assert.ok(result3);
+  assert.equal(Array.isArray(result3), true);
+  assert.equal(result3.length, 0);
+});
+
+QUnit.test("bag()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const playerId = 3;
+  const coinId = 12;
+  const action = ActionCreator.addToPlayerArray("playerToBag", playerId, coinId);
+  const state = Reducer.root(state0, action);
+
+  // Run.
+  const result = Selector.bag(playerId, state);
+
+  // Verify.
+  assert.ok(result);
+  assert.ok(Array.isArray(result));
+  assert.equal(result.length, 1);
+  assert.equal(result.includes(coinId), true);
+  assert.equal(result[0], coinId);
+});
+
+QUnit.test("canDeploy()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers4();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const an1 = "e2";
+  const state2 = addCoin(Selector.nextCoinId(state1), UnitCoin.SWORDSMAN, state1);
+  const coin1 = Selector.coin(1, state2);
+  const action2 = ActionCreator.setUnit(an1, coin1.id);
+  const state3 = Reducer.root(state2, action2);
+
+  const an2 = "f2";
+  const state4 = addCoin(Selector.nextCoinId(state3), UnitCoin.ARCHER, state3);
+  const coin2 = Selector.coin(2, state4);
+  const action4 = ActionCreator.setUnit(an2, coin2.id);
+  const state = Reducer.root(state4, action4);
+
+  // Run / Verify.
+  assert.equal(Selector.canDeploy(UnitCoin.ARCHER, state), false);
+  assert.equal(Selector.canDeploy(UnitCoin.BERSERKER, state), true);
+  assert.equal(Selector.canDeploy(UnitCoin.CAVALRY, state), true);
+  assert.equal(Selector.canDeploy(UnitCoin.CROSSBOWMAN, state), true);
+  assert.equal(Selector.canDeploy(UnitCoin.SWORDSMAN, state), false);
+});
+
+QUnit.test("canDeploy() Footman", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers4();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+
+  // Run / Verify.
+  assert.equal(
+    Selector.canDeploy(UnitCoin.FOOTMAN, state1),
+    true,
+    `ansByType = ${JSON.stringify(Selector.ansByType(UnitCoin.FOOTMAN, state1))}`
+  );
+
+  const an1 = "e2";
+  const state2 = addCoin(Selector.nextCoinId(state1), UnitCoin.FOOTMAN, state1);
+  const coin1 = Selector.coin(1, state2);
+  const action2 = ActionCreator.setUnit(an1, coin1.id);
+  const state3 = Reducer.root(state2, action2);
+
+  // Run / Verify.
+  assert.equal(
+    Selector.canDeploy(UnitCoin.FOOTMAN, state3),
+    true,
+    `ansByType = ${JSON.stringify(Selector.ansByType(UnitCoin.FOOTMAN, state3))}`
+  );
+
+  const an2 = "f2";
+  const state4 = addCoin(Selector.nextCoinId(state3), UnitCoin.FOOTMAN, state3);
+  const coin2 = Selector.coin(2, state4);
+  const action4 = ActionCreator.setUnit(an2, coin2.id);
+  const state = Reducer.root(state4, action4);
+
+  // Run / Verify.
+  assert.equal(
+    Selector.canDeploy(UnitCoin.FOOTMAN, state),
+    false,
+    `ansByType = ${JSON.stringify(Selector.ansByType(UnitCoin.FOOTMAN, state))}`
+  );
+});
+
 QUnit.test("coin()", assert => {
   // Setup.
   const state0 = AppState.create();
@@ -114,25 +246,6 @@ QUnit.test("coins()", assert => {
   assert.equal(result2.coinKey, UnitCoin.ENSIGN);
 });
 
-QUnit.test("bag()", assert => {
-  // Setup.
-  const state0 = AppState.create();
-  const playerId = 3;
-  const coinId = 12;
-  const action = ActionCreator.addToPlayerArray("playerToBag", playerId, coinId);
-  const state = Reducer.root(state0, action);
-
-  // Run.
-  const result = Selector.bag(playerId, state);
-
-  // Verify.
-  assert.ok(result);
-  assert.ok(Array.isArray(result));
-  assert.equal(result.length, 1);
-  assert.equal(result.includes(coinId), true);
-  assert.equal(result[0], coinId);
-});
-
 QUnit.test("controlLocations()", assert => {
   // Setup.
   let state = AppState.create();
@@ -168,25 +281,6 @@ QUnit.test("delay()", assert => {
 
   // Verify.
   assert.equal(result, 1000);
-});
-
-QUnit.test("morgue()", assert => {
-  // Setup.
-  const state0 = AppState.create();
-  const playerId = 3;
-  const coinId = 12;
-  const action = ActionCreator.addToPlayerArray("playerToMorgue", playerId, coinId);
-  const state = Reducer.root(state0, action);
-
-  // Run.
-  const result = Selector.morgue(playerId, state);
-
-  // Verify.
-  assert.ok(result);
-  assert.ok(Array.isArray(result));
-  assert.equal(result.length, 1);
-  assert.equal(result.includes(coinId), true);
-  assert.equal(result[0], coinId);
 });
 
 QUnit.test("discardFacedown()", assert => {
@@ -398,6 +492,25 @@ QUnit.test("isUnitType()", assert => {
 
   // Verify.
   assert.equal(result, true);
+});
+
+QUnit.test("morgue()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const playerId = 3;
+  const coinId = 12;
+  const action = ActionCreator.addToPlayerArray("playerToMorgue", playerId, coinId);
+  const state = Reducer.root(state0, action);
+
+  // Run.
+  const result = Selector.morgue(playerId, state);
+
+  // Verify.
+  assert.ok(result);
+  assert.ok(Array.isArray(result));
+  assert.equal(result.length, 1);
+  assert.equal(result.includes(coinId), true);
+  assert.equal(result[0], coinId);
 });
 
 QUnit.test("nextCoinId()", assert => {
