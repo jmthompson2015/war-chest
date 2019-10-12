@@ -30,7 +30,7 @@ const createInitialInput = (coinInstances, customKey, clientProps, moveStates, o
     const input = ReactDOMFactories.input(
       R.merge(inputProps, { key: customKey2, id: i, "data-index": i })
     );
-    const label = MoveFunction[moveState.moveKey].label(moveState, coinInstances);
+    const label = MoveFunction.label(moveState, coinInstances);
     const cells = [];
     cells.push(RU.createCell(input, cells.length, "pa1 v-mid"));
     cells.push(RU.createCell(label, cells.length, "pa1 v-mid"));

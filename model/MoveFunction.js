@@ -268,6 +268,12 @@ MoveFunction.execute = (moveState, store) => {
   MoveFunction[moveKey].execute(moveState, store);
 };
 
+MoveFunction.label = (moveState, coinInstances) => {
+  const { moveKey } = moveState;
+
+  return MoveFunction[moveKey].label(moveState, coinInstances);
+};
+
 Object.freeze(MoveFunction);
 
 export default MoveFunction;
