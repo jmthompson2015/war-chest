@@ -78,6 +78,28 @@ QUnit.test("attack isLegal() true", assert => {
   assert.equal(result, true);
 });
 
+QUnit.test("attack isLegal() Archer false", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 2;
+  const player = Selector.player(playerId, store.getState());
+  const hand = Selector.hand(playerId, store.getState());
+  const paymentCoin = Selector.coin(hand[1], store.getState());
+  const hand2 = Selector.hand(2, store.getState());
+  const victimCoin = randomUnitCoinState(hand2, store.getState());
+  const fromAN = "e2"; // Raven control location.
+  const toAN = "f2";
+  store.dispatch(ActionCreator.setUnit(fromAN, paymentCoin.id));
+  store.dispatch(ActionCreator.setUnit(toAN, victimCoin.id));
+  const move = MoveFunction[Move.ATTACK];
+
+  // Run.
+  const result = move.isLegal(player, paymentCoin, fromAN, toAN, store.getState());
+
+  // Verify.
+  assert.equal(result, false);
+});
+
 QUnit.test("bolster execute() ", assert => {
   // Setup.
   const store = TestData.createStore();

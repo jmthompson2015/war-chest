@@ -156,6 +156,8 @@ UnitCard.keys = () => Object.keys(UnitCard.properties);
 
 UnitCard.values = () => Object.values(UnitCard.properties);
 
+UnitCard.canAttack = cardKey => cardKey && ![UnitCard.ARCHER, UnitCard.LANCER].includes(cardKey);
+
 Object.freeze(UnitCard);
 
 export default UnitCard;

@@ -1,5 +1,6 @@
 import Board from "../artifact/Board.js";
 import Resolver from "../artifact/Resolver.js";
+import UnitCard from "../artifact/UnitCard.js";
 
 import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
@@ -242,6 +243,7 @@ const MoveFunction = {
     execute: executeAttack,
     isLegal: (player, paymentCoin, fromAN, toAN, state) =>
       Selector.isInHand(player.id, paymentCoin.id, state) &&
+      UnitCard.canAttack(paymentCoin.coinKey) &&
       Selector.isUnitType(fromAN, paymentCoin.coinKey, state) &&
       Board.isNeighbor(fromAN, toAN) &&
       Selector.isEnemyUnitAt(player.id, toAN, state),
