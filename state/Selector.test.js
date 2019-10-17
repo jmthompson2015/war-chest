@@ -71,7 +71,7 @@ const createPlayers4 = () => {
 QUnit.test("ansByType()", assert => {
   // Setup.
   const state0 = AppState.create();
-  const players = createPlayers4();
+  const players = createPlayers2();
   const action0 = ActionCreator.setPlayers(players);
   const state1 = Reducer.root(state0, action0);
   const an1 = "e2";
@@ -132,10 +132,63 @@ QUnit.test("bag()", assert => {
   assert.equal(result[0], coinId);
 });
 
+QUnit.test("canBeAttacked()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers2();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const an1 = "e2";
+  const state2 = addCoin(Selector.nextCoinId(state1), UnitCoin.SWORDSMAN, state1);
+  const coin1 = Selector.coin(1, state2);
+  const action2 = ActionCreator.setUnit(an1, coin1.id);
+  const state3 = Reducer.root(state2, action2);
+
+  const an2 = "e3";
+  const state4 = addCoin(Selector.nextCoinId(state3), UnitCoin.ARCHER, state3);
+  const coin2 = Selector.coin(2, state4);
+  const action4 = ActionCreator.setUnit(an2, coin2.id);
+  const state = Reducer.root(state4, action4);
+
+  // Run / Verify.
+  assert.equal(Selector.canBeAttacked(an1, an2, state), true);
+});
+
+QUnit.test("canBeAttacked() Knight", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers2();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const an1 = "e2";
+  const state2 = addCoin(Selector.nextCoinId(state1), UnitCoin.SWORDSMAN, state1);
+  const coin1 = Selector.coin(1, state2);
+  const action2 = ActionCreator.setUnit(an1, coin1.id);
+  const state3 = Reducer.root(state2, action2);
+
+  const an2 = "e3";
+  const state4 = addCoin(Selector.nextCoinId(state3), UnitCoin.KNIGHT, state3);
+  const coin2 = Selector.coin(2, state4);
+  const action4 = ActionCreator.setUnit(an2, coin2.id);
+  const state5 = Reducer.root(state4, action4);
+
+  // Run / Verify.
+  assert.equal(Selector.canBeAttacked(an1, an2, state5), false);
+
+  // Bolster.
+  const state6 = addCoin(Selector.nextCoinId(state5), UnitCoin.SWORDSMAN, state5);
+  const coin3 = Selector.coin(3, state6);
+  const action6 = ActionCreator.setUnit(an1, coin3.id);
+  const state = Reducer.root(state6, action6);
+
+  // Run / Verify.
+  assert.equal(Selector.canBeAttacked(an1, an2, state), true);
+});
+
 QUnit.test("canDeploy()", assert => {
   // Setup.
   const state0 = AppState.create();
-  const players = createPlayers4();
+  const players = createPlayers2();
   const action0 = ActionCreator.setPlayers(players);
   const state1 = Reducer.root(state0, action0);
   const an1 = "e2";
@@ -213,6 +266,27 @@ QUnit.test("coin()", assert => {
   assert.ok(result);
   assert.equal(result.id, coinId);
   assert.equal(result.coinKey, coinKey);
+});
+
+QUnit.test("coinForUnit()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers2();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const an1 = "e2";
+  const state2 = addCoin(Selector.nextCoinId(state1), UnitCoin.SWORDSMAN, state1);
+  const coin1 = Selector.coin(1, state2);
+  const action2 = ActionCreator.setUnit(an1, coin1.id);
+  const state = Reducer.root(state2, action2);
+
+  // Run.
+  const result = Selector.coinForUnit(an1, state);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.id, 1);
+  assert.equal(result.coinKey, UnitCoin.SWORDSMAN);
 });
 
 QUnit.test("coins()", assert => {
@@ -338,6 +412,42 @@ QUnit.test("hand()", assert => {
   assert.equal(result.length, 1);
   assert.equal(result.includes(coinId), true);
   assert.equal(result[0], coinId);
+});
+
+QUnit.test("isBolstered() false", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers2();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const an = "e2";
+  const state2 = addCoin(Selector.nextCoinId(state1), UnitCoin.SWORDSMAN, state1);
+  const coin1 = Selector.coin(1, state2);
+  const action2 = ActionCreator.setUnit(an, coin1.id);
+  const state = Reducer.root(state2, action2);
+
+  // Run / Verify.
+  assert.equal(Selector.isBolstered(an, state), false);
+});
+
+QUnit.test("isBolstered() true", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers2();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const an = "e2";
+  const state2 = addCoin(Selector.nextCoinId(state1), UnitCoin.SWORDSMAN, state1);
+  const coin1 = Selector.coin(1, state2);
+  const action2 = ActionCreator.setUnit(an, coin1.id);
+  const state3 = Reducer.root(state2, action2);
+  const state4 = addCoin(Selector.nextCoinId(state3), UnitCoin.SWORDSMAN, state3);
+  const coin2 = Selector.coin(1, state4);
+  const action4 = ActionCreator.setUnit(an, coin2.id);
+  const state = Reducer.root(state4, action4);
+
+  // Run / Verify.
+  assert.equal(Selector.isBolstered(an, state), true);
 });
 
 QUnit.test("isControlLocation()", assert => {

@@ -19,12 +19,25 @@ Selector.anToTokens = state => state.anToTokens;
 
 Selector.ansByType = (coinKey, state) => {
   const filterFunction = an => {
-    const unit = Selector.unit(an, state);
-    const coin = unit && unit.length > 0 ? Selector.coin(unit[0], state) : undefined;
+    const coin = Selector.coinForUnit(an, state);
+
     return coin && coin.coinKey === coinKey;
   };
 
   return R.filter(filterFunction, Object.keys(state.anToTokens));
+};
+
+Selector.canBeAttacked = (fromAN, toAN, state) => {
+  const attackUnit = Selector.unit(fromAN, state);
+  const victimUnit = Selector.unit(toAN, state);
+  let answer = false;
+
+  if (attackUnit && victimUnit) {
+    const isKnight = Selector.isUnitType(toAN, UnitCoin.KNIGHT, state);
+    answer = isKnight ? Selector.isBolstered(fromAN, state) : true;
+  }
+
+  return answer;
 };
 
 Selector.canDeploy = (coinKey, state) => {
@@ -35,6 +48,12 @@ Selector.canDeploy = (coinKey, state) => {
 };
 
 Selector.coin = (coinId, state) => state.coinInstances[coinId];
+
+Selector.coinForUnit = (an, state) => {
+  const unit = Selector.unit(an, state);
+
+  return unit && unit.length > 0 ? Selector.coin(unit[0], state) : undefined;
+};
 
 Selector.coins = (coinIds, state) => {
   const mapFunction = id => state.coinInstances[id];
@@ -77,6 +96,12 @@ Selector.initiativeChangedThisRound = state => state.initiativeChangedThisRound;
 Selector.initiativePlayer = state => {
   const id = state.initiativePlayerId;
   return state.playerInstances[id];
+};
+
+Selector.isBolstered = (an, state) => {
+  const unit = Selector.unit(an, state);
+
+  return unit && unit.length > 1;
 };
 
 Selector.isComputerPlayer = (playerId, state) => {
@@ -123,8 +148,7 @@ Selector.isFriendlyUnit = (playerId, coinKey, state) => {
 };
 
 Selector.isFriendlyUnitAt = (playerId, an, state) => {
-  const unit = Selector.unit(an, state);
-  const coin0 = unit && unit.length > 0 ? Selector.coin(unit[0], state) : undefined;
+  const coin0 = Selector.coinForUnit(an, state);
 
   return coin0 ? Selector.isFriendlyUnit(playerId, coin0.coinKey, state) : false;
 };
@@ -158,8 +182,7 @@ Selector.isOccupied = (an, state) => {
 Selector.isTwoPlayer = state => Object.keys(state.playerInstances).length === 2;
 
 Selector.isUnitType = (an, coinKey, state) => {
-  const unit = Selector.unit(an, state);
-  const coin0 = unit && unit.length > 0 ? Selector.coin(unit[0], state) : undefined;
+  const coin0 = Selector.coinForUnit(an, state);
 
   return coin0 ? coin0.coinKey === coinKey : false;
 };
@@ -200,8 +223,8 @@ Selector.playerUnitANs = (playerId, state) => {
   const tableau = Selector.tableau(playerId, state);
   const ans = Object.keys(state.anToTokens);
   const filterFunction = an => {
-    const unit = Selector.unit(an, state);
-    const coin = Selector.coin(unit[0], state);
+    const coin = Selector.coinForUnit(an, state);
+
     return tableau.includes(coin.coinKey);
   };
 

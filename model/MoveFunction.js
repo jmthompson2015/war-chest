@@ -245,6 +245,7 @@ const MoveFunction = {
     isLegal: (player, paymentCoin, fromAN, toAN, state) =>
       Selector.isInHand(player.id, paymentCoin.id, state) &&
       UnitCard.canAttack(paymentCoin.coinKey) &&
+      Selector.canBeAttacked(fromAN, toAN, state) &&
       Selector.isUnitType(fromAN, paymentCoin.coinKey, state) &&
       Board.isNeighbor(fromAN, toAN) &&
       Selector.isEnemyUnitAt(player.id, toAN, state),
