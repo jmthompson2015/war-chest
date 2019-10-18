@@ -1,6 +1,7 @@
 import Board from "../artifact/Board.js";
 import Resolver from "../artifact/Resolver.js";
 import UnitCard from "../artifact/UnitCard.js";
+import UnitCoin from "../artifact/UnitCoin.js";
 
 import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
@@ -118,7 +119,7 @@ const executeControl = (moveState, store) => {
 };
 
 const executeAttack = (moveState, store) => {
-  const { paymentCoinId, playerId, toAN } = moveState;
+  const { fromAN, paymentCoinId, playerId, toAN } = moveState;
   const player = Selector.player(playerId, store.getState());
   const paymentCoinState = Selector.coin(paymentCoinId, store.getState());
   const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
@@ -143,6 +144,11 @@ const executeAttack = (moveState, store) => {
     )
   );
   store.dispatch(ActionCreator.boardToMorgue(victimPlayer.id, toAN));
+
+  // Pikeman attribute.
+  if (victimCoin.key === UnitCoin.PIKEMAN) {
+    store.dispatch(ActionCreator.boardToMorgue(playerId, fromAN));
+  }
 };
 
 const executeTactic = (/* player, paymentCoin, fromAN, toAN, store */) => {};

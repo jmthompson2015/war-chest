@@ -23,7 +23,7 @@ const randomUnitCoinState = (array, state) => {
   return coinState;
 };
 
-QUnit.test("attack execute() ", assert => {
+QUnit.test("attack execute()", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -54,6 +54,41 @@ QUnit.test("attack execute() ", assert => {
   assert.ok(resultMorgue);
   assert.equal(resultMorgue.length, 1);
   assert.equal(resultMorgue.join(), victimCoinId);
+});
+
+QUnit.test("attack execute() Pikeman", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 2;
+  const hand = Selector.hand(playerId, store.getState());
+  const paymentCoinId = hand[1];
+  const victimCoinId = 7; // Pikeman
+  const fromAN = "e2"; // Raven control location.
+  const toAN = "f2";
+  store.dispatch(ActionCreator.setUnit(fromAN, paymentCoinId));
+  store.dispatch(ActionCreator.setUnit(toAN, victimCoinId));
+  const moveKey = Move.ATTACK;
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, fromAN, toAN });
+
+  // Run.
+  MoveFunction[moveKey].execute(moveState, store);
+
+  // Verify.
+  const resultHand = Selector.hand(playerId, store.getState());
+  assert.ok(resultHand);
+  assert.equal(resultHand.length, 2);
+  const resultFromUnit = Selector.unit(fromAN, store.getState());
+  assert.equal(resultFromUnit, undefined);
+  const resultToUnit = Selector.unit(toAN, store.getState());
+  assert.equal(resultToUnit, undefined);
+  const resultMorgue1 = Selector.morgue(1, store.getState());
+  assert.ok(resultMorgue1);
+  assert.equal(resultMorgue1.length, 1);
+  assert.equal(resultMorgue1.join(), victimCoinId);
+  const resultMorgue2 = Selector.morgue(2, store.getState());
+  assert.ok(resultMorgue2);
+  assert.equal(resultMorgue2.length, 1);
+  assert.equal(resultMorgue2.join(), paymentCoinId);
 });
 
 QUnit.test("attack isLegal() true", assert => {
@@ -100,7 +135,7 @@ QUnit.test("attack isLegal() Archer false", assert => {
   assert.equal(result, false);
 });
 
-QUnit.test("bolster execute() ", assert => {
+QUnit.test("bolster execute()", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -144,7 +179,7 @@ QUnit.test("bolster isLegal() true", assert => {
   assert.equal(result, true);
 });
 
-QUnit.test("claimInitiative execute() ", assert => {
+QUnit.test("claimInitiative execute()", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -183,7 +218,7 @@ QUnit.test("claimInitiative isLegal() true", assert => {
   assert.equal(result, true);
 });
 
-QUnit.test("control execute() ", assert => {
+QUnit.test("control execute()", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -225,7 +260,7 @@ QUnit.test("control isLegal() true", assert => {
   assert.equal(result, true);
 });
 
-QUnit.test("deploy execute() ", assert => {
+QUnit.test("deploy execute()", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -266,7 +301,7 @@ QUnit.test("deploy isLegal() true", assert => {
   assert.equal(result, true);
 });
 
-QUnit.test("moveAUnit execute() ", assert => {
+QUnit.test("moveAUnit execute()", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -317,7 +352,7 @@ QUnit.test("moveAUnit isLegal() true", assert => {
   assert.equal(result, true);
 });
 
-QUnit.test("pass execute() ", assert => {
+QUnit.test("pass execute()", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -352,7 +387,7 @@ QUnit.test("pass isLegal() true", assert => {
   assert.equal(result, true);
 });
 
-QUnit.test("recruit execute() ", assert => {
+QUnit.test("recruit execute()", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
