@@ -59,8 +59,11 @@ Board.neighbors = (an, isTwoPlayer = true) => {
   const r = Board.coordinateCalculator.anToRank(an);
   const hex = { q, r };
   const hexNeighbors = HexBoardUtilities.hexNeighbors(hex);
-  const mapFunction = n => Board.coordinateCalculator.fileRankToAN(n.q, n.r);
-  const neighbors = R.map(mapFunction, hexNeighbors);
+  const reduceFunction = (accum, n) => {
+    const neighborAN = Board.coordinateCalculator.fileRankToAN(n.q, n.r);
+    return R.isNil(neighborAN) ? accum : R.append(neighborAN, accum);
+  };
+  const neighbors = R.reduce(reduceFunction, [], hexNeighbors);
   const unused = isTwoPlayer ? Board.UNUSED_2P : Board.UNUSED_4P;
 
   return R.without(unused, neighbors).sort();

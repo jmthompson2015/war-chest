@@ -2,6 +2,8 @@
 
 import Board from "../artifact/Board.js";
 import Move from "../artifact/Move.js";
+import Resolver from "../artifact/Resolver.js";
+import UnitCoin from "../artifact/UnitCoin.js";
 
 import MoveState from "../state/MoveState.js";
 import Selector from "../state/Selector.js";
@@ -48,6 +50,27 @@ MoveGenerator.generateForCoin = (player, paymentCoin, state) => {
         }, tableau);
         break;
       case Move.DEPLOY:
+        controlANs = Selector.controlANs(player.teamKey, state);
+        R.forEach(an => {
+          if (mm.isLegal(player, paymentCoin, an, state)) {
+            newAccum.push(MoveState.create({ moveKey, playerId, paymentCoinId, an }));
+          }
+        }, controlANs);
+        if (
+          paymentCoin.coinKey === UnitCoin.SCOUT &&
+          Selector.isInHand(player.id, paymentCoin.id, state) &&
+          Resolver.isUnitCoin(paymentCoin.coinKey) &&
+          Selector.canDeploy(paymentCoin.coinKey, state)
+        ) {
+          // Scout attribute.
+          const neighborANs = Selector.teamAdjacentANs(player.teamKey, state);
+          R.forEach(an => {
+            if (Selector.isUnoccupied(an, state)) {
+              newAccum.push(MoveState.create({ moveKey, playerId, paymentCoinId, an }));
+            }
+          }, neighborANs);
+        }
+        break;
       case Move.BOLSTER:
         controlANs = Selector.controlANs(player.teamKey, state);
         R.forEach(an => {
@@ -81,7 +104,17 @@ MoveGenerator.generateForCoin = (player, paymentCoin, state) => {
           neighbors = Board.neighbors(fromAN, Selector.isTwoPlayer(state));
           R.forEach(toAN => {
             if (mm.isLegal(player, paymentCoin, fromAN, toAN, state)) {
-              newAccum.push(MoveState.create({ moveKey, playerId, paymentCoinId, fromAN, toAN }));
+              const victimCoin = Selector.coinForUnit(toAN, state);
+              newAccum.push(
+                MoveState.create({
+                  moveKey,
+                  playerId,
+                  paymentCoinId,
+                  fromAN,
+                  toAN,
+                  victimCoinId: victimCoin.id
+                })
+              );
             }
           }, neighbors);
         }, playerUnitANs);

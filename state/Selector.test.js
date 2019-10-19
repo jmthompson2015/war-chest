@@ -67,6 +67,50 @@ const createPlayers4 = () => {
   return [ravenPlayer1, wolfPlayer1, ravenPlayer2, wolfPlayer2];
 };
 
+const fillBoard4 = state => {
+  const state1 = addCoin(1, UnitCoin.ARCHER, state);
+  const an1 = "e2";
+  const action1 = ActionCreator.setUnit(an1, 1);
+  const state2 = Reducer.root(state1, action1);
+
+  const state3 = addCoin(2, UnitCoin.CROSSBOWMAN, state2);
+  const an2 = "d7";
+  const action3 = ActionCreator.setUnit(an2, 2);
+  const state4 = Reducer.root(state3, action3);
+
+  const state5 = addCoin(3, UnitCoin.KNIGHT, state4);
+  const an3 = "h1";
+  const action5 = ActionCreator.setUnit(an3, 3);
+  const state6 = Reducer.root(state5, action5);
+
+  const state7 = addCoin(4, UnitCoin.MARSHALL, state6);
+  const an4 = "g6";
+  const action7 = ActionCreator.setUnit(an4, 4);
+
+  return Reducer.root(state7, action7);
+};
+
+const fillTableau4 = state => {
+  const myCardKeys = {
+    1: [UnitCard.ARCHER, UnitCard.BERSERKER, UnitCard.CAVALRY],
+    2: [UnitCard.CROSSBOWMAN, UnitCard.ENSIGN, UnitCard.FOOTMAN],
+    3: [UnitCard.KNIGHT, UnitCard.LANCER, UnitCard.LIGHT_CAVALRY],
+    4: [UnitCard.MARSHALL, UnitCard.MERCENARY, UnitCard.PIKEMAN]
+  };
+  let myState = state;
+
+  for (let playerId = 1; playerId <= 4; playerId += 1) {
+    const cardKeys = myCardKeys[playerId];
+    const reduceFunction = (accum, cardKey) => {
+      const action = ActionCreator.addToPlayerArray("playerToTableau", playerId, cardKey);
+      return Reducer.root(accum, action);
+    };
+    myState = R.reduce(reduceFunction, myState, cardKeys);
+  }
+
+  return myState;
+};
+
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 QUnit.test("ansByType()", assert => {
   // Setup.
@@ -884,8 +928,7 @@ QUnit.test("tableau()", assert => {
   const state0 = AppState.create();
   const playerId = 3;
   const cardKey = "knight";
-  const action = ActionCreator.addToPlayerArray("playerToTableau", playerId, cardKey);
-  const state = Reducer.root(state0, action);
+  const state = fillTableau4(state0);
 
   // Run.
   const result = Selector.tableau(playerId, state);
@@ -893,9 +936,119 @@ QUnit.test("tableau()", assert => {
   // Verify.
   assert.ok(result);
   assert.ok(Array.isArray(result));
-  assert.equal(result.length, 1);
+  assert.equal(result.length, 3);
   assert.equal(result.includes(cardKey), true);
   assert.equal(result[0], cardKey);
+});
+
+QUnit.test("teamAdjacentANs()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers4();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const state2 = fillTableau4(state1);
+  const state = fillBoard4(state2);
+
+  // Run.
+  const resultRaven = Selector.teamAdjacentANs(Team.RAVEN, state);
+
+  // Verify.
+  assert.ok(resultRaven);
+  assert.equal(Array.isArray(resultRaven), true);
+  assert.equal(resultRaven.length, 8, `resultRaven.length=${resultRaven.length}`);
+  assert.equal(resultRaven[0], "d3");
+  assert.equal(resultRaven[resultRaven.length - 1], "i1");
+
+  // Run.
+  const resultWolf = Selector.teamAdjacentANs(Team.WOLF, state);
+
+  // Verify.
+  assert.ok(resultWolf);
+  assert.equal(Array.isArray(resultWolf), true);
+  assert.equal(resultWolf.length, 8, `resultWolf.length=${resultWolf.length}`);
+  assert.equal(resultWolf[0], "c7");
+  assert.equal(resultWolf[resultWolf.length - 1], "h5");
+});
+
+QUnit.test("teamANs()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers4();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const state2 = fillTableau4(state1);
+  const state = fillBoard4(state2);
+
+  // Run.
+  const resultRaven = Selector.teamANs(Team.RAVEN, state);
+
+  // Verify.
+  assert.ok(resultRaven);
+  assert.equal(Array.isArray(resultRaven), true);
+  assert.equal(resultRaven.length, 2);
+  assert.equal(resultRaven[0], "e2");
+  assert.equal(resultRaven[1], "h1");
+
+  // Run.
+  const resultWolf = Selector.teamANs(Team.WOLF, state);
+
+  // Verify.
+  assert.ok(resultWolf);
+  assert.equal(Array.isArray(resultWolf), true);
+  assert.equal(resultWolf.length, 2);
+  assert.equal(resultWolf[0], "d7");
+  assert.equal(resultWolf[1], "g6");
+});
+
+QUnit.test("teamPlayerIds() 2", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers2();
+  const action0 = ActionCreator.setPlayers(players);
+  const state = Reducer.root(state0, action0);
+
+  // Run / Verify.
+  assert.equal(Selector.teamPlayerIds(Team.RAVEN, state).join(), 1);
+  assert.equal(Selector.teamPlayerIds(Team.WOLF, state).join(), 2);
+});
+
+QUnit.test("teamTableau() Raven 4", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers4();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const state = fillTableau4(state1);
+
+  // Run.
+  const result = Selector.teamTableau(Team.RAVEN, state);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(Array.isArray(result), true);
+  assert.equal(result.length, 6);
+  assert.equal(result[0], UnitCard.ARCHER);
+  assert.equal(result[result.length - 1], UnitCard.LIGHT_CAVALRY);
+});
+
+QUnit.test("teamTableau() Wolf 4", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers4();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const state = fillTableau4(state1);
+
+  // Run.
+  const result = Selector.teamTableau(Team.WOLF, state);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(Array.isArray(result), true);
+  assert.equal(result.length, 6);
+  assert.equal(result[0], UnitCard.CROSSBOWMAN);
+  assert.equal(result[result.length - 1], UnitCard.PIKEMAN);
 });
 
 const ReducerTest = {};

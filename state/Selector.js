@@ -247,6 +247,48 @@ Selector.supplyCoinsByType = (playerId, coinKey, state) => {
   return coinsByType(coinKey, Selector.supply(playerId, state), state);
 };
 
+Selector.teamAdjacentANs = (teamKey, state) => {
+  const teamANs = Selector.teamANs(teamKey, state);
+  const isTwoPlayer = Selector.isTwoPlayer(state);
+  const reduceFunction = (accum, teamAN) => {
+    const neighbors = Board.neighbors(teamAN, isTwoPlayer);
+    return R.uniq(R.concat(accum, neighbors));
+  };
+
+  return R.reduce(reduceFunction, [], teamANs);
+};
+
+Selector.teamANs = (teamKey, state) => {
+  const teamTableau = Selector.teamTableau(teamKey, state);
+  const ans = Object.keys(state.anToTokens);
+  const filterFunction = an => {
+    const coin = Selector.coinForUnit(an, state);
+    return teamTableau.includes(coin.coinKey);
+  };
+
+  return R.filter(filterFunction, ans);
+};
+
+Selector.teamPlayerIds = (teamKey, state) => {
+  const playerIds = Object.keys(state.playerInstances);
+  const filterFunction = playerId => {
+    const player = Selector.player(playerId, state);
+    return player.teamKey === teamKey;
+  };
+
+  return R.filter(filterFunction, playerIds);
+};
+
+Selector.teamTableau = (teamKey, state) => {
+  const teamPlayerIds = Selector.teamPlayerIds(teamKey, state);
+  const reduceFunction = (accum, playerId) => {
+    const tableau = Selector.tableau(playerId, state);
+    return R.concat(accum, tableau);
+  };
+
+  return R.reduce(reduceFunction, [], teamPlayerIds);
+};
+
 Selector.unit = (an, state) => state.anToTokens[an];
 
 Selector.userMessage = state => state.userMessage;

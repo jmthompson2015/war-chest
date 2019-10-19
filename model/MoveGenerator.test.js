@@ -1,5 +1,6 @@
 import Move from "../artifact/Move.js";
 
+import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
 
 import MoveGenerator from "./MoveGenerator.js";
@@ -28,7 +29,7 @@ const verifyMoveState = (
   assert.equal(moveState.toAN, toAN, "toAN");
 };
 
-QUnit.test("generate() ", assert => {
+QUnit.test("generate()", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -56,7 +57,7 @@ QUnit.test("generate() ", assert => {
   verifyMoveState(assert, moveLast, Move.PASS, 1, 1);
 });
 
-QUnit.test("generateForCoin() ", assert => {
+QUnit.test("generateForCoin()", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -85,6 +86,29 @@ QUnit.test("generateForCoin() ", assert => {
   );
   const moveLast = result[result.length - 1];
   verifyMoveState(assert, moveLast, Move.PASS, 1, 1);
+});
+
+QUnit.test("generateForCoin() Scout", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 2;
+  const player = Selector.player(playerId, store.getState());
+  const paymentCoinId = 34; // Scout.
+  const paymentCoin = Selector.coin(paymentCoinId, store.getState());
+  store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
+  store.dispatch(ActionCreator.setUnit("e2", 22)); // Archer.
+
+  // Run.
+  const result = MoveGenerator.generateForCoin(player, paymentCoin, store.getState());
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(Array.isArray(result), true);
+  assert.equal(result.length, 12, `result.length=${result.length}`);
+  const move0 = result[0];
+  verifyMoveState(assert, move0, Move.CLAIM_INITIATIVE, playerId, paymentCoinId);
+  const moveLast = result[result.length - 1];
+  verifyMoveState(assert, moveLast, Move.DEPLOY, playerId, paymentCoinId, "f2");
 });
 
 const MoveGeneratorTest = {};
