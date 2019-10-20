@@ -18,28 +18,29 @@ MoveGenerator.generateAttacks = (player, paymentCoin, state) => {
   const paymentCoinId = paymentCoin.id;
   const mm = MoveFunction[moveKey];
   const playerUnitANs = Selector.playerUnitANs(player.id, state);
-  const answer = [];
-
-  R.forEach(fromAN => {
+  const reduceFunction2 = fromAN => (accum2, toAN) => {
+    if (mm.isLegal(player, paymentCoin, fromAN, toAN, state)) {
+      const victimCoin = Selector.coinForUnit(toAN, state);
+      const victimCoinId = victimCoin.id;
+      const moveState = MoveState.create({
+        moveKey,
+        playerId,
+        paymentCoinId,
+        fromAN,
+        toAN,
+        victimCoinId
+      });
+      return R.append(moveState, accum2);
+    }
+    return accum2;
+  };
+  const reduceFunction1 = (accum1, fromAN) => {
     const neighbors = Board.neighbors(fromAN, Selector.isTwoPlayer(state));
-    R.forEach(toAN => {
-      if (mm.isLegal(player, paymentCoin, fromAN, toAN, state)) {
-        const victimCoin = Selector.coinForUnit(toAN, state);
-        answer.push(
-          MoveState.create({
-            moveKey,
-            playerId,
-            paymentCoinId,
-            fromAN,
-            toAN,
-            victimCoinId: victimCoin.id
-          })
-        );
-      }
-    }, neighbors);
-  }, playerUnitANs);
+    const accum2 = R.reduce(reduceFunction2(fromAN), [], neighbors);
+    return R.concat(accum1, accum2);
+  };
 
-  return answer;
+  return R.reduce(reduceFunction1, [], playerUnitANs);
 };
 
 MoveGenerator.generateBolsters = (player, paymentCoin, state) => {
@@ -48,15 +49,15 @@ MoveGenerator.generateBolsters = (player, paymentCoin, state) => {
   const paymentCoinId = paymentCoin.id;
   const mm = MoveFunction[moveKey];
   const controlANs = Selector.controlANs(player.teamKey, state);
-  const answer = [];
-
-  R.forEach(an => {
+  const reduceFunction = (accum, an) => {
     if (mm.isLegal(player, paymentCoin, an, state)) {
-      answer.push(MoveState.create({ moveKey, playerId, paymentCoinId, an }));
+      const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an });
+      return R.append(moveState, accum);
     }
-  }, controlANs);
+    return accum;
+  };
 
-  return answer;
+  return R.reduce(reduceFunction, [], controlANs);
 };
 
 MoveGenerator.generateClaimInitiatives = (player, paymentCoin, state) => {
@@ -67,7 +68,8 @@ MoveGenerator.generateClaimInitiatives = (player, paymentCoin, state) => {
   const answer = [];
 
   if (mm.isLegal(player, paymentCoin, state)) {
-    answer.push(MoveState.create({ moveKey, playerId, paymentCoinId }));
+    const moveState = MoveState.create({ moveKey, playerId, paymentCoinId });
+    answer.push(moveState);
   }
 
   return answer;
@@ -79,15 +81,15 @@ MoveGenerator.generateControls = (player, paymentCoin, state) => {
   const paymentCoinId = paymentCoin.id;
   const mm = MoveFunction[moveKey];
   const possibleControlANs = Selector.possibleControlANs(player.id, state);
-  const answer = [];
-
-  R.forEach(an => {
+  const reduceFunction = (accum, an) => {
     if (mm.isLegal(player, paymentCoin, an, state)) {
-      answer.push(MoveState.create({ moveKey, playerId, paymentCoinId, an }));
+      const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an });
+      return R.append(moveState, accum);
     }
-  }, possibleControlANs);
+    return accum;
+  };
 
-  return answer;
+  return R.reduce(reduceFunction, [], possibleControlANs);
 };
 
 MoveGenerator.generateDeploys = (player, paymentCoin, state) => {
@@ -96,13 +98,14 @@ MoveGenerator.generateDeploys = (player, paymentCoin, state) => {
   const paymentCoinId = paymentCoin.id;
   const mm = MoveFunction[moveKey];
   const controlANs = Selector.controlANs(player.teamKey, state);
-  const answer = [];
-
-  R.forEach(an => {
+  const reduceFunction1 = (accum, an) => {
     if (mm.isLegal(player, paymentCoin, an, state)) {
-      answer.push(MoveState.create({ moveKey, playerId, paymentCoinId, an }));
+      const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an });
+      return R.append(moveState, accum);
     }
-  }, controlANs);
+    return accum;
+  };
+  let answer = R.reduce(reduceFunction1, [], controlANs);
 
   // Scout attribute.
   if (
@@ -112,11 +115,15 @@ MoveGenerator.generateDeploys = (player, paymentCoin, state) => {
     Selector.canDeploy(paymentCoin.coinKey, state)
   ) {
     const neighborANs = Selector.teamAdjacentANs(player.teamKey, state);
-    R.forEach(an => {
+    const reduceFunction2 = (accum, an) => {
       if (Selector.isUnoccupied(an, state)) {
-        answer.push(MoveState.create({ moveKey, playerId, paymentCoinId, an }));
+        const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an });
+        return R.append(moveState, accum);
       }
-    }, neighborANs);
+      return accum;
+    };
+    const answer2 = R.reduce(reduceFunction2, [], neighborANs);
+    answer = R.concat(answer, answer2);
   }
 
   return answer;
@@ -128,18 +135,19 @@ MoveGenerator.generateMoveAUnits = (player, paymentCoin, state) => {
   const paymentCoinId = paymentCoin.id;
   const mm = MoveFunction[moveKey];
   const playerUnitANs = Selector.playerUnitANs(player.id, state);
-  const answer = [];
-
-  R.forEach(fromAN => {
+  const reduceFunction2 = fromAN => (accum2, toAN) => {
+    if (mm.isLegal(player, paymentCoin, fromAN, toAN, state)) {
+      const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, fromAN, toAN });
+      return R.append(moveState, accum2);
+    }
+    return accum2;
+  };
+  const reduceFunction1 = (accum1, fromAN) => {
     const neighbors = Board.neighbors(fromAN, Selector.isTwoPlayer(state));
-    R.forEach(toAN => {
-      if (mm.isLegal(player, paymentCoin, fromAN, toAN, state)) {
-        answer.push(MoveState.create({ moveKey, playerId, paymentCoinId, fromAN, toAN }));
-      }
-    }, neighbors);
-  }, playerUnitANs);
+    return R.reduce(reduceFunction2(fromAN), [], neighbors);
+  };
 
-  return answer;
+  return R.reduce(reduceFunction1, [], playerUnitANs);
 };
 
 MoveGenerator.generatePasses = (player, paymentCoin, state) => {
@@ -150,7 +158,8 @@ MoveGenerator.generatePasses = (player, paymentCoin, state) => {
   const answer = [];
 
   if (mm.isLegal(player, paymentCoin, state)) {
-    answer.push(MoveState.create({ moveKey, playerId, paymentCoinId }));
+    const moveState = MoveState.create({ moveKey, playerId, paymentCoinId });
+    answer.push(moveState);
   }
 
   return answer;
@@ -162,19 +171,18 @@ MoveGenerator.generateRecruits = (player, paymentCoin, state) => {
   const paymentCoinId = paymentCoin.id;
   const mm = MoveFunction[moveKey];
   const tableau = Selector.tableau(player.id, state);
-  const answer = [];
-
-  R.forEach(cardKey => {
+  const reduceFunction = (accum, cardKey) => {
     const supply = Selector.supplyCoinsByType(player.id, cardKey, state);
     const recruitCoin = supply && supply.length > 0 ? supply[0] : undefined;
     if (recruitCoin && mm.isLegal(player, paymentCoin, recruitCoin, state)) {
-      answer.push(
-        MoveState.create({ moveKey, playerId, paymentCoinId, recruitCoinId: recruitCoin.id })
-      );
+      const recruitCoinId = recruitCoin.id;
+      const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, recruitCoinId });
+      return R.append(moveState, accum);
     }
-  }, tableau);
+    return accum;
+  };
 
-  return answer;
+  return R.reduce(reduceFunction, [], tableau);
 };
 
 MoveGenerator.generateForCoin = (player, paymentCoin, state) => {
