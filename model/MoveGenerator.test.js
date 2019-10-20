@@ -192,6 +192,31 @@ QUnit.test("generateDeploys()", assert => {
   verifyMoveState(assert, moveLast, Move.DEPLOY, playerId, paymentCoinId, "h1");
 });
 
+QUnit.test("generateDeploys() Scout", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 2;
+  const player = Selector.player(playerId, store.getState());
+  store.dispatch(ActionCreator.setUnit("d6", 22)); // Archer
+  store.dispatch(
+    ActionCreator.transferBetweenPlayerArrays("playerToSupply", "playerToHand", playerId, 38)
+  );
+  const paymentCoinId = 38; // Scout
+  const paymentCoin = Selector.coin(paymentCoinId, store.getState());
+
+  // Run.
+  const result = MoveGenerator.generateDeploys(player, paymentCoin, store.getState());
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(Array.isArray(result), true);
+  assert.equal(result.length, 7, `result.length=${result.length}`);
+  const move0 = result[0];
+  verifyMoveState(assert, move0, Move.DEPLOY, playerId, paymentCoinId, "d7");
+  const moveLast = result[result.length - 1];
+  verifyMoveState(assert, moveLast, Move.DEPLOY, playerId, paymentCoinId, "e6");
+});
+
 QUnit.test("generateForCoin()", assert => {
   // Setup.
   const store = TestData.createStore();

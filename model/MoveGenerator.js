@@ -114,7 +114,8 @@ MoveGenerator.generateDeploys = (player, paymentCoin, state) => {
     Resolver.isUnitCoin(paymentCoin.coinKey) &&
     Selector.canDeploy(paymentCoin.coinKey, state)
   ) {
-    const neighborANs = Selector.teamAdjacentANs(player.teamKey, state);
+    const teamAdjacentANs = Selector.teamAdjacentANs(player.teamKey, state);
+    const neighborANs = R.without(controlANs, teamAdjacentANs);
     const reduceFunction2 = (accum, an) => {
       if (Selector.isUnoccupied(an, state)) {
         const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an });
