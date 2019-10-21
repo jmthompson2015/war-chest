@@ -5,12 +5,36 @@ import UnitCoin from "../artifact/UnitCoin.js";
 
 import Endpoint from "./Endpoint.js";
 
-const drawCoin = (context, center, size, an, token, resourceBase, imageMap) => {
-  const corners = Board.boardCalculator.computeCorners(center, size, Board.IS_FLAT);
-  const img = imageMap[`${resourceBase}${token.image}`];
+const TWO_PI = 2.0 * Math.PI;
 
-  if (img) {
-    ReactGameBoard.BoardCalculator.drawCircularImage(context, corners, img);
+const drawCoins = (context0, center, size, an, tokens, resourceBase, imageMap) => {
+  if (tokens && tokens.length > 0) {
+    const context = context0;
+    const corners = Board.boardCalculator.computeCorners(center, size, Board.IS_FLAT);
+    const boundingBox = ReactGameBoard.BoardCalculator.boundingBox(corners);
+    const { height, width, x, y } = boundingBox;
+    const diameter = 0.9 * Math.min(width, height);
+    const count = tokens.length;
+    const img = imageMap[`${resourceBase}${tokens[0].image}`];
+
+    if (img) {
+      ReactGameBoard.BoardCalculator.drawCircularImage(context, corners, img);
+      if (count > 1) {
+        context.save();
+        context.fillStyle = "rgba(211, 211, 211, 0.5)";
+        context.beginPath();
+        context.arc(x + width / 2.0, y + height / 2.0, diameter / 4.0, 0, TWO_PI);
+        context.fill();
+        context.restore();
+
+        context.save();
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.font = "bold 24px serif";
+        context.fillText(count, x + width / 2.0, y + height / 2.0);
+        context.restore();
+      }
+    }
   }
 };
 
@@ -27,19 +51,15 @@ const drawTokenFunction = resourceBase => (context0, center, size, an, tokens, i
   const context = context0;
 
   if (tokens) {
-    if (Array.isArray(tokens)) {
-      for (let i = 0; i < tokens.length; i += 1) {
-        const token = tokens[i];
-        if (token.image.indexOf("Control") >= 0) {
-          drawControl(context, center, size, an, token, resourceBase, imageMap);
-        } else {
-          drawCoin(context, center, size, an, token, resourceBase, imageMap);
-        }
+    if (Array.isArray(tokens) && tokens.length > 0) {
+      const token0 = tokens[0];
+
+      if (token0.image.indexOf("Control") >= 0) {
+        drawControl(context, center, size, an, token0, resourceBase, imageMap);
+        drawCoins(context, center, size, an, tokens.slice(1), resourceBase, imageMap);
+      } else {
+        drawCoins(context, center, size, an, tokens, resourceBase, imageMap);
       }
-    } else if (tokens.image.indexOf("Control") >= 0) {
-      drawControl(context, center, size, an, tokens, resourceBase, imageMap);
-    } else {
-      drawCoin(context, center, size, an, tokens, resourceBase, imageMap);
     }
   } else {
     context.save();
