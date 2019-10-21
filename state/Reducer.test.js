@@ -1,3 +1,5 @@
+import UnitCard from "../artifact/UnitCard.js";
+
 import AppState from "./AppState.js";
 import ActionCreator from "./ActionCreator.js";
 import CoinState from "./CoinState.js";
@@ -386,6 +388,28 @@ QUnit.test("setPlayers()", assert => {
   assert.equal(Object.keys(playerInstances).length, 2);
   assert.equal(playerInstances[id1], ravenPlayer);
   assert.equal(playerInstances[id2], wolfPlayer);
+});
+
+QUnit.test("setPlayerTableau()", assert => {
+  // Setup.
+  const state = AppState.create();
+  const playerId = 1;
+  const tableau = [UnitCard.ARCHER, UnitCard.BERSERKER, UnitCard.CAVALRY, UnitCard.CROSSBOWMAN];
+  const action = ActionCreator.setPlayerTableau(playerId, tableau);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  const { playerToTableau } = result;
+  assert.ok(playerToTableau);
+  const resultTableau = playerToTableau[playerId];
+  assert.ok(resultTableau);
+  assert.equal(Array.isArray(resultTableau), true);
+  assert.equal(resultTableau.length, 4);
+  assert.equal(resultTableau[0], UnitCard.ARCHER);
+  assert.equal(resultTableau[resultTableau.length - 1], UnitCard.CROSSBOWMAN);
 });
 
 QUnit.test("setRound()", assert => {

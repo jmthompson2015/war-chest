@@ -20,6 +20,7 @@ ActionType.SET_DELAY = "setDelay";
 ActionType.SET_INITIATIVE_CHANGED_THIS_ROUND = "setInitiativeChangedThisRound";
 ActionType.SET_INITIATIVE_PLAYER = "setInitiativePlayer";
 ActionType.SET_PLAYERS = "setPlayers";
+ActionType.SET_PLAYER_TABLEAU = "setPlayerTableau";
 ActionType.SET_ROUND = "setRound";
 ActionType.SET_UNIT = "setUnit";
 ActionType.SET_USER_MESSAGE = "setUserMessage";

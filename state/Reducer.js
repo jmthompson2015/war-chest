@@ -63,6 +63,7 @@ Reducer.root = (state, action) => {
   let newPlayerToDiscardFaceup;
   let newPlayerToMorgue;
   let newPlayerToHand;
+  let newPlayerToTableau;
   let newUnit;
   let oldBag;
   let oldDiscardFacedown;
@@ -178,6 +179,14 @@ Reducer.root = (state, action) => {
       console.log(`Reducer SET_PLAYERS players.length = ${action.players.length}`);
       newPlayers = R.reduce((accum, p) => assoc(p.id, p, accum), {}, action.players);
       return assoc("playerInstances", newPlayers, state);
+    case ActionType.SET_PLAYER_TABLEAU:
+      console.log(
+        `Reducer SET_PLAYER_TABLEAU playerId = ${action.playerId} tableau = ${JSON.stringify(
+          action.tableau
+        )}`
+      );
+      newPlayerToTableau = assoc(action.playerId, action.tableau, state.playerToTableau);
+      return assoc("playerToTableau", newPlayerToTableau, state);
     case ActionType.SET_ROUND:
       console.log(`Reducer SET_ROUND round = ${action.round}`);
       return assoc("round", action.round, state);

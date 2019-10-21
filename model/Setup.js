@@ -67,11 +67,14 @@ Setup.execute = store => {
     store.dispatch(ActionCreator.addToPlayerArray("playerToBag", p.id, royalCoin.id));
 
     // Randomly deal or draft four (2 player) or three (4 player) unit cards.
+    const tableau = [];
     for (let i = 0; i < maxCards; i += 1) {
       const card = ArrayUtils.randomElement(unitCards);
       unitCards = ArrayUtils.remove(card, unitCards);
-      store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", p.id, card.key));
+      tableau.push(card.key);
     }
+    tableau.sort();
+    store.dispatch(ActionCreator.setPlayerTableau(p.id, tableau));
 
     // Randomly deal or draft four (2 player) or three (4 player) unit cards.
     const cardKeys = Selector.tableau(p.id, store.getState());
