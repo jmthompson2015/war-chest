@@ -35,8 +35,8 @@ const anToTokens2 = Selector.anToTokens(state2);
 const element2 = React.createElement(BoardUI, {
   anToControl: anToControl2,
   anToTokens: anToTokens2,
-  isTwoPlayer: false,
   customKey: "hexBoardCanvas2",
+  isTwoPlayer: false,
   resourceBase: Endpoint.LOCAL_RESOURCE
 });
 
