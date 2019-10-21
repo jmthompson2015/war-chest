@@ -145,7 +145,8 @@ MoveGenerator.generateMoveAUnits = (player, paymentCoin, state) => {
   };
   const reduceFunction1 = (accum1, fromAN) => {
     const neighbors = Board.neighbors(fromAN, Selector.isTwoPlayer(state));
-    return R.reduce(reduceFunction2(fromAN), [], neighbors);
+    const accum2 = R.reduce(reduceFunction2(fromAN), [], neighbors);
+    return R.concat(accum1, accum2);
   };
 
   return R.reduce(reduceFunction1, [], playerUnitANs);

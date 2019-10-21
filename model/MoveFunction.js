@@ -261,8 +261,10 @@ const MoveFunction = {
       const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
       const victimCoinState = coinInstances[moveState.victimCoinId];
       const victimCoin = Resolver.coin(victimCoinState.coinKey);
-      return `${move.name}: ${paymentCoin.name} at ${moveState.fromAN}'+
-          ' attack ${victimCoin.name} at ${moveState.toAN}`;
+      return (
+        `${move.name}: ${paymentCoin.name} at ${moveState.fromAN}` +
+        ` attack ${victimCoin.name} at ${moveState.toAN}`
+      );
     },
     key: "attack"
   },
