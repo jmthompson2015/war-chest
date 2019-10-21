@@ -113,11 +113,11 @@ class BoardUI extends React.PureComponent {
       backgroundColor: "hsl(40,30%,75%)",
       cellColorFunction,
       cellImageFunction: cellImageFunction(isTwoPlayer),
+      customKey,
       gridColor: "hsl(40,30%,75%)",
       gridLineWidth: 3,
       images,
-      isCellUsedFunction: isCellUsedFunction(isTwoPlayer),
-      myKey: customKey
+      isCellUsedFunction: isCellUsedFunction(isTwoPlayer)
     });
   }
 }
