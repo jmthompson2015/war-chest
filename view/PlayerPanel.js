@@ -1,13 +1,11 @@
-import Resolver from "../artifact/Resolver.js";
-
 import CoinState from "../state/CoinState.js";
 
-import CardsUI from "./CardsUI.js";
 import CoinsUI from "./CoinsUI.js";
 import Endpoint from "./Endpoint.js";
 import MoveOptionDialog from "./MoveOptionDialog.js";
+import TableauUI from "./TableauUI.js";
 
-const { CollapsiblePane, ReactUtilities: RU, TitledElement } = ReactComponent;
+const { ReactUtilities: RU, TitledElement } = ReactComponent;
 
 const titleClass = "b bg-wc-dark f6 tc wc-light";
 
@@ -119,20 +117,6 @@ const createSupplyUI = (supply, resourceBase) => {
   });
 };
 
-const createTableauUI = (tableau, resourceBase) => {
-  const cards = Resolver.cards(tableau);
-  const customKey = "tableau";
-  const element = React.createElement(CardsUI, { cards, customKey, resourceBase, width: 125 });
-
-  return React.createElement(CollapsiblePane, {
-    key: "tableau",
-    element,
-    className: "bg-wc-medium ma1",
-    header: "Tableau",
-    headerClass: titleClass
-  });
-};
-
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 class PlayerPanel extends React.Component {
   constructor(props) {
@@ -195,7 +179,7 @@ class PlayerPanel extends React.Component {
       cells = R.append(supplyUI, cells);
     }
 
-    const tableauUI = createTableauUI(tableau, resourceBase);
+    const tableauUI = React.createElement(TableauUI, { key: "tableau", tableau, resourceBase });
     cells = R.append(tableauUI, cells);
 
     if (!R.isNil(paymentCoin)) {

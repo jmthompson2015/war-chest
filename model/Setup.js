@@ -1,3 +1,6 @@
+/* eslint no-console: ["error", { allow: ["warn"] }] */
+/* eslint prefer-destructuring: ["error", {VariableDeclarator: {object: true}}] */
+
 import ArrayUtils from "../util/ArrayUtilities.js";
 
 import Board from "../artifact/Board.js";
@@ -43,6 +46,45 @@ const initializeControlMarkers = (store, isTwoPlayer) => {
   initializePlayerControlMarkers(isTwoPlayer, false, store);
 };
 
+Setup.createInitialPlayerToTableau = () => {
+  const answer = {};
+  let unitCards = [].concat(UnitCard.values());
+
+  for (let playerId = 1; playerId <= 4; playerId += 1) {
+    // Randomly deal four (2 player) or three (4 player) unit cards.
+    const maxCards = playerId < 3 ? 4 : 3;
+    const tableau = [];
+
+    for (let i = 0; i < maxCards; i += 1) {
+      const card = ArrayUtils.randomElement(unitCards);
+      unitCards = ArrayUtils.remove(card, unitCards);
+      tableau.push(card.key);
+    }
+
+    answer[playerId] = tableau.sort();
+  }
+
+  return answer;
+};
+
+Setup.determinePlayerToTableau = (playerCount, initialPlayerToTableau) => {
+  const answer = {};
+
+  if (playerCount === 2) {
+    answer[1] = initialPlayerToTableau[1];
+    answer[2] = initialPlayerToTableau[2];
+  } else if (playerCount === 4) {
+    answer[1] = initialPlayerToTableau[1].slice(0, 3);
+    answer[2] = initialPlayerToTableau[2].slice(0, 3);
+    answer[3] = initialPlayerToTableau[3];
+    answer[4] = initialPlayerToTableau[4];
+  } else {
+    console.warn(`Unknown playerCount: ${playerCount}`);
+  }
+
+  return answer;
+};
+
 Setup.execute = store => {
   const players0 = Selector.players(store.getState());
   const isTwoPlayer = players0.length === 2;
@@ -54,9 +96,6 @@ Setup.execute = store => {
   const initiativePlayer = ArrayUtils.randomElement(players0);
   store.dispatch(ActionCreator.setInitiativePlayer(initiativePlayer.id));
 
-  let unitCards = [].concat(UnitCard.values());
-  const maxCards = isTwoPlayer ? 4 : 3;
-
   // For each player,
   const players = Selector.playersInOrder(store.getState());
 
@@ -66,36 +105,23 @@ Setup.execute = store => {
     const royalCoin = CoinState.create({ coinKey: royalCoinKey, store });
     store.dispatch(ActionCreator.addToPlayerArray("playerToBag", p.id, royalCoin.id));
 
-    // Randomly deal or draft four (2 player) or three (4 player) unit cards.
-    const tableau = [];
-    for (let i = 0; i < maxCards; i += 1) {
-      const card = ArrayUtils.randomElement(unitCards);
-      unitCards = ArrayUtils.remove(card, unitCards);
-      tableau.push(card.key);
-    }
-    tableau.sort();
-    store.dispatch(ActionCreator.setPlayerTableau(p.id, tableau));
-
-    // Randomly deal or draft four (2 player) or three (4 player) unit cards.
+    // Fill supply with unit coins.
     const cardKeys = Selector.tableau(p.id, store.getState());
     const cards = R.map(c => Resolver.card(c), cardKeys);
 
     R.forEach(card => {
-      // Fill supply with unit coins.
       for (let j = 0; j < card.initialCount - 2; j += 1) {
         const coin = CoinState.create({ coinKey: card.key, store });
         store.dispatch(ActionCreator.addToPlayerArray("playerToSupply", p.id, coin.id));
       }
 
-      // Move two of each unit coin type into bag.
+      // Put two of each unit coin type into bag.
       for (let j = 0; j < 2; j += 1) {
         const coin = CoinState.create({ coinKey: card.key, store });
         store.dispatch(ActionCreator.addToPlayerArray("playerToBag", p.id, coin.id));
       }
     }, cards);
   }, players);
-
-  // Toggle initiative if draft used.
 };
 
 Object.freeze(Setup);

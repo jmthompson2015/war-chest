@@ -1,6 +1,9 @@
 import PlayerState from "../state/PlayerState.js";
 
-const RU = ReactComponent.ReactUtilities;
+import Endpoint from "./Endpoint.js";
+import TableauUI from "./TableauUI.js";
+
+const { ReactUtilities: RU } = ReactComponent;
 
 const computerTypes = ["SimplePlayerStrategy"];
 const humanTypes = ["HumanPlayerStrategy"];
@@ -33,7 +36,7 @@ class NewPlayerPanel extends React.Component {
   }
 
   handleNameChangeFunction(event) {
-    const { callback, playerId, team } = this.props;
+    const { onChange, playerId, team } = this.props;
     const { strategy } = this.state;
     const name = event.target.value;
     this.setState({ name });
@@ -45,11 +48,11 @@ class NewPlayerPanel extends React.Component {
       strategy
     });
 
-    callback(player);
+    onChange(player);
   }
 
   handleTypeChangeFunction(event) {
-    const { callback, playerId, team } = this.props;
+    const { onChange, playerId, team } = this.props;
     const { name } = this.state;
     const strategy = event.target.value;
     this.setState({ strategy });
@@ -61,14 +64,15 @@ class NewPlayerPanel extends React.Component {
       strategy
     });
 
-    callback(player);
+    onChange(player);
   }
 
   render() {
-    const { customKey, playerId, team } = this.props;
+    const { customKey, playerId, resourceBase, tableau, team } = this.props;
     const { name, strategy } = this.state;
     const nameInput = createNameInput(name, this.handleNameChange);
     const strategySelect = createStrategySelect(strategy, this.handleTypeChange);
+    const tableauUI = React.createElement(TableauUI, { tableau, resourceBase });
 
     const titleCell = RU.createCell(`Player ${playerId}`, "titleCell");
     const teamPromptCell = RU.createCell("Team:", "teamPromptCell");
@@ -77,6 +81,7 @@ class NewPlayerPanel extends React.Component {
     const nameInputCell = RU.createCell(nameInput, "nameInputCell");
     const strategyPromptCell = RU.createCell("Type:", "strategyPromptCell");
     const strategySelectCell = RU.createCell(strategySelect, "strategySelectCell");
+    const tableauCell = RU.createCell(tableauUI, "tableauCell");
 
     const rows1 = [];
     rows1.push(RU.createRow([teamPromptCell, teamOutputCell], "teamRow"));
@@ -88,25 +93,29 @@ class NewPlayerPanel extends React.Component {
     const rows2 = [];
     rows2.push(RU.createRow(titleCell, "titleRow", "b center f5 ma0 tc"));
     rows2.push(RU.createRow(inputTable, "inputTableRow"));
+    rows2.push(RU.createRow(tableauCell, "tableauRow"));
 
-    return RU.createTable(rows2, `${customKey}${team.key}`, "center f6 ma0 tc");
+    return RU.createTable(rows2, `${customKey}${team.key}`, "bg-wc-light center f6 ma0 tc");
   }
 }
 
 NewPlayerPanel.propTypes = {
-  callback: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
   playerId: PropTypes.number.isRequired,
+  tableau: PropTypes.arrayOf(PropTypes.string).isRequired,
   team: PropTypes.shape().isRequired,
 
   customKey: PropTypes.string,
   initialName: PropTypes.string,
-  initialStrategy: PropTypes.string
+  initialStrategy: PropTypes.string,
+  resourceBase: PropTypes.string
 };
 
 NewPlayerPanel.defaultProps = {
   customKey: "NewPlayerPanel",
   initialName: "Alfred",
-  initialStrategy: "SimplePlayerStrategy"
+  initialStrategy: "SimplePlayerStrategy",
+  resourceBase: Endpoint.NETWORK_RESOURCE
 };
 
 export default NewPlayerPanel;

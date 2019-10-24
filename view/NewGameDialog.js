@@ -3,6 +3,8 @@ import Team from "../artifact/Team.js";
 
 import PlayerState from "../state/PlayerState.js";
 
+import Setup from "../model/Setup.js";
+
 import NewPlayerPanel from "./NewPlayerPanel.js";
 
 const RU = ReactComponent.ReactUtilities;
@@ -49,22 +51,31 @@ const createCountSelect = (count, onChange) => {
   return ReactDOMFactories.select({ defaultValue: count, onChange }, countOptions);
 };
 
-const createNewPlayerPanel = (playerState, callback) => {
-  return React.createElement(NewPlayerPanel, {
+const createNewPlayerPanel = (playerState, tableau, onChange) => {
+  const panel = React.createElement(NewPlayerPanel, {
     key: `player${playerState.id}`,
     playerId: playerState.id,
-    callback,
+    onChange,
     customKey: `player${playerState.id}`,
+    tableau,
     team: Resolver.team(playerState.teamKey),
     initialName: playerState.name,
     initialStrategy: playerState.strategy
   });
+  return ReactDOMFactories.div({ key: `player${playerState.id}`, className: "ma1" }, panel);
 };
 
-const createInitialInput = (customKey, count, players, handleCountChange, handlePlayerChange) => {
+const createInitialInput = (
+  customKey,
+  count,
+  players,
+  playerToTableau,
+  handleCountChange,
+  handlePlayerChange
+) => {
   const countSelect = createCountSelect(count, handleCountChange);
-  const playerPanel1 = createNewPlayerPanel(players[1], handlePlayerChange);
-  const playerPanel2 = createNewPlayerPanel(players[2], handlePlayerChange);
+  const playerPanel1 = createNewPlayerPanel(players[1], playerToTableau[1], handlePlayerChange);
+  const playerPanel2 = createNewPlayerPanel(players[2], playerToTableau[2], handlePlayerChange);
 
   const countPromptCell = RU.createCell("Player Count:", "countPromptCell");
   const countSelectCell = RU.createCell(countSelect, "countCell");
@@ -75,8 +86,8 @@ const createInitialInput = (customKey, count, players, handleCountChange, handle
   const cells = [playerPanel1, playerPanel2];
 
   if (count > 2) {
-    const playerPanel3 = createNewPlayerPanel(players[3], handlePlayerChange);
-    const playerPanel4 = createNewPlayerPanel(players[4], handlePlayerChange);
+    const playerPanel3 = createNewPlayerPanel(players[3], playerToTableau[3], handlePlayerChange);
+    const playerPanel4 = createNewPlayerPanel(players[4], playerToTableau[4], handlePlayerChange);
 
     cells.push(playerPanel3);
     cells.push(playerPanel4);
@@ -97,7 +108,11 @@ class NewGameDialog extends React.Component {
     super(props);
 
     const initialPlayers = props.initialCount === 2 ? INITIAL_PLAYERS2 : INITIAL_PLAYERS4;
-    this.state = { players: initialPlayers };
+    const playerToTableau = Setup.determinePlayerToTableau(
+      props.initialCount,
+      props.initialPlayerToTableau
+    );
+    this.state = { players: initialPlayers, playerToTableau };
 
     this.handleCountChange = this.handleCountChangeFunction.bind(this);
     this.handlePlayerChange = this.handlePlayerChangeFunction.bind(this);
@@ -111,14 +126,16 @@ class NewGameDialog extends React.Component {
   }
 
   handleCountChangeFunction(event) {
+    const { initialPlayerToTableau } = this.props;
     const { players } = this.state;
     const newCount = parseInt(event.target.value, 10);
     const newPlayers =
       newCount === 2
         ? R.omit([3, 4], players)
         : R.assoc(3, INITIAL_PLAYER3, R.assoc(4, INITIAL_PLAYER4, players));
+    const newPlayerToTableau = Setup.determinePlayerToTableau(newCount, initialPlayerToTableau);
 
-    this.setState({ players: newPlayers });
+    this.setState({ players: newPlayers, playerToTableau: newPlayerToTableau });
   }
 
   handlePlayerChangeFunction(playerState) {
@@ -130,19 +147,20 @@ class NewGameDialog extends React.Component {
 
   okFunction() {
     const { callback } = this.props;
-    const { players } = this.state;
+    const { players, playerToTableau } = this.state;
 
-    callback(players);
+    callback(players, playerToTableau);
   }
 
   render() {
     const { customKey } = this.props;
-    const { players } = this.state;
+    const { players, playerToTableau } = this.state;
     const message = "Configure Players";
     const initialInput = createInitialInput(
       customKey,
       this.count,
       players,
+      playerToTableau,
       this.handleCountChange,
       this.handlePlayerChange
     );
@@ -162,6 +180,7 @@ class NewGameDialog extends React.Component {
 
 NewGameDialog.propTypes = {
   callback: PropTypes.func.isRequired,
+  initialPlayerToTableau: PropTypes.shape().isRequired,
 
   customKey: PropTypes.string,
   initialCount: PropTypes.number

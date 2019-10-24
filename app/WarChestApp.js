@@ -1,5 +1,7 @@
 import Selector from "../state/Selector.js";
 
+import Setup from "../model/Setup.js";
+
 import Endpoint from "../view/Endpoint.js";
 import NewGameDialog from "../view/NewGameDialog.js";
 
@@ -15,11 +17,11 @@ const isLocal = true;
 const resourceBase = isLocal ? Endpoint.LOCAL_RESOURCE : undefined;
 const helpBase = isLocal ? `${Endpoint.LOCAL_RESOURCE}view/` : undefined;
 
-const playGame = playerInstances => {
+const playGame = (playerInstances, playerToTableau) => {
   document.getElementById("newGamePanel").style.display = "none";
 
   const players = Object.values(playerInstances);
-  const game = new Game(players);
+  const game = new Game(players, playerToTableau);
   const { store } = game;
 
   // Status Bar
@@ -64,6 +66,7 @@ const playGame = playerInstances => {
 };
 
 const element1 = React.createElement(NewGameDialog, {
+  initialPlayerToTableau: Setup.createInitialPlayerToTableau(),
   callback: playGame
 });
 

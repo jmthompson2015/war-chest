@@ -53,9 +53,10 @@ const executeGame = (roundLimit, resolve, store) => {
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 class Game {
-  constructor(players, roundLimit = 100) {
+  constructor(players, playerToTableau, roundLimit = 100) {
     this._store = Redux.createStore(Reducer.root);
     this._store.dispatch(ActionCreator.setPlayers(players));
+    this._store.dispatch(ActionCreator.setPlayerToTableau(playerToTableau));
     this._roundLimit = roundLimit;
 
     Setup.execute(this._store);

@@ -1,4 +1,5 @@
 import Team from "../artifact/Team.js";
+import UnitCard from "../artifact/UnitCard.js";
 
 import ActionCreator from "../state/ActionCreator.js";
 import PlayerState from "../state/PlayerState.js";
@@ -23,12 +24,21 @@ const createPlayers = () => {
   return [ravenPlayer, wolfPlayer];
 };
 
+const createPlayerToTableau = () => {
+  const cardKeys = UnitCard.keys();
+
+  return {
+    1: cardKeys.slice(0, 4),
+    2: cardKeys.slice(4, 8)
+  };
+};
+
 QUnit.test("execute() ", assert => {
   // Setup.
-  const isTwoPlayer = true;
-  const players = createPlayers(isTwoPlayer);
+  const players = createPlayers();
+  const playerToTableau = createPlayerToTableau();
   const roundLimit = 1;
-  const game = new Game(players, roundLimit);
+  const game = new Game(players, playerToTableau, roundLimit);
   const { store } = game;
   store.dispatch(ActionCreator.setDelay(0));
 

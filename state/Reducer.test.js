@@ -390,12 +390,15 @@ QUnit.test("setPlayers()", assert => {
   assert.equal(playerInstances[id2], wolfPlayer);
 });
 
-QUnit.test("setPlayerTableau()", assert => {
+QUnit.test("setPlayerToTableau()", assert => {
   // Setup.
   const state = AppState.create();
-  const playerId = 1;
-  const tableau = [UnitCard.ARCHER, UnitCard.BERSERKER, UnitCard.CAVALRY, UnitCard.CROSSBOWMAN];
-  const action = ActionCreator.setPlayerTableau(playerId, tableau);
+  const cardKeys = UnitCard.keys();
+  const playerToTableau0 = {
+    1: cardKeys.slice(0, 4),
+    2: cardKeys.slice(4, 8)
+  };
+  const action = ActionCreator.setPlayerToTableau(playerToTableau0);
 
   // Run.
   const result = Reducer.root(state, action);
@@ -404,12 +407,20 @@ QUnit.test("setPlayerTableau()", assert => {
   assert.ok(result);
   const { playerToTableau } = result;
   assert.ok(playerToTableau);
-  const resultTableau = playerToTableau[playerId];
-  assert.ok(resultTableau);
-  assert.equal(Array.isArray(resultTableau), true);
-  assert.equal(resultTableau.length, 4);
-  assert.equal(resultTableau[0], UnitCard.ARCHER);
-  assert.equal(resultTableau[resultTableau.length - 1], UnitCard.CROSSBOWMAN);
+
+  const resultTableau1 = playerToTableau[1];
+  assert.ok(resultTableau1);
+  assert.equal(Array.isArray(resultTableau1), true);
+  assert.equal(resultTableau1.length, 4);
+  assert.equal(resultTableau1[0], UnitCard.ARCHER);
+  assert.equal(resultTableau1[resultTableau1.length - 1], UnitCard.CROSSBOWMAN);
+
+  const resultTableau2 = playerToTableau[2];
+  assert.ok(resultTableau2);
+  assert.equal(Array.isArray(resultTableau2), true);
+  assert.equal(resultTableau2.length, 4);
+  assert.equal(resultTableau2[0], UnitCard.ENSIGN);
+  assert.equal(resultTableau2[resultTableau2.length - 1], UnitCard.LANCER);
 });
 
 QUnit.test("setRound()", assert => {

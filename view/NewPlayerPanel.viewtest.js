@@ -2,16 +2,21 @@
 
 import Resolver from "../artifact/Resolver.js";
 import Team from "../artifact/Team.js";
+import UnitCard from "../artifact/UnitCard.js";
 
 import NewPlayerPanel from "./NewPlayerPanel.js";
 
-function myCallback(playerState) {
-  console.log(`myCallback() playerState = ${JSON.stringify(playerState)}`);
+function myOnChange(playerState) {
+  console.log(`myOnChange() playerState = ${JSON.stringify(playerState)}`);
 }
 
+const cardKeys = UnitCard.keys();
+const tableau = cardKeys.slice(0, 4);
+
 const element1 = React.createElement(NewPlayerPanel, {
-  callback: myCallback,
+  onChange: myOnChange,
   playerId: 1,
+  tableau,
   team: Resolver.team(Team.RAVEN)
 });
 
