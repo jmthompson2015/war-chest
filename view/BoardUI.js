@@ -130,7 +130,7 @@ class BoardUI extends React.PureComponent {
       coordinateCalculator: Board.coordinateCalculator,
       drawTokenFunction: drawTokenFunction(resourceBase),
 
-      backgroundColor: "hsl(40,30%,75%)",
+      backgroundColor: "rgba(255,255,255,0.3)",
       cellColorFunction,
       cellImageFunction: cellImageFunction(isTwoPlayer),
       customKey,
