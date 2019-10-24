@@ -314,6 +314,50 @@ QUnit.test("generateMoveAUnits()", assert => {
   );
 });
 
+QUnit.test("generateMoveAUnits() four player", assert => {
+  // Setup.
+  const isTwoPlayer = false;
+  const store = TestData.createStore(isTwoPlayer);
+  const playerId = 1;
+  const player = Selector.player(playerId, store.getState());
+  const fromAN = "b5";
+  store.dispatch(ActionCreator.setUnit(fromAN, 2)); // Swordsman
+  const paymentCoinId = 6; // Swordsman
+  const paymentCoin = Selector.coin(paymentCoinId, store.getState());
+
+  // Run.
+  const result = MoveGenerator.generateMoveAUnits(player, paymentCoin, store.getState());
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(Array.isArray(result), true);
+  assert.equal(result.length, 4, `result.length=${result.length}`);
+  const move0 = result[0];
+  verifyMoveState(
+    assert,
+    move0,
+    Move.MOVE_A_UNIT,
+    playerId,
+    paymentCoinId,
+    undefined, // an
+    fromAN,
+    undefined, // recruitCoinId
+    "a6"
+  );
+  const moveLast = result[result.length - 1];
+  verifyMoveState(
+    assert,
+    moveLast,
+    Move.MOVE_A_UNIT,
+    playerId,
+    paymentCoinId,
+    undefined, // an
+    fromAN,
+    undefined, // recruitCoinId
+    "c5"
+  );
+});
+
 QUnit.test("generatePasses()", assert => {
   // Setup.
   const store = TestData.createStore();

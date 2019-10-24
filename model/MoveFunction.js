@@ -222,7 +222,7 @@ const MoveFunction = {
     isLegal: (player, paymentCoin, fromAN, toAN, state) =>
       Selector.isInHand(player.id, paymentCoin.id, state) &&
       Selector.isUnitType(fromAN, paymentCoin.coinKey, state) &&
-      Board.isNeighbor(fromAN, toAN) &&
+      Board.isNeighbor(fromAN, toAN, Selector.isTwoPlayer(state)) &&
       Selector.isUnoccupied(toAN, state),
     label: (moveState, coinInstances) => {
       const move = Resolver.move(moveState.moveKey);
@@ -253,7 +253,7 @@ const MoveFunction = {
       UnitCard.canAttack(paymentCoin.coinKey) &&
       Selector.canBeAttacked(fromAN, toAN, state) &&
       Selector.isUnitType(fromAN, paymentCoin.coinKey, state) &&
-      Board.isNeighbor(fromAN, toAN) &&
+      Board.isNeighbor(fromAN, toAN, Selector.isTwoPlayer(state)) &&
       Selector.isEnemyUnitAt(player.id, toAN, state),
     label: (moveState, coinInstances) => {
       const move = Resolver.move(moveState.moveKey);
