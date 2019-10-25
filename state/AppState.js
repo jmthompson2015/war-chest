@@ -19,7 +19,7 @@ AppState.create = ({
   currentHandCallback = null,
   currentMoves = [],
   currentMove = null,
-  currentInputCallback = null,
+  inputCallbackStack = [],
 
   playerToBag = {},
   playerToDiscardFacedown = {},
@@ -51,7 +51,7 @@ AppState.create = ({
     currentHandCallback,
     currentMoves,
     currentMove,
-    currentInputCallback,
+    inputCallbackStack,
 
     playerToBag,
     playerToDiscardFacedown,

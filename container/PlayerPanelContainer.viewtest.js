@@ -1,6 +1,7 @@
 /* eslint no-console: ["error", { allow: ["log"] }] */
 
 import ActionCreator from "../state/ActionCreator.js";
+import PlayerState from "../state/PlayerState.js";
 import Selector from "../state/Selector.js";
 
 import MoveGenerator from "../model/MoveGenerator.js";
@@ -19,12 +20,26 @@ const myInputCallback = moveState => {
 };
 
 const store = TestData.createStore();
+
+const oldPlayer1 = Selector.player(1, store.getState());
+const newPlayer1 = PlayerState.create({
+  id: oldPlayer1.id,
+  name: oldPlayer1.name,
+  teamKey: oldPlayer1.teamKey,
+  isComputer: false,
+  strategy: "HumanPlayerStrategy"
+});
+const oldPlayers = store.getState().playerInstances;
+const newPlayers = R.assoc(newPlayer1.id, newPlayer1, oldPlayers);
+newPlayers[newPlayer1.id] = newPlayer1;
+store.dispatch(ActionCreator.setPlayers(Object.values(newPlayers)));
+
 store.dispatch(ActionCreator.setUnit("e2", 2)); // swordsman
 store.dispatch(ActionCreator.setUnit("d7", 22)); // archer
 store.dispatch(ActionCreator.setUnit("d7", 23)); // archer
 store.dispatch(ActionCreator.setCurrentPlayer(1));
 store.dispatch(ActionCreator.setCurrentHandCallback(myHandOnClick));
-store.dispatch(ActionCreator.setCurrentInputCallback(myInputCallback));
+store.dispatch(ActionCreator.pushInputCallback(myInputCallback));
 const state = store.getState();
 
 const playerId = 1;

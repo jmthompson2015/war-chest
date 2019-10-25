@@ -23,6 +23,10 @@ ActionCreator.handToBoard = makeActionCreator(ActionType.HAND_TO_BOARD, "playerI
 
 ActionCreator.moveAUnit = makeActionCreator(ActionType.MOVE_A_UNIT, "playerId", "fromAN", "toAN");
 
+ActionCreator.popInputCallback = makeActionCreator(ActionType.POP_INPUT_CALLBACK);
+
+ActionCreator.pushInputCallback = makeActionCreator(ActionType.PUSH_INPUT_CALLBACK, "callback");
+
 ActionCreator.refillBag = makeActionCreator(ActionType.REFILL_BAG, "playerId");
 
 ActionCreator.removeFromPlayerArray = (arrayName, playerId, coinId) => {
@@ -33,11 +37,6 @@ ActionCreator.setControl = makeActionCreator(ActionType.SET_CONTROL, "an", "cont
 
 ActionCreator.setCurrentHandCallback = makeActionCreator(
   ActionType.SET_CURRENT_HAND_CALLBACK,
-  "callback"
-);
-
-ActionCreator.setCurrentInputCallback = makeActionCreator(
-  ActionType.SET_CURRENT_INPUT_CALLBACK,
   "callback"
 );
 

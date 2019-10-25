@@ -14,7 +14,7 @@ function mapStateToProps(state, ownProps) {
 
   if (Selector.isCurrentPlayer(playerId, state) && Selector.isHumanPlayer(playerId, state)) {
     handOnClick = Selector.currentHandCallback(state);
-    inputCallback = Selector.currentInputCallback(state);
+    inputCallback = Selector.peekInputCallback(state);
     moveStates = Selector.currentMoves(state);
     paymentCoin = Selector.currentPaymentCoin(state);
   }
@@ -42,11 +42,10 @@ function mapStateToProps(state, ownProps) {
 
 const mapDispatchToProps = dispatch => ({
   handOnClickWithCallback: (coinId, currentHandCallback) => {
-    dispatch(ActionCreator.setCurrentPaymentCoin(coinId));
     currentHandCallback(coinId);
   },
   inputCallbackWithCallback: (moveState, currentInputCallback) => {
-    dispatch(ActionCreator.setCurrentMove(moveState));
+    dispatch(ActionCreator.popInputCallback());
     currentInputCallback(moveState);
   }
 });

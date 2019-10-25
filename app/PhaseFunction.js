@@ -31,7 +31,6 @@ const advanceCurrentPlayer = store => {
   store.dispatch(ActionCreator.setCurrentHandCallback(null));
   store.dispatch(ActionCreator.setCurrentMoves([]));
   store.dispatch(ActionCreator.setCurrentMove(null));
-  store.dispatch(ActionCreator.setCurrentInputCallback(null));
   store.dispatch(ActionCreator.setUserMessage(null));
 };
 

@@ -103,7 +103,7 @@ QUnit.test("addToPlayerSupply()", assert => {
 QUnit.test("all action types", assert => {
   // Setup.
   const actionTypeKeys = Object.getOwnPropertyNames(ActionType);
-  assert.equal(actionTypeKeys.length, 25);
+  assert.equal(actionTypeKeys.length, 26);
 
   // Run / Verify.
   actionTypeKeys.forEach(key => {

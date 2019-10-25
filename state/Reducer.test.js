@@ -167,6 +167,42 @@ QUnit.test("moveAUnit()", assert => {
   assert.equal(anToTokens[toAN].join(), coinId);
 });
 
+QUnit.test("popInputCallback()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const callback = 12;
+  const action0 = ActionCreator.pushInputCallback(callback);
+  const state = Reducer.root(state0, action0);
+  const action = ActionCreator.popInputCallback(callback);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  const stack = result.inputCallbackStack;
+  assert.ok(stack);
+  assert.equal(Array.isArray(stack), true);
+  assert.equal(stack.length, 0);
+});
+
+QUnit.test("pushInputCallback()", assert => {
+  // Setup.
+  const state = AppState.create();
+  const callback = 12;
+  const action = ActionCreator.pushInputCallback(callback);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  const stack = result.inputCallbackStack;
+  assert.ok(stack);
+  assert.equal(Array.isArray(stack), true);
+  assert.equal(stack[0], callback);
+});
+
 QUnit.test("refillBag()", assert => {
   // Setup.
   const state0 = AppState.create();
@@ -240,20 +276,6 @@ QUnit.test("setCurrentHandCallback()", assert => {
   // Verify.
   assert.ok(result);
   assert.equal(result.currentHandCallback, callback);
-});
-
-QUnit.test("setCurrentInputCallback()", assert => {
-  // Setup.
-  const state = AppState.create();
-  const callback = 12;
-  const action = ActionCreator.setCurrentInputCallback(callback);
-
-  // Run.
-  const result = Reducer.root(state, action);
-
-  // Verify.
-  assert.ok(result);
-  assert.equal(result.currentInputCallback, callback);
 });
 
 QUnit.test("setCurrentMove()", assert => {

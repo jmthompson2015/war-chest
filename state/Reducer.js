@@ -55,6 +55,7 @@ Reducer.root = (state, action) => {
   let newANToTokens;
   let newBag;
   let newCoins;
+  let newInputCallbackStack;
   let newMorgue;
   let newHand;
   let newPlayers;
@@ -118,6 +119,14 @@ Reducer.root = (state, action) => {
       newANToTokens = R.dissoc(action.fromAN, state.anToTokens);
       newANToTokens = assoc(action.toAN, unit, newANToTokens);
       return assoc("anToTokens", newANToTokens, state);
+    case ActionType.POP_INPUT_CALLBACK:
+      console.log(`Reducer POP_INPUT_CALLBACK`);
+      newInputCallbackStack = R.init(state.inputCallbackStack);
+      return assoc("inputCallbackStack", newInputCallbackStack, state);
+    case ActionType.PUSH_INPUT_CALLBACK:
+      console.log(`Reducer PUSH_INPUT_CALLBACK callback isNil ? ${R.isNil(action.callback)}`);
+      newInputCallbackStack = R.append(action.callback, state.inputCallbackStack);
+      return assoc("inputCallbackStack", newInputCallbackStack, state);
     case ActionType.REFILL_BAG:
       oldDiscardFacedown = state.playerToDiscardFacedown[action.playerId] || [];
       oldDiscardFaceup = state.playerToDiscardFaceup[action.playerId] || [];
@@ -141,11 +150,6 @@ Reducer.root = (state, action) => {
     case ActionType.SET_CURRENT_HAND_CALLBACK:
       console.log(`Reducer SET_CURRENT_HAND_CALLBACK callback isNil ? ${R.isNil(action.callback)}`);
       return assoc("currentHandCallback", action.callback, state);
-    case ActionType.SET_CURRENT_INPUT_CALLBACK:
-      console.log(
-        `Reducer SET_CURRENT_INPUT_CALLBACK callback isNil ? ${R.isNil(action.callback)}`
-      );
-      return assoc("currentInputCallback", action.callback, state);
     case ActionType.SET_CURRENT_MOVE:
       console.log(`Reducer SET_CURRENT_MOVE moveState = ${JSON.stringify(action.moveState)}`);
       return assoc("currentMove", action.moveState, state);

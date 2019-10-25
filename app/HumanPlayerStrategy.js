@@ -10,7 +10,7 @@ HumanPlayerStrategy.choosePaymentCoin = (coinKeys, store) =>
 
 HumanPlayerStrategy.chooseMove = (moveStates, store) =>
   new Promise(resolve => {
-    store.dispatch(ActionCreator.setCurrentInputCallback(resolve));
+    store.dispatch(ActionCreator.pushInputCallback(resolve));
     store.dispatch(ActionCreator.setUserMessage("Select an Action."));
   });
 

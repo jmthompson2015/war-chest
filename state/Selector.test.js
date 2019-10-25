@@ -695,6 +695,21 @@ QUnit.test("nextPlayerId()", assert => {
   assert.equal(Selector.nextPlayerId(state2), 3);
 });
 
+QUnit.test("peekInputCallback()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const callback = 12;
+  const action = ActionCreator.pushInputCallback(callback);
+  const state = Reducer.root(state0, action);
+
+  // Run.
+  const result = Selector.peekInputCallback(state);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result, callback);
+});
+
 QUnit.test("playerForCard() 1", assert => {
   // Setup.
   const state0 = AppState.create();

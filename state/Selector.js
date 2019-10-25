@@ -75,8 +75,6 @@ Selector.controlANs = (teamKey, state) => {
 
 Selector.currentHandCallback = state => state.currentHandCallback;
 
-Selector.currentInputCallback = state => state.currentInputCallback;
-
 Selector.currentMove = state => state.currentMove;
 
 Selector.currentMoves = state => state.currentMoves || [];
@@ -192,6 +190,8 @@ Selector.isUnoccupied = (an, state) => {
 
   return R.isNil(unit);
 };
+
+Selector.peekInputCallback = state => state.inputCallbackStack[state.inputCallbackStack.length - 1];
 
 Selector.player = (playerId, state) => state.playerInstances[playerId];
 
