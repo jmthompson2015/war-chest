@@ -142,8 +142,23 @@ PhaseFunction.chooseMove = (moveStates, paymentCoin, resolve, store, callback) =
       })
       .then(() => {
         const moveState = Selector.currentMove(store.getState());
+        const recruitCoin = moveState.recruitCoinId
+          ? Selector.coin(moveState.recruitCoinId, store.getState())
+          : undefined;
 
-        if (paymentCoin.coinKey === UnitCoin.SWORDSMAN && moveState.moveKey === Move.ATTACK) {
+        if (
+          recruitCoin &&
+          recruitCoin.coinKey === UnitCoin.MERCENARY &&
+          moveState.moveKey === Move.RECRUIT
+        ) {
+          store.dispatch(ActionCreator.setCurrentPaymentCoin(recruitCoin.id));
+          PhaseFunction.executeMercenaryAttribute(store).then(() => {
+            callback(resolve, store);
+          });
+        } else if (
+          paymentCoin.coinKey === UnitCoin.SWORDSMAN &&
+          moveState.moveKey === Move.ATTACK
+        ) {
           PhaseFunction.executeSwordsmanAttribute(store).then(() => {
             callback(resolve, store);
           });
@@ -153,6 +168,29 @@ PhaseFunction.chooseMove = (moveStates, paymentCoin, resolve, store, callback) =
       });
   }
 };
+
+PhaseFunction.executeMercenaryAttribute = store =>
+  new Promise(resolve => {
+    const currentPlayer = Selector.currentPlayer(store.getState());
+    const strategy = StrategyResolver.resolve(currentPlayer.strategy);
+    const paymentCoin = Selector.currentPaymentCoin(store.getState());
+    const delay = Selector.delay(store.getState());
+    const moveStates = MoveGenerator.generateManeuvers(
+      currentPlayer,
+      paymentCoin,
+      store.getState()
+    );
+    store.dispatch(ActionCreator.setCurrentMoves(moveStates));
+
+    if (!R.isEmpty(moveStates)) {
+      strategy.chooseMove(moveStates, store, delay).then(moveState => {
+        if (!R.isNil(moveState)) {
+          MoveFunction.execute(moveState, store);
+        }
+        resolve();
+      });
+    }
+  });
 
 PhaseFunction.executeSwordsmanAttribute = store =>
   new Promise(resolve => {

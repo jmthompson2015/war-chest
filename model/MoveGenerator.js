@@ -187,6 +187,15 @@ MoveGenerator.generateRecruits = (player, paymentCoin, state) => {
   return R.reduce(reduceFunction, [], tableau);
 };
 
+MoveGenerator.generateManeuvers = (player, paymentCoin, state) => {
+  const moveAUnits = MoveGenerator.generateMoveAUnits(player, paymentCoin, state);
+  const controls = MoveGenerator.generateControls(player, paymentCoin, state);
+  const attacks = MoveGenerator.generateAttacks(player, paymentCoin, state);
+  // const tactics = MoveGenerator.generateTactics();
+
+  return R.concat(moveAUnits, R.concat(controls, attacks));
+};
+
 MoveGenerator.generateForCoin = (player, paymentCoin, state) => {
   const moves = Move.values();
 
