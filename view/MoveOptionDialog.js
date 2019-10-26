@@ -90,6 +90,7 @@ class MoveOptionDialog extends React.Component {
     const panelClass = "bg-wc-medium f6";
 
     return React.createElement(ReactComponent.OptionPane, {
+      key: `${customKey}-${moveStates.length}`,
       panelClass,
       title: "Select Action",
       message,

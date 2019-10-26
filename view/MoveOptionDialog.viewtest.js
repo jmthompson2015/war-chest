@@ -2,6 +2,8 @@
 
 import ArrayUtils from "../util/ArrayUtilities.js";
 
+import Resolver from "../artifact/Resolver.js";
+
 import Selector from "../state/Selector.js";
 
 import MoveGenerator from "../model/MoveGenerator.js";
@@ -18,7 +20,8 @@ const store = TestData.createStore();
 const state = store.getState();
 const player1 = Selector.player(1, state);
 const hand1 = Selector.coins(Selector.hand(1, state), state);
-const paymentCoin1 = ArrayUtils.randomElement(hand1);
+const paymentCoinState1 = ArrayUtils.randomElement(hand1);
+const paymentCoin1 = Resolver.coin(paymentCoinState1.coinKey);
 const moveStates1 = MoveGenerator.generateForCoin(player1, paymentCoin1, state);
 const element1 = React.createElement(MoveOptionDialog, {
   callback: myCallback,
@@ -35,7 +38,8 @@ ReactDOM.render(element1, document.getElementById("inputArea1"));
 
 const player2 = Selector.player(2, state);
 const hand2 = Selector.coins(Selector.hand(2, state), state);
-const paymentCoin2 = ArrayUtils.randomElement(hand2);
+const paymentCoinState2 = ArrayUtils.randomElement(hand2);
+const paymentCoin2 = Resolver.coin(paymentCoinState2.coinKey);
 const moveStates2 = MoveGenerator.generateForCoin(player2, paymentCoin2, state);
 const element2 = React.createElement(MoveOptionDialog, {
   callback: myCallback,

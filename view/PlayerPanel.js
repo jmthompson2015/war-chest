@@ -1,3 +1,5 @@
+import Resolver from "../artifact/Resolver.js";
+
 import CoinState from "../state/CoinState.js";
 
 import CoinsUI from "./CoinsUI.js";
@@ -73,8 +75,9 @@ const createInitiativeUI = (initiativeTeamKey, resourceBase) => {
   });
 };
 
-const createInputArea = (callback, coinInstances, moveStates, paymentCoin, player) => {
+const createInputArea = (callback, coinInstances, moveStates, paymentCoinState, player) => {
   const customKey = `inputArea${player.id}`;
+  const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
   let element;
 
   if (!R.isEmpty(moveStates)) {
@@ -148,7 +151,7 @@ class PlayerPanel extends React.Component {
       inputCallback,
       isInitiativePlayer,
       moveStates,
-      paymentCoin,
+      paymentCoinState,
       resourceBase
     } = this.props;
 
@@ -165,7 +168,7 @@ class PlayerPanel extends React.Component {
     }
 
     if (!R.isEmpty(hand)) {
-      const handUI = createHandUI(hand, paymentCoin, resourceBase, this.handOnClick);
+      const handUI = createHandUI(hand, paymentCoinState, resourceBase, this.handOnClick);
       cells = R.append(handUI, cells);
     }
 
@@ -182,12 +185,12 @@ class PlayerPanel extends React.Component {
     const tableauUI = React.createElement(TableauUI, { key: "tableau", tableau, resourceBase });
     cells = R.append(tableauUI, cells);
 
-    if (!R.isNil(paymentCoin)) {
+    if (!R.isNil(paymentCoinState)) {
       const inputArea = createInputArea(
         inputCallback,
         coinInstances,
         moveStates,
-        paymentCoin,
+        paymentCoinState,
         player
       );
       cells = R.append(inputArea, cells);
@@ -197,6 +200,7 @@ class PlayerPanel extends React.Component {
     const title = `Player ${player.name}`;
 
     return React.createElement(TitledElement, {
+      key: `playerPanel${player.id}`,
       element,
       title,
       className: "bg-wc-light center",
@@ -222,7 +226,7 @@ PlayerPanel.propTypes = {
   inputCallback: PropTypes.func,
   isInitiativePlayer: PropTypes.bool,
   moveStates: PropTypes.arrayOf(PropTypes.shape()),
-  paymentCoin: PropTypes.shape(),
+  paymentCoinState: PropTypes.shape(),
   resourceBase: PropTypes.string
 };
 
@@ -233,7 +237,7 @@ PlayerPanel.defaultProps = {
   inputCallback: () => {},
   isInitiativePlayer: false,
   moveStates: undefined,
-  paymentCoin: undefined,
+  paymentCoinState: undefined,
   resourceBase: Endpoint.NETWORK_RESOURCE
 };
 

@@ -171,16 +171,13 @@ const MoveFunction = {
   claimInitiative: {
     execute: executeClaimInitiative,
     isLegal: (player, paymentCoin, state) =>
-      Selector.isInHand(player.id, paymentCoin.id, state) &&
-      !Selector.isInitiativePlayer(player.id, state) &&
-      !Selector.initiativeChangedThisRound(state),
+      !Selector.isInitiativePlayer(player.id, state) && !Selector.initiativeChangedThisRound(state),
     label: labelClaimOrPass,
     key: "claimInitiative"
   },
   recruit: {
     execute: executeRecruit,
     isLegal: (player, paymentCoin, recruitCoin, state) =>
-      Selector.isInHand(player.id, paymentCoin.id, state) &&
       Resolver.isUnitCoin(recruitCoin.coinKey) &&
       Selector.isInSupply(player.id, recruitCoin.id, state),
     label: (moveState, coinInstances) => {
@@ -193,14 +190,13 @@ const MoveFunction = {
   },
   pass: {
     execute: executePass,
-    isLegal: (player, paymentCoin, state) => Selector.isInHand(player.id, paymentCoin.id, state),
+    isLegal: () => true,
     label: labelClaimOrPass,
     key: "pass"
   },
   deploy: {
     execute: executeDeploy,
     isLegal: (player, paymentCoin, an, state) =>
-      Selector.isInHand(player.id, paymentCoin.id, state) &&
       Resolver.isUnitCoin(paymentCoin.coinKey) &&
       Selector.canDeploy(paymentCoin.coinKey, state) &&
       Selector.isControlledBy(an, player.teamKey, state) &&
@@ -211,7 +207,6 @@ const MoveFunction = {
   bolster: {
     execute: executeBolster,
     isLegal: (player, paymentCoin, an, state) =>
-      Selector.isInHand(player.id, paymentCoin.id, state) &&
       Resolver.isUnitCoin(paymentCoin.coinKey) &&
       Selector.isUnitType(an, paymentCoin.coinKey, state),
     label: labelDeployOrBolster,
@@ -220,7 +215,6 @@ const MoveFunction = {
   moveAUnit: {
     execute: executeMoveAUnit,
     isLegal: (player, paymentCoin, fromAN, toAN, state) =>
-      Selector.isInHand(player.id, paymentCoin.id, state) &&
       Selector.isUnitType(fromAN, paymentCoin.coinKey, state) &&
       Board.isNeighbor(fromAN, toAN, Selector.isTwoPlayer(state)) &&
       Selector.isUnoccupied(toAN, state),
@@ -235,7 +229,6 @@ const MoveFunction = {
   control: {
     execute: executeControl,
     isLegal: (player, paymentCoin, an, state) =>
-      Selector.isInHand(player.id, paymentCoin.id, state) &&
       Resolver.isUnitCoin(paymentCoin.coinKey) &&
       Selector.isUnitType(an, paymentCoin.coinKey, state) &&
       Selector.isControlLocation(an, state) &&
@@ -249,7 +242,6 @@ const MoveFunction = {
   attack: {
     execute: executeAttack,
     isLegal: (player, paymentCoin, fromAN, toAN, state) =>
-      Selector.isInHand(player.id, paymentCoin.id, state) &&
       UnitCard.canAttack(paymentCoin.coinKey) &&
       Selector.canBeAttacked(fromAN, toAN, state) &&
       Selector.isUnitType(fromAN, paymentCoin.coinKey, state) &&

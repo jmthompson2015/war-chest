@@ -10,13 +10,13 @@ function mapStateToProps(state, ownProps) {
   let handOnClick;
   let inputCallback;
   let moveStates;
-  let paymentCoin;
+  let paymentCoinState;
 
   if (Selector.isCurrentPlayer(playerId, state) && Selector.isHumanPlayer(playerId, state)) {
     handOnClick = Selector.currentHandCallback(state);
     inputCallback = Selector.peekInputCallback(state);
     moveStates = Selector.currentMoves(state);
-    paymentCoin = Selector.currentPaymentCoin(state);
+    paymentCoinState = Selector.currentPaymentCoin(state);
   }
 
   return {
@@ -35,7 +35,7 @@ function mapStateToProps(state, ownProps) {
     inputCallback,
     isInitiativePlayer: Selector.isInitiativePlayer(player.id, state),
     moveStates,
-    paymentCoin,
+    paymentCoinState,
     resourceBase: ownProps.resourceBase
   };
 }

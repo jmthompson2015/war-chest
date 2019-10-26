@@ -1,5 +1,8 @@
 import ArrayUtils from "../util/ArrayUtilities.js";
 
+import Move from "../artifact/Move.js";
+import UnitCoin from "../artifact/UnitCoin.js";
+
 import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
 
@@ -7,6 +10,8 @@ import MoveGenerator from "../model/MoveGenerator.js";
 import MoveFunction from "../model/MoveFunction.js";
 
 import StrategyResolver from "./StrategyResolver.js";
+
+const PhaseFunction = {};
 
 const advanceCurrentPlayer = store => {
   const oldPlayer = Selector.currentPlayer(store.getState());
@@ -70,66 +75,107 @@ const hasCoinsInHand = state => {
   return R.reduce(reduceFunction, false, playerIds);
 };
 
+const executePlayCoin = (resolve, store, callback) => {
+  const currentPlayer = Selector.currentPlayer(store.getState());
+  const strategy = StrategyResolver.resolve(currentPlayer.strategy);
+  const hand = Selector.hand(currentPlayer.id, store.getState());
+
+  if (hand.length > 0) {
+    const delay = Selector.delay(store.getState());
+    strategy.choosePaymentCoin(hand, store, delay).then(paymentCoinId => {
+      if (!R.isNil(paymentCoinId)) {
+        store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
+        const paymentCoin = Selector.coin(paymentCoinId, store.getState());
+        const moveStates = MoveGenerator.generateForCoin(
+          currentPlayer,
+          paymentCoin,
+          store.getState()
+        );
+        store.dispatch(ActionCreator.setCurrentMoves(moveStates));
+
+        PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
+      }
+    });
+  }
+};
+
 const executePlayCoins = (resolve, store) => {
   advanceCurrentPlayer(store);
 
   const hasCoins = hasCoinsInHand(store.getState());
 
-  if (!hasCoins) {
-    resolve();
+  if (hasCoins) {
+    executePlayCoin(resolve, store, executePlayCoins);
   } else {
+    resolve();
+  }
+};
+
+PhaseFunction.drawThreeCoins = {
+  execute: store =>
+    new Promise(resolve => {
+      executeDrawThreeCoins(resolve, store);
+    })
+};
+
+PhaseFunction.playCoins = {
+  execute: store =>
+    new Promise(resolve => {
+      executePlayCoins(resolve, store);
+    })
+};
+
+PhaseFunction.chooseMove = (moveStates, paymentCoin, resolve, store, callback) => {
+  if (!R.isEmpty(moveStates)) {
     const currentPlayer = Selector.currentPlayer(store.getState());
     const strategy = StrategyResolver.resolve(currentPlayer.strategy);
-    const hand = Selector.hand(currentPlayer.id, store.getState());
+    const delay = Selector.delay(store.getState());
 
-    if (hand.length > 0) {
-      const delay = Selector.delay(store.getState());
-      strategy.choosePaymentCoin(hand, store, delay).then(paymentCoinId => {
-        if (!R.isNil(paymentCoinId)) {
-          store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
-          const paymentCoin = Selector.coin(paymentCoinId, store.getState());
-          const moveStates = MoveGenerator.generateForCoin(
-            currentPlayer,
-            paymentCoin,
-            store.getState()
-          );
-          store.dispatch(ActionCreator.setCurrentMoves(moveStates));
+    strategy
+      .chooseMove(moveStates, store, delay)
+      .then(moveState => {
+        store.dispatch(ActionCreator.setCurrentMove(moveState));
 
-          if (!R.isEmpty(moveStates)) {
-            strategy
-              .chooseMove(moveStates, store, delay)
-              .then(moveState => {
-                store.dispatch(ActionCreator.setCurrentMove(moveState));
-                if (!R.isNil(moveState)) {
-                  MoveFunction.execute(moveState, store);
-                }
-              })
-              .then(() => {
-                executePlayCoins(resolve, store);
-              });
-          }
+        if (!R.isNil(moveState)) {
+          MoveFunction.execute(moveState, store);
+        }
+      })
+      .then(() => {
+        const moveState = Selector.currentMove(store.getState());
+
+        if (paymentCoin.coinKey === UnitCoin.SWORDSMAN && moveState.moveKey === Move.ATTACK) {
+          PhaseFunction.executeSwordsmanAttribute(store).then(() => {
+            callback(resolve, store);
+          });
+        } else {
+          callback(resolve, store);
         }
       });
-    }
   }
 };
 
-const PhaseFunction = {
-  drawThreeCoins: {
-    execute: store =>
-      new Promise(resolve => {
-        executeDrawThreeCoins(resolve, store);
-      }),
-    key: "drawThreeCoins"
-  },
-  playCoins: {
-    execute: store =>
-      new Promise(resolve => {
-        executePlayCoins(resolve, store);
-      }),
-    key: "playCoins"
-  }
-};
+PhaseFunction.executeSwordsmanAttribute = store =>
+  new Promise(resolve => {
+    const currentPlayer = Selector.currentPlayer(store.getState());
+    const strategy = StrategyResolver.resolve(currentPlayer.strategy);
+    const paymentCoin = Selector.currentPaymentCoin(store.getState());
+    const delay = Selector.delay(store.getState());
+    const moveStates = MoveGenerator.generateMoveAUnits(
+      currentPlayer,
+      paymentCoin,
+      store.getState()
+    );
+    store.dispatch(ActionCreator.setCurrentMoves(moveStates));
+
+    if (!R.isEmpty(moveStates)) {
+      strategy.chooseMove(moveStates, store, delay).then(moveState => {
+        if (!R.isNil(moveState)) {
+          MoveFunction.execute(moveState, store);
+        }
+        resolve();
+      });
+    }
+  });
 
 Object.freeze(PhaseFunction);
 
