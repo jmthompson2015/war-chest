@@ -26,7 +26,7 @@ const createInitialInput = (coinInstances, customKey, clientProps, moveStates, o
     clientProps
   );
   const mapFunction = (moveState, i) => {
-    const customKey2 = `${customKey}${moveState.playerId}-${moveState.moveKey}-${i}`;
+    const customKey2 = `${customKey}-${moveState.playerId}-${moveState.moveKey}-${i}`;
     const input = ReactDOMFactories.input(
       R.merge(inputProps, { key: customKey2, id: i, "data-index": i })
     );
@@ -38,8 +38,9 @@ const createInitialInput = (coinInstances, customKey, clientProps, moveStates, o
     return RU.createRow(cells, `row${moveState.playerId}-${moveState.moveKey}-${i}`);
   };
   const rows = mapIndexed(mapFunction, moveStates);
+  const customKey3 = R.map(m => m.moveKey, moveStates);
 
-  return RU.createTable(rows, undefined, "f6 tl");
+  return RU.createTable(rows, `initialInput-${customKey3}`, "f6 tl");
 };
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,10 +88,11 @@ class MoveOptionDialog extends React.Component {
       this.selectionChanged
     );
     const buttons = createButtons(this.cancel, this.ok);
+    const customKey2 = R.map(m => m.moveKey, moveStates);
     const panelClass = "bg-wc-medium f6";
 
     return React.createElement(ReactComponent.OptionPane, {
-      key: `${customKey}-${moveStates.length}`,
+      key: `${customKey}-${customKey2}`,
       panelClass,
       title: "Select Action",
       message,

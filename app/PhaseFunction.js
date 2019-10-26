@@ -39,19 +39,23 @@ const advanceCurrentPlayer = store => {
   store.dispatch(ActionCreator.setUserMessage(null));
 };
 
+const drawCoin = (playerId, store) => {
+  let bag = Selector.bag(playerId, store.getState());
+
+  if (R.isEmpty(bag)) {
+    store.dispatch(ActionCreator.refillBag(playerId));
+    bag = Selector.bag(playerId, store.getState());
+  }
+
+  const coinId = ArrayUtils.randomElement(bag);
+  store.dispatch(
+    ActionCreator.transferBetweenPlayerArrays("playerToBag", "playerToHand", playerId, coinId)
+  );
+};
+
 const drawThreeCoins = (playerId, store) => {
   for (let i = 0; i < 3; i += 1) {
-    let bag = Selector.bag(playerId, store.getState());
-
-    if (R.isEmpty(bag)) {
-      store.dispatch(ActionCreator.refillBag(playerId));
-      bag = Selector.bag(playerId, store.getState());
-    }
-
-    const coinKey = ArrayUtils.randomElement(bag);
-    store.dispatch(
-      ActionCreator.transferBetweenPlayerArrays("playerToBag", "playerToHand", playerId, coinKey)
-    );
+    drawCoin(playerId, store);
   }
 };
 
@@ -162,6 +166,13 @@ PhaseFunction.chooseMove = (moveStates, paymentCoin, resolve, store, callback) =
           PhaseFunction.executeSwordsmanAttribute(store).then(() => {
             callback(resolve, store);
           });
+        } else if (
+          paymentCoin.coinKey === UnitCoin.WARRIOR_PRIEST &&
+          [Move.ATTACK, Move.CONTROL].includes(moveState.moveKey)
+        ) {
+          PhaseFunction.executeWarriorPriestAttribute(store).then(() => {
+            callback(resolve, store);
+          });
         } else {
           callback(resolve, store);
         }
@@ -203,6 +214,28 @@ PhaseFunction.executeSwordsmanAttribute = store =>
       paymentCoin,
       store.getState()
     );
+    store.dispatch(ActionCreator.setCurrentMoves(moveStates));
+
+    if (!R.isEmpty(moveStates)) {
+      strategy.chooseMove(moveStates, store, delay).then(moveState => {
+        if (!R.isNil(moveState)) {
+          MoveFunction.execute(moveState, store);
+        }
+        resolve();
+      });
+    }
+  });
+
+PhaseFunction.executeWarriorPriestAttribute = store =>
+  new Promise(resolve => {
+    const currentPlayer = Selector.currentPlayer(store.getState());
+    const strategy = StrategyResolver.resolve(currentPlayer.strategy);
+    drawCoin(currentPlayer.id, store);
+    const hand = Selector.hand(currentPlayer.id, store.getState());
+    const paymentCoin = Selector.coin(R.last(hand), store.getState());
+    store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoin.id));
+    const delay = Selector.delay(store.getState());
+    const moveStates = MoveGenerator.generateForCoin(currentPlayer, paymentCoin, store.getState());
     store.dispatch(ActionCreator.setCurrentMoves(moveStates));
 
     if (!R.isEmpty(moveStates)) {
