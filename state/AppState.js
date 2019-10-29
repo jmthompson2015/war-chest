@@ -12,6 +12,8 @@ AppState.create = ({
   winner = null,
 
   round = 0,
+  currentDamageCallback = null,
+  currentDamageTargetKey = null,
   currentPlayerOrder = null,
   currentPhaseKey = null,
   currentPlayerId = null,
@@ -44,6 +46,8 @@ AppState.create = ({
     winner,
 
     round,
+    currentDamageCallback,
+    currentDamageTargetKey,
     currentPlayerOrder,
     currentPhaseKey,
     currentPlayerId,

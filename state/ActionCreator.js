@@ -35,6 +35,16 @@ ActionCreator.removeFromPlayerArray = (arrayName, playerId, coinId) => {
 
 ActionCreator.setControl = makeActionCreator(ActionType.SET_CONTROL, "an", "controlKey");
 
+ActionCreator.setCurrentDamageCallback = makeActionCreator(
+  ActionType.SET_CURRENT_DAMAGE_CALLBACK,
+  "callback"
+);
+
+ActionCreator.setCurrentDamageTarget = makeActionCreator(
+  ActionType.SET_CURRENT_DAMAGE_TARGET,
+  "damageTargetKey"
+);
+
 ActionCreator.setCurrentHandCallback = makeActionCreator(
   ActionType.SET_CURRENT_HAND_CALLBACK,
   "callback"

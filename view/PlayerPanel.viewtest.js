@@ -1,5 +1,7 @@
 /* eslint no-console: ["error", { allow: ["log"] }] */
 
+import DamageTarget from "../artifact/DamageTarget.js";
+
 import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
 
@@ -8,6 +10,12 @@ import TestData from "../model/TestData.js";
 
 import Endpoint from "./Endpoint.js";
 import PlayerPanel from "./PlayerPanel.js";
+
+function damageCallback({ playerId, damageTarget }) {
+  console.log(
+    `damageCallback() playerId = ${playerId} damageTarget = ${JSON.stringify(damageTarget)}`
+  );
+}
 
 const handOnClick = ({ coinId, coinKey, eventSource, playerId }) => {
   console.log(`handOnClick()`);
@@ -47,8 +55,8 @@ const tableau = Selector.tableau(1, state);
 const initiativePlayer = Selector.initiativePlayer(state);
 const isInitiativePlayer = player.id === initiativePlayer.id;
 
-const paymentCoin = hand[1];
-const moveStates = MoveGenerator.generateForCoin(player, paymentCoin, state);
+const paymentCoinState = hand[1];
+const moveStates = MoveGenerator.generateForCoin(player, paymentCoinState, state);
 
 const element = React.createElement(PlayerPanel, {
   coinInstances: state.coinInstances,
@@ -60,11 +68,14 @@ const element = React.createElement(PlayerPanel, {
   supply,
   tableau,
 
+  customKey: "panel1",
+  damageCallback,
+  damageTargets: DamageTarget.values(),
   handOnClick,
   inputCallback,
   isInitiativePlayer,
   moveStates,
-  paymentCoin,
+  paymentCoinState,
   resourceBase: Endpoint.LOCAL_RESOURCE
 });
 ReactDOM.render(element, document.getElementById("panel"));

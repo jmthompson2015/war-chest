@@ -147,6 +147,14 @@ Reducer.root = (state, action) => {
     case ActionType.SET_CONTROL:
       newAnToControl = assoc(action.an, action.controlKey, state.anToControl);
       return assoc("anToControl", newAnToControl, state);
+    case ActionType.SET_CURRENT_DAMAGE_CALLBACK:
+      console.log(
+        `Reducer SET_CURRENT_DAMAGE_CALLBACK callback isNil ? ${R.isNil(action.callback)}`
+      );
+      return assoc("currentDamageCallback", action.callback, state);
+    case ActionType.SET_CURRENT_DAMAGE_TARGET:
+      console.log(`Reducer SET_CURRENT_DAMAGE_TARGET damageTargetKey = ${action.damageTargetKey}`);
+      return assoc("currentDamageTargetKey", action.damageTargetKey, state);
     case ActionType.SET_CURRENT_HAND_CALLBACK:
       console.log(`Reducer SET_CURRENT_HAND_CALLBACK callback isNil ? ${R.isNil(action.callback)}`);
       return assoc("currentHandCallback", action.callback, state);

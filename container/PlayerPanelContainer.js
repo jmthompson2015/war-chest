@@ -1,3 +1,5 @@
+import DamageTarget from "../artifact/DamageTarget.js";
+
 import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
 
@@ -7,12 +9,18 @@ function mapStateToProps(state, ownProps) {
   const { playerId } = ownProps;
   const player = Selector.player(playerId, state);
 
+  let damageCallback;
+  let damageTargets;
   let handOnClick;
   let inputCallback;
   let moveStates;
   let paymentCoinState;
 
   if (Selector.isCurrentPlayer(playerId, state) && Selector.isHumanPlayer(playerId, state)) {
+    damageCallback = Selector.currentDamageCallback(state);
+    if (damageCallback) {
+      damageTargets = DamageTarget.values();
+    }
     handOnClick = Selector.currentHandCallback(state);
     inputCallback = Selector.peekInputCallback(state);
     moveStates = Selector.currentMoves(state);
@@ -31,6 +39,8 @@ function mapStateToProps(state, ownProps) {
     supply: Selector.coins(Selector.supply(player.id, state), state),
     tableau: Selector.tableau(player.id, state),
 
+    damageCallback,
+    damageTargets,
     handOnClick,
     inputCallback,
     isInitiativePlayer: Selector.isInitiativePlayer(player.id, state),
@@ -41,12 +51,23 @@ function mapStateToProps(state, ownProps) {
 }
 
 const mapDispatchToProps = dispatch => ({
-  handOnClickWithCallback: (coinId, currentHandCallback) => {
-    currentHandCallback(coinId);
+  damageCallbackWithCallback: (playerId, damageTarget, currentDamageCallback) => {
+    dispatch(ActionCreator.setCurrentDamageCallback());
+    if (currentDamageCallback) {
+      currentDamageCallback(damageTarget.key);
+    }
   },
-  inputCallbackWithCallback: (moveState, currentInputCallback) => {
+  handOnClickWithCallback: (playerId, coinId, currentHandCallback) => {
+    dispatch(ActionCreator.setCurrentHandCallback());
+    if (currentHandCallback) {
+      currentHandCallback(coinId);
+    }
+  },
+  inputCallbackWithCallback: (playerId, moveState, currentInputCallback) => {
     dispatch(ActionCreator.popInputCallback());
-    currentInputCallback(moveState);
+    if (currentInputCallback) {
+      currentInputCallback(moveState);
+    }
   }
 });
 
@@ -55,11 +76,14 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
     ...ownProps,
     ...stateProps,
     ...dispatchProps,
-    handOnClick: ({ coinId }) => {
-      dispatchProps.handOnClickWithCallback(coinId, stateProps.handOnClick);
+    damageCallback: ({ playerId, damageTarget }) => {
+      dispatchProps.damageCallbackWithCallback(playerId, damageTarget, stateProps.damageCallback);
     },
-    inputCallback: ({ moveState }) => {
-      dispatchProps.inputCallbackWithCallback(moveState, stateProps.inputCallback);
+    handOnClick: ({ playerId, coinId }) => {
+      dispatchProps.handOnClickWithCallback(playerId, coinId, stateProps.handOnClick);
+    },
+    inputCallback: ({ playerId, moveState }) => {
+      dispatchProps.inputCallbackWithCallback(playerId, moveState, stateProps.inputCallback);
     }
   };
 };

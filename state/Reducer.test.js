@@ -264,6 +264,34 @@ QUnit.test("setControl()", assert => {
   assert.equal(result.anToControl[an], controlKey);
 });
 
+QUnit.test("setCurrentDamageCallback()", assert => {
+  // Setup.
+  const state = AppState.create();
+  const callback = 12;
+  const action = ActionCreator.setCurrentDamageCallback(callback);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.currentDamageCallback, callback);
+});
+
+QUnit.test("setCurrentDamageTarget()", assert => {
+  // Setup.
+  const state = AppState.create();
+  const damageTargetKey = 12;
+  const action = ActionCreator.setCurrentDamageTarget(damageTargetKey);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.currentDamageTargetKey, damageTargetKey);
+});
+
 QUnit.test("setCurrentHandCallback()", assert => {
   // Setup.
   const state = AppState.create();

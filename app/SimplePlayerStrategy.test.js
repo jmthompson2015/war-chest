@@ -1,3 +1,5 @@
+import DamageTarget from "../artifact/DamageTarget.js";
+
 import Selector from "../state/Selector.js";
 
 import MoveGenerator from "../model/MoveGenerator.js";
@@ -7,12 +9,11 @@ import SimplePlayerStrategy from "./SimplePlayerStrategy.js";
 
 QUnit.module("SimplePlayerStrategy");
 
-QUnit.test("choosePaymentCoin()", assert => {
+QUnit.test("chooseDamageTarget()", assert => {
   // Setup.
   const store = TestData.createStore();
+  const damageTargets = DamageTarget.values();
   const delay = 0;
-  const playerId = 1;
-  const hand = Selector.hand(playerId, store.getState());
 
   // Run.
   const done = assert.async();
@@ -20,11 +21,11 @@ QUnit.test("choosePaymentCoin()", assert => {
     assert.ok(true, "test resumed from async operation");
     // Verify.
     assert.ok(result);
-    assert.equal(hand.includes(result), true);
+    assert.equal(damageTargets.includes(result), true);
     done();
   };
 
-  SimplePlayerStrategy.choosePaymentCoin(hand, store, delay).then(callback);
+  SimplePlayerStrategy.chooseDamageTarget(damageTargets, store, delay).then(callback);
 });
 
 QUnit.test("chooseMove()", assert => {
@@ -51,6 +52,26 @@ QUnit.test("chooseMove()", assert => {
   };
 
   SimplePlayerStrategy.chooseMove(moveStates, store, delay).then(callback);
+});
+
+QUnit.test("choosePaymentCoin()", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const delay = 0;
+  const playerId = 1;
+  const hand = Selector.hand(playerId, store.getState());
+
+  // Run.
+  const done = assert.async();
+  const callback = result => {
+    assert.ok(true, "test resumed from async operation");
+    // Verify.
+    assert.ok(result);
+    assert.equal(hand.includes(result), true);
+    done();
+  };
+
+  SimplePlayerStrategy.choosePaymentCoin(hand, store, delay).then(callback);
 });
 
 const SimplePlayerStrategyTest = {};

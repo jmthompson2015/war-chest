@@ -1,5 +1,6 @@
 import ArrayUtils from "../util/ArrayUtilities.js";
 
+import DamageTarget from "../artifact/DamageTarget.js";
 import Move from "../artifact/Move.js";
 import UnitCoin from "../artifact/UnitCoin.js";
 
@@ -36,6 +37,8 @@ const advanceCurrentPlayer = store => {
   store.dispatch(ActionCreator.setCurrentHandCallback(null));
   store.dispatch(ActionCreator.setCurrentMoves([]));
   store.dispatch(ActionCreator.setCurrentMove(null));
+  store.dispatch(ActionCreator.setCurrentDamageTarget(null));
+  store.dispatch(ActionCreator.setCurrentDamageCallback(null));
   store.dispatch(ActionCreator.setUserMessage(null));
 };
 
@@ -129,124 +132,119 @@ PhaseFunction.playCoins = {
     })
 };
 
+const beforeMoveExecute = store =>
+  new Promise(resolve => {
+    const moveState = Selector.currentMove(store.getState());
+    const victimCoin = moveState.victimCoinId
+      ? Selector.coin(moveState.victimCoinId, store.getState())
+      : undefined;
+
+    if (
+      victimCoin &&
+      victimCoin.coinKey === UnitCoin.ROYAL_GUARD &&
+      moveState.moveKey === Move.ATTACK
+    ) {
+      PhaseFunction.executeRoyalGuardAttribute(store).then(() => {
+        resolve();
+      });
+    } else {
+      resolve();
+    }
+  });
+
+const afterMoveExecute = (paymentCoin, resolve, store, callback) => {
+  const moveState = Selector.currentMove(store.getState());
+  const recruitCoin = moveState.recruitCoinId
+    ? Selector.coin(moveState.recruitCoinId, store.getState())
+    : undefined;
+
+  if (
+    recruitCoin &&
+    recruitCoin.coinKey === UnitCoin.MERCENARY &&
+    moveState.moveKey === Move.RECRUIT
+  ) {
+    store.dispatch(ActionCreator.setCurrentPaymentCoin(recruitCoin.id));
+    PhaseFunction.executeMercenaryAttribute(resolve, store, callback);
+  } else if (paymentCoin.coinKey === UnitCoin.SWORDSMAN && moveState.moveKey === Move.ATTACK) {
+    PhaseFunction.executeSwordsmanAttribute(resolve, store, callback);
+  } else if (
+    paymentCoin.coinKey === UnitCoin.WARRIOR_PRIEST &&
+    [Move.ATTACK, Move.CONTROL].includes(moveState.moveKey)
+  ) {
+    PhaseFunction.executeWarriorPriestAttribute(resolve, store, callback);
+  } else {
+    callback(resolve, store);
+  }
+};
+
 PhaseFunction.chooseMove = (moveStates, paymentCoin, resolve, store, callback) => {
   if (!R.isEmpty(moveStates)) {
     const currentPlayer = Selector.currentPlayer(store.getState());
     const strategy = StrategyResolver.resolve(currentPlayer.strategy);
     const delay = Selector.delay(store.getState());
 
-    strategy
-      .chooseMove(moveStates, store, delay)
-      .then(moveState => {
-        store.dispatch(ActionCreator.setCurrentMove(moveState));
+    strategy.chooseMove(moveStates, store, delay).then(moveState => {
+      store.dispatch(ActionCreator.setCurrentMove(moveState));
 
-        if (!R.isNil(moveState)) {
-          MoveFunction.execute(moveState, store);
-        }
-      })
-      .then(() => {
-        const moveState = Selector.currentMove(store.getState());
-        const recruitCoin = moveState.recruitCoinId
-          ? Selector.coin(moveState.recruitCoinId, store.getState())
-          : undefined;
-
-        if (
-          recruitCoin &&
-          recruitCoin.coinKey === UnitCoin.MERCENARY &&
-          moveState.moveKey === Move.RECRUIT
-        ) {
-          store.dispatch(ActionCreator.setCurrentPaymentCoin(recruitCoin.id));
-          PhaseFunction.executeMercenaryAttribute(store).then(() => {
-            callback(resolve, store);
+      if (!R.isNil(moveState)) {
+        beforeMoveExecute(store)
+          .then(() => {
+            MoveFunction.execute(moveState, store);
+          })
+          .then(() => {
+            afterMoveExecute(paymentCoin, resolve, store, callback);
           });
-        } else if (
-          paymentCoin.coinKey === UnitCoin.SWORDSMAN &&
-          moveState.moveKey === Move.ATTACK
-        ) {
-          PhaseFunction.executeSwordsmanAttribute(store).then(() => {
-            callback(resolve, store);
-          });
-        } else if (
-          paymentCoin.coinKey === UnitCoin.WARRIOR_PRIEST &&
-          [Move.ATTACK, Move.CONTROL].includes(moveState.moveKey)
-        ) {
-          PhaseFunction.executeWarriorPriestAttribute(store).then(() => {
-            callback(resolve, store);
-          });
-        } else {
-          callback(resolve, store);
-        }
-      });
+      } else {
+        afterMoveExecute(paymentCoin, resolve, store, callback);
+      }
+    });
   }
 };
 
-PhaseFunction.executeMercenaryAttribute = store =>
-  new Promise(resolve => {
-    const currentPlayer = Selector.currentPlayer(store.getState());
-    const strategy = StrategyResolver.resolve(currentPlayer.strategy);
-    const paymentCoin = Selector.currentPaymentCoin(store.getState());
-    const delay = Selector.delay(store.getState());
-    const moveStates = MoveGenerator.generateManeuvers(
-      currentPlayer,
-      paymentCoin,
-      store.getState()
-    );
-    store.dispatch(ActionCreator.setCurrentMoves(moveStates));
+PhaseFunction.executeMercenaryAttribute = (resolve, store, callback) => {
+  const currentPlayer = Selector.currentPlayer(store.getState());
+  const paymentCoin = Selector.currentPaymentCoin(store.getState());
+  const moveStates = MoveGenerator.generateManeuvers(currentPlayer, paymentCoin, store.getState());
+  store.dispatch(ActionCreator.setCurrentMoves(moveStates));
 
-    if (!R.isEmpty(moveStates)) {
-      strategy.chooseMove(moveStates, store, delay).then(moveState => {
-        if (!R.isNil(moveState)) {
-          MoveFunction.execute(moveState, store);
-        }
-        resolve();
-      });
-    }
+  PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
+};
+
+PhaseFunction.executeRoyalGuardAttribute = store =>
+  new Promise(resolve => {
+    const moveState = Selector.currentMove(store.getState());
+    const victimCoin = moveState.victimCoinId
+      ? Selector.coin(moveState.victimCoinId, store.getState())
+      : undefined;
+    const victimPlayer = Selector.playerForCard(victimCoin.coinKey, store.getState());
+    const strategy = StrategyResolver.resolve(victimPlayer.strategy);
+    const delay = Selector.delay(store.getState());
+    strategy.chooseDamageTarget(DamageTarget.values(), store, delay).then(damageTarget => {
+      store.dispatch(ActionCreator.setCurrentDamageTarget(damageTarget.key));
+      resolve();
+    });
   });
 
-PhaseFunction.executeSwordsmanAttribute = store =>
-  new Promise(resolve => {
-    const currentPlayer = Selector.currentPlayer(store.getState());
-    const strategy = StrategyResolver.resolve(currentPlayer.strategy);
-    const paymentCoin = Selector.currentPaymentCoin(store.getState());
-    const delay = Selector.delay(store.getState());
-    const moveStates = MoveGenerator.generateMoveAUnits(
-      currentPlayer,
-      paymentCoin,
-      store.getState()
-    );
-    store.dispatch(ActionCreator.setCurrentMoves(moveStates));
+PhaseFunction.executeSwordsmanAttribute = (resolve, store, callback) => {
+  const currentPlayer = Selector.currentPlayer(store.getState());
+  const paymentCoin = Selector.currentPaymentCoin(store.getState());
+  const moveStates = MoveGenerator.generateMoveAUnits(currentPlayer, paymentCoin, store.getState());
+  store.dispatch(ActionCreator.setCurrentMoves(moveStates));
 
-    if (!R.isEmpty(moveStates)) {
-      strategy.chooseMove(moveStates, store, delay).then(moveState => {
-        if (!R.isNil(moveState)) {
-          MoveFunction.execute(moveState, store);
-        }
-        resolve();
-      });
-    }
-  });
+  PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
+};
 
-PhaseFunction.executeWarriorPriestAttribute = store =>
-  new Promise(resolve => {
-    const currentPlayer = Selector.currentPlayer(store.getState());
-    const strategy = StrategyResolver.resolve(currentPlayer.strategy);
-    drawCoin(currentPlayer.id, store);
-    const hand = Selector.hand(currentPlayer.id, store.getState());
-    const paymentCoin = Selector.coin(R.last(hand), store.getState());
-    store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoin.id));
-    const delay = Selector.delay(store.getState());
-    const moveStates = MoveGenerator.generateForCoin(currentPlayer, paymentCoin, store.getState());
-    store.dispatch(ActionCreator.setCurrentMoves(moveStates));
+PhaseFunction.executeWarriorPriestAttribute = (resolve, store, callback) => {
+  const currentPlayer = Selector.currentPlayer(store.getState());
+  drawCoin(currentPlayer.id, store);
+  const hand = Selector.hand(currentPlayer.id, store.getState());
+  const paymentCoin = Selector.coin(R.last(hand), store.getState());
+  store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoin.id));
+  const moveStates = MoveGenerator.generateForCoin(currentPlayer, paymentCoin, store.getState());
+  store.dispatch(ActionCreator.setCurrentMoves(moveStates));
 
-    if (!R.isEmpty(moveStates)) {
-      strategy.chooseMove(moveStates, store, delay).then(moveState => {
-        if (!R.isNil(moveState)) {
-          MoveFunction.execute(moveState, store);
-        }
-        resolve();
-      });
-    }
-  });
+  PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
+};
 
 Object.freeze(PhaseFunction);
 

@@ -3,6 +3,7 @@ import Resolver from "../artifact/Resolver.js";
 import CoinState from "../state/CoinState.js";
 
 import CoinsUI from "./CoinsUI.js";
+import DamageTargetDialog from "./DamageTargetDialog.js";
 import Endpoint from "./Endpoint.js";
 import MoveOptionDialog from "./MoveOptionDialog.js";
 import TableauUI from "./TableauUI.js";
@@ -21,6 +22,18 @@ const mergeCoinStates = coinStates => {
   const coinStateMap = R.reduce(reduceFunction, {}, coinStates);
 
   return Object.values(coinStateMap);
+};
+
+const createDamageArea = (damageTargets, callback, player) => {
+  const customKey = `damageArea${player.id}`;
+  const element = React.createElement(DamageTargetDialog, {
+    callback,
+    damageTargets,
+    player,
+    customKey: "damage"
+  });
+
+  return ReactDOMFactories.div({ key: customKey, id: customKey }, element);
 };
 
 const createDiscardUI = (player, discardFacedown, discardFaceup, resourceBase) => {
@@ -77,10 +90,10 @@ const createInitiativeUI = (initiativeTeamKey, resourceBase) => {
 
 const createInputArea = (callback, coinInstances, moveStates, paymentCoinState, player) => {
   const customKey = `inputArea${player.id}`;
-  const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
+  const paymentCoin = paymentCoinState ? Resolver.coin(paymentCoinState.coinKey) : undefined;
   let element;
 
-  if (!R.isEmpty(moveStates)) {
+  if (moveStates && moveStates.length > 0 && paymentCoin) {
     element = React.createElement(MoveOptionDialog, {
       callback,
       coinInstances,
@@ -131,7 +144,9 @@ class PlayerPanel extends React.Component {
   handOnClickFunction(props) {
     const { handOnClick, player } = this.props;
 
-    handOnClick(R.merge(props, { playerId: player.id }));
+    if (handOnClick) {
+      handOnClick(R.merge(props, { playerId: player.id }));
+    }
   }
 
   render() {
@@ -148,6 +163,8 @@ class PlayerPanel extends React.Component {
 
       className,
       customKey,
+      damageCallback,
+      damageTargets,
       inputCallback,
       isInitiativePlayer,
       moveStates,
@@ -185,7 +202,7 @@ class PlayerPanel extends React.Component {
     const tableauUI = React.createElement(TableauUI, { key: "tableau", tableau, resourceBase });
     cells = R.append(tableauUI, cells);
 
-    if (!R.isNil(paymentCoinState)) {
+    if (!R.isNil(moveStates)) {
       const inputArea = createInputArea(
         inputCallback,
         coinInstances,
@@ -194,6 +211,11 @@ class PlayerPanel extends React.Component {
         player
       );
       cells = R.append(inputArea, cells);
+    }
+
+    if (!R.isNil(damageTargets)) {
+      const damageArea = createDamageArea(damageTargets, damageCallback, player);
+      cells = R.append(damageArea, cells);
     }
 
     const element = RU.createFlexboxWrap(cells, customKey, className);
@@ -222,6 +244,8 @@ PlayerPanel.propTypes = {
 
   className: PropTypes.string,
   customKey: PropTypes.string,
+  damageCallback: PropTypes.func,
+  damageTargets: PropTypes.arrayOf(PropTypes.shape()),
   handOnClick: PropTypes.func,
   inputCallback: PropTypes.func,
   isInitiativePlayer: PropTypes.bool,
@@ -233,8 +257,10 @@ PlayerPanel.propTypes = {
 PlayerPanel.defaultProps = {
   className: undefined,
   customKey: "playerPanel",
-  handOnClick: () => {},
-  inputCallback: () => {},
+  damageCallback: undefined,
+  damageTargets: undefined,
+  handOnClick: undefined,
+  inputCallback: undefined,
   isInitiativePlayer: false,
   moveStates: undefined,
   paymentCoinState: undefined,

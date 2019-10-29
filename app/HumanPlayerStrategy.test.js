@@ -1,3 +1,5 @@
+import DamageTarget from "../artifact/DamageTarget.js";
+
 import Selector from "../state/Selector.js";
 
 import MoveGenerator from "../model/MoveGenerator.js";
@@ -7,12 +9,10 @@ import HumanPlayerStrategy from "./HumanPlayerStrategy.js";
 
 QUnit.module("HumanPlayerStrategy");
 
-QUnit.skip("choosePaymentCoin()", assert => {
+QUnit.skip("chooseDamageTarget()", assert => {
   // Setup.
   const store = TestData.createStore();
-  const delay = 0;
-  const playerId = 1;
-  const hand = Selector.hand(playerId, store.getState());
+  const damageTargets = DamageTarget.values();
 
   // Run.
   const done = assert.async();
@@ -20,17 +20,16 @@ QUnit.skip("choosePaymentCoin()", assert => {
     assert.ok(true, "test resumed from async operation");
     // Verify.
     assert.ok(result);
-    assert.equal(hand.includes(result), true);
+    assert.equal(damageTargets.includes(result), true);
     done();
   };
 
-  HumanPlayerStrategy.choosePaymentCoin(hand, store, delay).then(callback);
+  HumanPlayerStrategy.chooseDamageTarget(damageTargets, store).then(callback);
 });
 
 QUnit.skip("chooseMove()", assert => {
   // Setup.
   const store = TestData.createStore();
-  const delay = 0;
   const playerId = 1;
   const player = Selector.player(playerId, store.getState());
   const hand = Selector.hand(playerId, store.getState());
@@ -50,7 +49,26 @@ QUnit.skip("chooseMove()", assert => {
     done();
   };
 
-  HumanPlayerStrategy.chooseMove(moveStates, store, delay).then(callback);
+  HumanPlayerStrategy.chooseMove(moveStates, store).then(callback);
+});
+
+QUnit.skip("choosePaymentCoin()", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 1;
+  const hand = Selector.hand(playerId, store.getState());
+
+  // Run.
+  const done = assert.async();
+  const callback = result => {
+    assert.ok(true, "test resumed from async operation");
+    // Verify.
+    assert.ok(result);
+    assert.equal(hand.includes(result), true);
+    done();
+  };
+
+  HumanPlayerStrategy.choosePaymentCoin(hand, store).then(callback);
 });
 
 const HumanPlayerStrategyTest = {};

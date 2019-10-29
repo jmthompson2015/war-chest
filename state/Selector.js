@@ -73,6 +73,10 @@ Selector.controlANs = (teamKey, state) => {
   return R.filter(filterFunction, allControlANs);
 };
 
+Selector.currentDamageCallback = state => state.currentDamageCallback;
+
+Selector.currentDamageTarget = state => Resolver.damageTarget(state.currentDamageTargetKey);
+
 Selector.currentHandCallback = state => state.currentHandCallback;
 
 Selector.currentMove = state => state.currentMove;

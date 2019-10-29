@@ -1,4 +1,5 @@
 import Board from "../artifact/Board.js";
+import DamageTarget from "../artifact/DamageTarget.js";
 import Resolver from "../artifact/Resolver.js";
 import UnitCard from "../artifact/UnitCard.js";
 import UnitCoin from "../artifact/UnitCoin.js";
@@ -124,7 +125,7 @@ const executeAttack = (moveState, store) => {
   const paymentCoinState = Selector.coin(paymentCoinId, store.getState());
   const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
   const victimUnit = Selector.unit(toAN, store.getState());
-  const victimCoinId = victimUnit[0];
+  const victimCoinId = R.last(victimUnit);
   const victimCoinState = Selector.coin(victimCoinId, store.getState());
   const victimCoin = Resolver.coin(victimCoinState.coinKey);
   const victimPlayer = Selector.playerForCard(victimCoinState.coinKey, store.getState());
@@ -143,7 +144,27 @@ const executeAttack = (moveState, store) => {
       victimCoinId
     )
   );
-  store.dispatch(ActionCreator.boardToMorgue(victimPlayer.id, toAN));
+
+  const damageTarget = Selector.currentDamageTarget(store.getState());
+
+  if (damageTarget && damageTarget.key === DamageTarget.SUPPLY) {
+    const supplyCoinIds = Selector.supplyCoinsByType(
+      victimPlayer.id,
+      victimCoinState.coinKey,
+      store.getState()
+    );
+    const supplyCoinId = R.last(supplyCoinIds).id;
+    store.dispatch(
+      ActionCreator.transferBetweenPlayerArrays(
+        "playerToSupply",
+        "playerToMorgue",
+        victimPlayer.id,
+        supplyCoinId
+      )
+    );
+  } else {
+    store.dispatch(ActionCreator.boardToMorgue(victimPlayer.id, toAN));
+  }
 
   // Pikeman attribute.
   if (victimCoin.key === UnitCoin.PIKEMAN) {

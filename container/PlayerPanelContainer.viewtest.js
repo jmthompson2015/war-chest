@@ -11,12 +11,18 @@ import Endpoint from "../view/Endpoint.js";
 
 import PlayerPanelContainer from "./PlayerPanelContainer.js";
 
-const myHandOnClick = coinId => {
-  console.log(`myHandOnClick() coinId = ${coinId}`);
+const myDamageCallback = (playerId, damageTarget) => {
+  console.log(
+    `myDamageCallback() playerId = ${playerId} damageTarget = ${JSON.stringify(damageTarget)}`
+  );
 };
 
-const myInputCallback = moveState => {
-  console.log(`myInputCallback() moveState = ${JSON.stringify(moveState)}`);
+const myHandOnClick = (playerId, coinId) => {
+  console.log(`myHandOnClick() playerId = ${playerId} coinId = ${coinId}`);
+};
+
+const myInputCallback = (playerId, moveState) => {
+  console.log(`myInputCallback() playerId = ${playerId} moveState = ${JSON.stringify(moveState)}`);
 };
 
 const store = TestData.createStore();
@@ -40,6 +46,7 @@ store.dispatch(ActionCreator.setUnit("d7", 23)); // archer
 store.dispatch(ActionCreator.setCurrentPlayer(1));
 store.dispatch(ActionCreator.setCurrentHandCallback(myHandOnClick));
 store.dispatch(ActionCreator.pushInputCallback(myInputCallback));
+store.dispatch(ActionCreator.setCurrentDamageCallback(myDamageCallback));
 const state = store.getState();
 
 const playerId = 1;

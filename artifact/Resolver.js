@@ -1,4 +1,5 @@
 import ControlMarker from "./ControlMarker.js";
+import DamageTarget from "./DamageTarget.js";
 import Move from "./Move.js";
 import Phase from "./Phase.js";
 import RoyalCoin from "./RoyalCoin.js";
@@ -23,6 +24,8 @@ Resolver.coinImage = (coinKey, isFaceup) => {
 Resolver.coins = coinKeys => R.map(c => Resolver.coin(c), coinKeys);
 
 Resolver.control = controlKey => ControlMarker.properties[controlKey];
+
+Resolver.damageTarget = damageTargetKey => DamageTarget.properties[damageTargetKey];
 
 Resolver.isRoyalCoin = coinKey => !R.isNil(Resolver.royalCoin(coinKey));
 

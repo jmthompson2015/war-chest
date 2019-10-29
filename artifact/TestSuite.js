@@ -1,5 +1,6 @@
 import BoardTest from "./Board.test.js";
 import ControlMarkerTest from "./ControlMarker.test.js";
+import DamageTargetTest from "./DamageTarget.test.js";
 import MoveTest from "./Move.test.js";
 import PhaseTest from "./Phase.test.js";
 import ResolverTest from "./Resolver.test.js";
