@@ -69,6 +69,20 @@ QUnit.test("Move.faceups()", assert => {
   assert.equal(result[length - 1], Move.properties[Move.TACTIC]);
 });
 
+QUnit.test("Move.maneuverKeys()", assert => {
+  // Run.
+  const result = Move.maneuverKeys();
+
+  // Verify.
+  assert.ok(result);
+  const length = 4;
+  assert.equal(result.length, length);
+  assert.equal(result[0], Move.MOVE_A_UNIT);
+  assert.equal(result[1], Move.CONTROL);
+  assert.equal(result[2], Move.ATTACK);
+  assert.equal(result[3], Move.TACTIC);
+});
+
 QUnit.test("Move.maneuvers()", assert => {
   // Run.
   const result = Move.maneuvers();

@@ -77,6 +77,8 @@ Move.facedowns = () => R.filter(m => !m.isFaceup, Move.values());
 
 Move.faceups = () => R.filter(m => m.isFaceup, Move.values());
 
+Move.maneuverKeys = () => R.map(m => m.key, Move.maneuvers());
+
 Move.maneuvers = () => R.filter(m => m.isManeuver, Move.values());
 
 Object.freeze(Move);

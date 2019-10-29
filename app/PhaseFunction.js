@@ -2,6 +2,7 @@ import ArrayUtils from "../util/ArrayUtilities.js";
 
 import DamageTarget from "../artifact/DamageTarget.js";
 import Move from "../artifact/Move.js";
+import Resolver from "../artifact/Resolver.js";
 import UnitCoin from "../artifact/UnitCoin.js";
 
 import ActionCreator from "../state/ActionCreator.js";
@@ -154,11 +155,22 @@ const beforeMoveExecute = store =>
 
 const afterMoveExecute = (paymentCoin, resolve, store, callback) => {
   const moveState = Selector.currentMove(store.getState());
+  const move = Resolver.move(moveState.moveKey);
+  const an = moveState.moveKey === Move.MOVE_A_UNIT ? moveState.toAN : moveState.an;
+  const unit = Selector.unit(an, store.getState());
   const recruitCoin = moveState.recruitCoinId
     ? Selector.coin(moveState.recruitCoinId, store.getState())
     : undefined;
 
   if (
+    paymentCoin.coinKey === UnitCoin.BERSERKER &&
+    move &&
+    move.isManeuver &&
+    unit &&
+    unit.length > 1
+  ) {
+    PhaseFunction.executeBerserkerAttribute(resolve, store, callback);
+  } else if (
     recruitCoin &&
     recruitCoin.coinKey === UnitCoin.MERCENARY &&
     moveState.moveKey === Move.RECRUIT
@@ -199,6 +211,20 @@ PhaseFunction.chooseMove = (moveStates, paymentCoin, resolve, store, callback) =
       }
     });
   }
+};
+
+PhaseFunction.executeBerserkerAttribute = (resolve, store, callback) => {
+  // Discard a bolstered coin.
+  const currentPlayer = Selector.currentPlayer(store.getState());
+  const moveState = Selector.currentMove(store.getState());
+  const an = moveState.moveKey === Move.MOVE_A_UNIT ? moveState.toAN : moveState.an;
+  store.dispatch(ActionCreator.boardToMorgue(currentPlayer.id, an));
+
+  const paymentCoin = Selector.currentPaymentCoin(store.getState());
+  const moveStates = MoveGenerator.generateManeuvers(currentPlayer, paymentCoin, store.getState());
+  store.dispatch(ActionCreator.setCurrentMoves(moveStates));
+
+  PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
 };
 
 PhaseFunction.executeMercenaryAttribute = (resolve, store, callback) => {

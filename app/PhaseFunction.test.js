@@ -15,6 +15,14 @@ import PhaseFunction from "./PhaseFunction.js";
 
 QUnit.module("PhaseFunction");
 
+// const logDebug = store => {
+//   console.log(`coinInstances = ${JSON.stringify(store.getState().coinInstances, null, 2)}`);
+//   console.log(`tableau1 = ${JSON.stringify(Selector.tableau(1, store.getState()))}`);
+//   console.log(`hand1 = ${JSON.stringify(Selector.hand(1, store.getState()))}`);
+//   console.log(`tableau2 = ${JSON.stringify(Selector.tableau(2, store.getState()))}`);
+//   console.log(`hand2 = ${JSON.stringify(Selector.hand(2, store.getState()))}`);
+// };
+
 QUnit.test("chooseMove()", assert => {
   // Setup.
   const store = TestData.createStore();
@@ -44,6 +52,59 @@ QUnit.test("chooseMove()", assert => {
     assert.ok(moveState.moveKey, `moveState.moveKey = ${moveState.moveKey}`);
     assert.equal(moveState.playerId, 1);
     assert.equal(moveState.paymentCoinId, 6);
+    done();
+  };
+  PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
+});
+
+QUnit.test("chooseMove() Berserker", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 1;
+  const coinState1 = CoinState.create({ coinKey: UnitCoin.BERSERKER, store });
+  store.dispatch(ActionCreator.addCoin(coinState1));
+  const coinState2 = CoinState.create({ coinKey: UnitCoin.BERSERKER, store });
+  store.dispatch(ActionCreator.addCoin(coinState2));
+  const coinState3 = CoinState.create({ coinKey: UnitCoin.BERSERKER, store });
+  store.dispatch(ActionCreator.addCoin(coinState3));
+  const coinState4 = CoinState.create({ coinKey: UnitCoin.BERSERKER, store });
+  store.dispatch(ActionCreator.addCoin(coinState4));
+  const paymentCoinId = coinState4.id; // Berserker
+  store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", playerId, UnitCard.BERSERKER));
+  store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, coinState4.id));
+  store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
+  const an = "e2";
+  store.dispatch(ActionCreator.setUnit(an, coinState1.id)); // Berserker
+  store.dispatch(ActionCreator.setUnit(an, coinState2.id)); // Berserker
+  store.dispatch(ActionCreator.setUnit(an, coinState3.id)); // Berserker
+  const victimCoinId = 22; // Archer
+  const toAN = "e3";
+  store.dispatch(ActionCreator.setUnit(toAN, victimCoinId)); // Archer
+
+  const players = Selector.playersInOrder(store.getState());
+  const playerIds = R.map(R.prop("id"), players);
+  store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
+  store.dispatch(ActionCreator.setDelay(0));
+  store.dispatch(ActionCreator.setCurrentPlayer(playerId));
+
+  const paymentCoin = Selector.currentPaymentCoin(store.getState());
+  const moveStates = [
+    MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, an, toAN, victimCoinId })
+  ];
+  const resolve = 12;
+
+  // Run.
+  const done = assert.async();
+  const callback = (resolve2, store2) => {
+    assert.ok(true, "test resumed from async operation");
+    // Verify.
+    assert.equal(resolve2, resolve);
+    assert.ok(store2);
+    const moveState = Selector.currentMove(store2.getState());
+    assert.ok(moveState);
+    assert.ok(moveState.moveKey, `moveState.moveKey = ${moveState.moveKey}`);
+    assert.equal(Move.maneuverKeys().includes(moveState.moveKey), true);
+    assert.equal(resolve, resolve2);
     done();
   };
   PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
@@ -88,10 +149,7 @@ QUnit.test("chooseMove() Mercenary", assert => {
     const moveState = Selector.currentMove(store2.getState());
     assert.ok(moveState);
     assert.ok(moveState.moveKey, `moveState.moveKey = ${moveState.moveKey}`);
-    assert.equal(
-      [Move.MOVE_A_UNIT, Move.CONTROL, Move.ATTACK, Move.TACTIC].includes(moveState.moveKey),
-      true
-    );
+    assert.equal(Move.maneuverKeys().includes(moveState.moveKey), true);
     done();
   };
   PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
