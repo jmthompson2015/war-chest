@@ -114,9 +114,9 @@ Reducer.root = (state, action) => {
         )(state)
       );
     case ActionType.MOVE_A_UNIT:
-      console.log(`Reducer MOVE_A_UNIT fromAN = ${action.fromAN} toAN = ${action.toAN}`);
-      unit = state.anToTokens[action.fromAN];
-      newANToTokens = R.dissoc(action.fromAN, state.anToTokens);
+      console.log(`Reducer MOVE_A_UNIT an = ${action.an} toAN = ${action.toAN}`);
+      unit = state.anToTokens[action.an];
+      newANToTokens = R.dissoc(action.an, state.anToTokens);
       newANToTokens = assoc(action.toAN, unit, newANToTokens);
       return assoc("anToTokens", newANToTokens, state);
     case ActionType.POP_INPUT_CALLBACK:

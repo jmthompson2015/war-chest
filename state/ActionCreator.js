@@ -21,7 +21,7 @@ ActionCreator.boardToMorgue = makeActionCreator(ActionType.BOARD_TO_MORGUE, "pla
 
 ActionCreator.handToBoard = makeActionCreator(ActionType.HAND_TO_BOARD, "playerId", "coinId", "an");
 
-ActionCreator.moveAUnit = makeActionCreator(ActionType.MOVE_A_UNIT, "playerId", "fromAN", "toAN");
+ActionCreator.moveAUnit = makeActionCreator(ActionType.MOVE_A_UNIT, "playerId", "an", "toAN");
 
 ActionCreator.popInputCallback = makeActionCreator(ActionType.POP_INPUT_CALLBACK);
 

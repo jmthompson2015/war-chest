@@ -31,12 +31,12 @@ QUnit.test("attack execute()", assert => {
   const paymentCoinId = hand[1];
   const hand2 = Selector.hand(2, store.getState());
   const victimCoinId = hand2[1];
-  const fromAN = "e2"; // Raven control location.
+  const an = "e2"; // Raven control location.
   const toAN = "f2";
-  store.dispatch(ActionCreator.setUnit(fromAN, paymentCoinId));
+  store.dispatch(ActionCreator.setUnit(an, paymentCoinId));
   store.dispatch(ActionCreator.setUnit(toAN, victimCoinId));
   const moveKey = Move.ATTACK;
-  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, fromAN, toAN });
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an, toAN });
 
   // Run.
   MoveFunction[moveKey].execute(moveState, store);
@@ -45,7 +45,7 @@ QUnit.test("attack execute()", assert => {
   const resultHand = Selector.hand(playerId, store.getState());
   assert.ok(resultHand);
   assert.equal(resultHand.length, 2);
-  const resultFromUnit = Selector.unit(fromAN, store.getState());
+  const resultFromUnit = Selector.unit(an, store.getState());
   assert.ok(resultFromUnit);
   assert.equal(resultFromUnit.join(), paymentCoinId);
   const resultToUnit = Selector.unit(toAN, store.getState());
@@ -63,12 +63,12 @@ QUnit.test("attack execute() Pikeman", assert => {
   const hand = Selector.hand(playerId, store.getState());
   const paymentCoinId = hand[1];
   const victimCoinId = 7; // Pikeman
-  const fromAN = "e2"; // Raven control location.
+  const an = "e2"; // Raven control location.
   const toAN = "f2";
-  store.dispatch(ActionCreator.setUnit(fromAN, paymentCoinId));
+  store.dispatch(ActionCreator.setUnit(an, paymentCoinId));
   store.dispatch(ActionCreator.setUnit(toAN, victimCoinId));
   const moveKey = Move.ATTACK;
-  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, fromAN, toAN });
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an, toAN });
 
   // Run.
   MoveFunction[moveKey].execute(moveState, store);
@@ -77,7 +77,7 @@ QUnit.test("attack execute() Pikeman", assert => {
   const resultHand = Selector.hand(playerId, store.getState());
   assert.ok(resultHand);
   assert.equal(resultHand.length, 2);
-  const resultFromUnit = Selector.unit(fromAN, store.getState());
+  const resultFromUnit = Selector.unit(an, store.getState());
   assert.equal(resultFromUnit, undefined);
   const resultToUnit = Selector.unit(toAN, store.getState());
   assert.equal(resultToUnit, undefined);
@@ -100,14 +100,14 @@ QUnit.test("attack isLegal() true", assert => {
   const paymentCoin = randomUnitCoinState(hand, store.getState());
   const hand2 = Selector.hand(2, store.getState());
   const victimCoin = randomUnitCoinState(hand2, store.getState());
-  const fromAN = "e2"; // Raven control location.
+  const an = "e2"; // Raven control location.
   const toAN = "f2";
-  store.dispatch(ActionCreator.setUnit(fromAN, paymentCoin.id));
+  store.dispatch(ActionCreator.setUnit(an, paymentCoin.id));
   store.dispatch(ActionCreator.setUnit(toAN, victimCoin.id));
   const move = MoveFunction[Move.ATTACK];
 
   // Run.
-  const result = move.isLegal(player, paymentCoin, fromAN, toAN, store.getState());
+  const result = move.isLegal(player, paymentCoin, an, toAN, store.getState());
 
   // Verify.
   assert.equal(result, true);
@@ -122,14 +122,14 @@ QUnit.test("attack isLegal() Archer false", assert => {
   const paymentCoin = Selector.coin(hand[1], store.getState());
   const hand2 = Selector.hand(2, store.getState());
   const victimCoin = randomUnitCoinState(hand2, store.getState());
-  const fromAN = "e2"; // Raven control location.
+  const an = "e2"; // Raven control location.
   const toAN = "f2";
-  store.dispatch(ActionCreator.setUnit(fromAN, paymentCoin.id));
+  store.dispatch(ActionCreator.setUnit(an, paymentCoin.id));
   store.dispatch(ActionCreator.setUnit(toAN, victimCoin.id));
   const move = MoveFunction[Move.ATTACK];
 
   // Run.
-  const result = move.isLegal(player, paymentCoin, fromAN, toAN, store.getState());
+  const result = move.isLegal(player, paymentCoin, an, toAN, store.getState());
 
   // Verify.
   assert.equal(result, false);
@@ -307,15 +307,15 @@ QUnit.test("moveAUnit execute()", assert => {
   const playerId = 1;
   const hand = Selector.hand(playerId, store.getState());
   const paymentCoin = randomUnitCoinState(hand, store.getState());
-  const fromAN = "e2"; // Raven control location.
+  const an = "e2"; // Raven control location.
   const toAN = "f2";
-  store.dispatch(ActionCreator.setUnit(fromAN, paymentCoin.id));
+  store.dispatch(ActionCreator.setUnit(an, paymentCoin.id));
   const moveKey = Move.MOVE_A_UNIT;
   const moveState = MoveState.create({
     moveKey,
     playerId,
     paymentCoinId: paymentCoin.id,
-    fromAN,
+    an,
     toAN
   });
 
@@ -326,7 +326,7 @@ QUnit.test("moveAUnit execute()", assert => {
   const resultHand = Selector.hand(playerId, store.getState());
   assert.ok(resultHand);
   assert.equal(resultHand.length, 2);
-  const resultFromUnit = Selector.unit(fromAN, store.getState());
+  const resultFromUnit = Selector.unit(an, store.getState());
   assert.equal(resultFromUnit, undefined);
   const resultToUnit = Selector.unit(toAN, store.getState());
   assert.ok(resultToUnit);
@@ -340,13 +340,13 @@ QUnit.test("moveAUnit isLegal() true", assert => {
   const player = Selector.player(playerId, store.getState());
   const hand = Selector.hand(playerId, store.getState());
   const paymentCoin = randomUnitCoinState(hand, store.getState());
-  const fromAN = "e2"; // Raven control location.
+  const an = "e2"; // Raven control location.
   const toAN = "f2";
-  store.dispatch(ActionCreator.setUnit(fromAN, paymentCoin.id));
+  store.dispatch(ActionCreator.setUnit(an, paymentCoin.id));
   const move = MoveFunction[Move.MOVE_A_UNIT];
 
   // Run.
-  const result = move.isLegal(player, paymentCoin, fromAN, toAN, store.getState());
+  const result = move.isLegal(player, paymentCoin, an, toAN, store.getState());
 
   // Verify.
   assert.equal(result, true);

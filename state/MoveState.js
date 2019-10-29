@@ -1,15 +1,6 @@
 const MoveState = {};
 
-MoveState.create = ({
-  an,
-  fromAN,
-  moveKey,
-  paymentCoinId,
-  playerId,
-  recruitCoinId,
-  toAN,
-  victimCoinId
-}) =>
+MoveState.create = ({ an, moveKey, paymentCoinId, playerId, recruitCoinId, toAN, victimCoinId }) =>
   Immutable({
     // Required.
     moveKey,
@@ -17,7 +8,6 @@ MoveState.create = ({
     paymentCoinId,
     // Situational.
     an,
-    fromAN,
     recruitCoinId,
     toAN,
     victimCoinId

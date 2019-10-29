@@ -150,11 +150,11 @@ QUnit.test("moveAUnit()", assert => {
   const state0 = AppState.create();
   const playerId = 3;
   const coinId = 12;
-  const fromAN = "e2";
+  const an = "e2";
   const toAN = "d2";
-  const action0 = ActionCreator.setUnit(fromAN, coinId);
+  const action0 = ActionCreator.setUnit(an, coinId);
   const state = Reducer.root(state0, action0);
-  const action = ActionCreator.moveAUnit(playerId, fromAN, toAN);
+  const action = ActionCreator.moveAUnit(playerId, an, toAN);
 
   // Run.
   const result = Reducer.root(state, action);
@@ -163,7 +163,7 @@ QUnit.test("moveAUnit()", assert => {
   assert.ok(result);
   const { anToTokens } = result;
   assert.ok(anToTokens);
-  assert.equal(anToTokens[fromAN], undefined);
+  assert.equal(anToTokens[an], undefined);
   assert.equal(anToTokens[toAN].join(), coinId);
 });
 

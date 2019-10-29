@@ -52,8 +52,8 @@ Board.WOLF_STARTER_CONTROL_POINTS_4P = Immutable(
 Board.boardCalculator = new BoardCalculator(Board.IS_SQUARE, Board.IS_FLAT);
 Board.coordinateCalculator = new CoordinateCalculator(11, 7);
 
-Board.isNeighbor = (fromAN, toAN, isTwoPlayer = true) =>
-  Board.neighbors(fromAN, isTwoPlayer).includes(toAN);
+Board.isNeighbor = (an, toAN, isTwoPlayer = true) =>
+  Board.neighbors(an, isTwoPlayer).includes(toAN);
 
 Board.neighbors = (an, isTwoPlayer = true) => {
   const q = Board.coordinateCalculator.anToFile(an);

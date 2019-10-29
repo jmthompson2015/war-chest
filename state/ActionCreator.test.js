@@ -190,17 +190,17 @@ QUnit.test("handToBoard()", assert => {
 QUnit.test("moveAUnit()", assert => {
   // Setup.
   const playerId = 3;
-  const fromAN = "a1";
+  const an = "a1";
   const toAN = "b1";
 
   // Run.
-  const result = ActionCreator.moveAUnit(playerId, fromAN, toAN);
+  const result = ActionCreator.moveAUnit(playerId, an, toAN);
 
   // Verify.
   assert.ok(result);
   assert.equal(result.type, ActionType.MOVE_A_UNIT);
   assert.equal(result.playerId, playerId);
-  assert.equal(result.fromAN, fromAN);
+  assert.equal(result.an, an);
   assert.equal(result.toAN, toAN);
 });
 

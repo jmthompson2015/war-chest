@@ -105,13 +105,13 @@ QUnit.test("chooseMove() Royal Guard", assert => {
   const paymentCoinId = hand[2]; // Pikeman
   store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", 2, UnitCard.ROYAL_GUARD));
   store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
-  const fromAN = "e2";
+  const an = "e2";
   const toAN = "e3";
   const coinState1 = CoinState.create({ coinKey: UnitCoin.ROYAL_GUARD, store });
   store.dispatch(ActionCreator.addCoin(coinState1));
   store.dispatch(ActionCreator.addToPlayerArray("playerToSupply", 2, coinState1.id));
   const victimCoinId = coinState1.id; // Royal Guard
-  store.dispatch(ActionCreator.setUnit(fromAN, 7)); // Pikeman
+  store.dispatch(ActionCreator.setUnit(an, 7)); // Pikeman
   store.dispatch(ActionCreator.setUnit(toAN, victimCoinId)); // Royal Guard
   const players = Selector.playersInOrder(store.getState());
   const playerIds = R.map(R.prop("id"), players);
@@ -121,7 +121,7 @@ QUnit.test("chooseMove() Royal Guard", assert => {
 
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates = [
-    MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, fromAN, toAN, victimCoinId })
+    MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, an, toAN, victimCoinId })
   ];
   const resolve = 12;
 
@@ -140,7 +140,7 @@ QUnit.test("chooseMove() Royal Guard", assert => {
       10,
       `moveState.paymentCoinId = ${moveState.paymentCoinId}`
     );
-    assert.equal(moveState.fromAN, "e2", `moveState.fromAN = ${moveState.fromAN}`);
+    assert.equal(moveState.an, "e2", `moveState.an = ${moveState.an}`);
     assert.equal(
       ["d3", "e3", "f1", "f2"].includes(moveState.toAN),
       true,
@@ -158,10 +158,10 @@ QUnit.test("chooseMove() Swordsman", assert => {
   const hand = Selector.hand(playerId, store.getState());
   const paymentCoinId = hand[1]; // Swordsman
   store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
-  const fromAN = "e2";
+  const an = "e2";
   const toAN = "e3";
   const victimCoinId = 22; // Archer
-  store.dispatch(ActionCreator.setUnit(fromAN, 2)); // Swordsman
+  store.dispatch(ActionCreator.setUnit(an, 2)); // Swordsman
   store.dispatch(ActionCreator.setUnit(toAN, victimCoinId)); // Archer
   const players = Selector.playersInOrder(store.getState());
   const playerIds = R.map(R.prop("id"), players);
@@ -171,7 +171,7 @@ QUnit.test("chooseMove() Swordsman", assert => {
 
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates = [
-    MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, fromAN, toAN, victimCoinId })
+    MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, an, toAN, victimCoinId })
   ];
   const resolve = 12;
 
@@ -191,7 +191,7 @@ QUnit.test("chooseMove() Swordsman", assert => {
       6,
       `moveState.paymentCoinId = ${moveState.paymentCoinId}`
     );
-    assert.equal(moveState.fromAN, "e2", `moveState.fromAN = ${moveState.fromAN}`);
+    assert.equal(moveState.an, "e2", `moveState.an = ${moveState.an}`);
     assert.equal(
       ["d3", "e3", "f1", "f2"].includes(moveState.toAN),
       true,
@@ -272,16 +272,16 @@ QUnit.test("executeSwordsmanAttribute()", assert => {
   const paymentCoinId = hand[1]; // Swordsman
   store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
   const unitCoinId = 2; // Swordsman
-  const fromAN = "e3"; // Raven control location.
+  const an = "e3"; // Raven control location.
   const toAN = "e4";
-  store.dispatch(ActionCreator.setUnit(fromAN, unitCoinId));
+  store.dispatch(ActionCreator.setUnit(an, unitCoinId));
   const players = Selector.playersInOrder(store.getState());
   const playerIds = R.map(R.prop("id"), players);
   store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
   store.dispatch(ActionCreator.setDelay(0));
   store.dispatch(
     ActionCreator.setCurrentMove(
-      MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, fromAN, toAN })
+      MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, an, toAN })
     )
   );
   const resolve = 12;

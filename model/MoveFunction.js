@@ -86,7 +86,7 @@ const executeBolster = (moveState, store) => {
 };
 
 const executeMoveAUnit = (moveState, store) => {
-  const { fromAN, paymentCoinId, playerId, toAN } = moveState;
+  const { an, paymentCoinId, playerId, toAN } = moveState;
   const player = Selector.player(playerId, store.getState());
   const paymentCoinState = Selector.coin(paymentCoinId, store.getState());
   const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
@@ -101,7 +101,7 @@ const executeMoveAUnit = (moveState, store) => {
       paymentCoinId
     )
   );
-  store.dispatch(ActionCreator.moveAUnit(playerId, fromAN, toAN));
+  store.dispatch(ActionCreator.moveAUnit(playerId, an, toAN));
 };
 
 const executeControl = (moveState, store) => {
@@ -120,7 +120,7 @@ const executeControl = (moveState, store) => {
 };
 
 const executeAttack = (moveState, store) => {
-  const { fromAN, paymentCoinId, playerId, toAN } = moveState;
+  const { an, paymentCoinId, playerId, toAN } = moveState;
   const player = Selector.player(playerId, store.getState());
   const paymentCoinState = Selector.coin(paymentCoinId, store.getState());
   const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
@@ -168,11 +168,11 @@ const executeAttack = (moveState, store) => {
 
   // Pikeman attribute.
   if (victimCoin.key === UnitCoin.PIKEMAN) {
-    store.dispatch(ActionCreator.boardToMorgue(playerId, fromAN));
+    store.dispatch(ActionCreator.boardToMorgue(playerId, an));
   }
 };
 
-const executeTactic = (/* player, paymentCoin, fromAN, toAN, store */) => {};
+const executeTactic = (/* player, paymentCoin, an, toAN, store */) => {};
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 const labelClaimOrPass = moveState => {
@@ -235,15 +235,15 @@ const MoveFunction = {
   },
   moveAUnit: {
     execute: executeMoveAUnit,
-    isLegal: (player, paymentCoin, fromAN, toAN, state) =>
-      Selector.isUnitType(fromAN, paymentCoin.coinKey, state) &&
-      Board.isNeighbor(fromAN, toAN, Selector.isTwoPlayer(state)) &&
+    isLegal: (player, paymentCoin, an, toAN, state) =>
+      Selector.isUnitType(an, paymentCoin.coinKey, state) &&
+      Board.isNeighbor(an, toAN, Selector.isTwoPlayer(state)) &&
       Selector.isUnoccupied(toAN, state),
     label: (moveState, coinInstances) => {
       const move = Resolver.move(moveState.moveKey);
       const paymentCoinState = coinInstances[moveState.paymentCoinId];
       const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
-      return `${move.name}: ${paymentCoin.name} from ${moveState.fromAN} to ${moveState.toAN}`;
+      return `${move.name}: ${paymentCoin.name} from ${moveState.an} to ${moveState.toAN}`;
     },
     key: "moveAUnit"
   },
@@ -262,11 +262,11 @@ const MoveFunction = {
   },
   attack: {
     execute: executeAttack,
-    isLegal: (player, paymentCoin, fromAN, toAN, state) =>
+    isLegal: (player, paymentCoin, an, toAN, state) =>
       UnitCard.canAttack(paymentCoin.coinKey) &&
-      Selector.canBeAttacked(fromAN, toAN, state) &&
-      Selector.isUnitType(fromAN, paymentCoin.coinKey, state) &&
-      Board.isNeighbor(fromAN, toAN, Selector.isTwoPlayer(state)) &&
+      Selector.canBeAttacked(an, toAN, state) &&
+      Selector.isUnitType(an, paymentCoin.coinKey, state) &&
+      Board.isNeighbor(an, toAN, Selector.isTwoPlayer(state)) &&
       Selector.isEnemyUnitAt(player.id, toAN, state),
     label: (moveState, coinInstances) => {
       const move = Resolver.move(moveState.moveKey);
@@ -275,7 +275,7 @@ const MoveFunction = {
       const victimCoinState = coinInstances[moveState.victimCoinId];
       const victimCoin = Resolver.coin(victimCoinState.coinKey);
       return (
-        `${move.name}: ${paymentCoin.name} at ${moveState.fromAN}` +
+        `${move.name}: ${paymentCoin.name} at ${moveState.an}` +
         ` attack ${victimCoin.name} at ${moveState.toAN}`
       );
     },
@@ -283,7 +283,7 @@ const MoveFunction = {
   },
   tactic: {
     execute: executeTactic,
-    isLegal: (/* player, paymentCoin, fromAN, toAN, state */) => false,
+    isLegal: (/* player, paymentCoin, an, toAN, state */) => false,
     key: "tactic"
   }
 };
