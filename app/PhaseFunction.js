@@ -198,7 +198,11 @@ PhaseFunction.chooseMove = (moveStates, paymentCoin, resolve, store, callback) =
     strategy.chooseMove(moveStates, store, delay).then(moveState => {
       store.dispatch(ActionCreator.setCurrentMove(moveState));
 
-      if (!R.isNil(moveState)) {
+      if (R.isNil(moveState)) {
+        store.dispatch(ActionCreator.setCurrentMoves([]));
+        store.dispatch(ActionCreator.setCurrentPaymentCoin(null));
+        executePlayCoin(resolve, store, callback);
+      } else {
         beforeMoveExecute(store)
           .then(() => {
             MoveFunction.execute(moveState, store);
@@ -206,8 +210,6 @@ PhaseFunction.chooseMove = (moveStates, paymentCoin, resolve, store, callback) =
           .then(() => {
             afterMoveExecute(paymentCoin, resolve, store, callback);
           });
-      } else {
-        afterMoveExecute(paymentCoin, resolve, store, callback);
       }
     });
   }
