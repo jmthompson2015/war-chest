@@ -6,7 +6,7 @@ PlayerState.create = ({
   teamKey,
 
   isComputer = true,
-  strategy = "SimplePlayerStrategy"
+  strategy = "RandomPlayerStrategy"
 }) =>
   Immutable({
     id,

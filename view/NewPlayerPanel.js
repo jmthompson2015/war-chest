@@ -5,10 +5,11 @@ import TableauUI from "./TableauUI.js";
 
 const { ReactUtilities: RU } = ReactComponent;
 
-const computerTypes = ["SimplePlayerStrategy"];
+const computerTypes = ["RandomPlayerStrategy", "SimplePlayerStrategy"];
 const humanTypes = ["HumanPlayerStrategy"];
 const typeToName = {
   HumanPlayerStrategy: "Human",
+  RandomPlayerStrategy: "Random (computer)",
   SimplePlayerStrategy: "Simple (computer)"
 };
 const playerTypes = R.concat(computerTypes, humanTypes).sort();

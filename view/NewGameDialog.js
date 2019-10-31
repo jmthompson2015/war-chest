@@ -17,9 +17,24 @@ const INITIAL_PLAYER1 = PlayerState.create({
   isComputer: false,
   strategy: "HumanPlayerStrategy"
 });
-const INITIAL_PLAYER2 = PlayerState.create({ id: 2, name: "Bruce", teamKey: Team.WOLF });
-const INITIAL_PLAYER3 = PlayerState.create({ id: 3, name: "Clark", teamKey: Team.RAVEN });
-const INITIAL_PLAYER4 = PlayerState.create({ id: 4, name: "Diana", teamKey: Team.WOLF });
+const INITIAL_PLAYER2 = PlayerState.create({
+  id: 2,
+  name: "Bruce",
+  teamKey: Team.WOLF,
+  strategy: "SimplePlayerStrategy"
+});
+const INITIAL_PLAYER3 = PlayerState.create({
+  id: 3,
+  name: "Clark",
+  teamKey: Team.RAVEN,
+  strategy: "SimplePlayerStrategy"
+});
+const INITIAL_PLAYER4 = PlayerState.create({
+  id: 4,
+  name: "Diana",
+  teamKey: Team.WOLF,
+  strategy: "SimplePlayerStrategy"
+});
 const INITIAL_PLAYERS2 = {
   1: INITIAL_PLAYER1,
   2: INITIAL_PLAYER2
