@@ -33,7 +33,7 @@ const createPlayerToTableau = () => {
   };
 };
 
-QUnit.test("execute() ", assert => {
+QUnit.test("execute()", assert => {
   // Setup.
   const players = createPlayers();
   const playerToTableau = createPlayerToTableau();

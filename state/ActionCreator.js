@@ -90,6 +90,8 @@ ActionCreator.setUnit = makeActionCreator(ActionType.SET_UNIT, "an", "coinId");
 
 ActionCreator.setUserMessage = makeActionCreator(ActionType.SET_USER_MESSAGE, "userMessage");
 
+ActionCreator.setWinner = makeActionCreator(ActionType.SET_WINNER, "winnerTeamKey");
+
 ActionCreator.transferBetweenPlayerArrays = (fromArrayName, toArrayName, playerId, coinId) => {
   return {
     type: ActionType.TRANSFER_BETWEEN_PLAYER_ARRAYS,

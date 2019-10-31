@@ -9,7 +9,7 @@ AppState.create = ({
   initiativePlayerId,
   isGameOver = false,
   userMessage = null,
-  winner = null,
+  winnerTeamKey = null,
 
   round = 0,
   currentDamageCallback = null,
@@ -43,7 +43,7 @@ AppState.create = ({
     initiativePlayerId,
     isGameOver,
     userMessage,
-    winner,
+    winnerTeamKey,
 
     round,
     currentDamageCallback,

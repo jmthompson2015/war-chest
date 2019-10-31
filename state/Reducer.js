@@ -191,7 +191,7 @@ Reducer.root = (state, action) => {
       newPlayers = R.reduce((accum, p) => assoc(p.id, p, accum), {}, action.players);
       return assoc("playerInstances", newPlayers, state);
     case ActionType.SET_PLAYER_TO_TABLEAU:
-      console.log(`Reducer SET_PLAYER_TO_TABLEAU playerToTableau = ${action.playerToTableau})}`);
+      console.log(`Reducer SET_PLAYER_TO_TABLEAU playerToTableau = ${action.playerToTableau}`);
       return assoc("playerToTableau", action.playerToTableau, state);
     case ActionType.SET_ROUND:
       console.log(`Reducer SET_ROUND round = ${action.round}`);
@@ -205,6 +205,9 @@ Reducer.root = (state, action) => {
     case ActionType.SET_USER_MESSAGE:
       console.log(`Reducer SET_USER_MESSAGE userMessage = ${action.userMessage}`);
       return assoc("userMessage", action.userMessage, state);
+    case ActionType.SET_WINNER:
+      console.log(`Reducer SET_WINNER winnerTeamKey = ${action.winnerTeamKey}`);
+      return assoc("winnerTeamKey", action.winnerTeamKey, state);
     case ActionType.TRANSFER_BETWEEN_PLAYER_ARRAYS:
       return transferBetweenArrays(
         state,

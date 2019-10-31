@@ -27,6 +27,7 @@ ActionType.SET_PLAYER_TO_TABLEAU = "setPlayerToTableau";
 ActionType.SET_ROUND = "setRound";
 ActionType.SET_UNIT = "setUnit";
 ActionType.SET_USER_MESSAGE = "setUserMessage";
+ActionType.SET_WINNER = "setWinner";
 ActionType.TRANSFER_BETWEEN_PLAYER_ARRAYS = "transferBetweenPlayerArrays";
 
 Object.freeze(ActionType);

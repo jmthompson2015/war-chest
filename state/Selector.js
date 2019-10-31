@@ -297,6 +297,8 @@ Selector.unit = (an, state) => state.anToTokens[an];
 
 Selector.userMessage = state => state.userMessage;
 
+Selector.winner = state => (state.winnerTeamKey ? Resolver.team(state.winnerTeamKey) : undefined);
+
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 const nextId = instanceMap => {
   const reduceFunction = (accum, key) => Math.max(accum, key);

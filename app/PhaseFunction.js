@@ -11,6 +11,7 @@ import Selector from "../state/Selector.js";
 import MoveGenerator from "../model/MoveGenerator.js";
 import MoveFunction from "../model/MoveFunction.js";
 
+import GameOver from "./GameOver.js";
 import StrategyResolver from "./StrategyResolver.js";
 
 const PhaseFunction = {};
@@ -122,14 +123,18 @@ const executePlayCoins = (resolve, store) => {
 PhaseFunction.drawThreeCoins = {
   execute: store =>
     new Promise(resolve => {
-      executeDrawThreeCoins(resolve, store);
+      if (!GameOver.isGameOver(store)) {
+        executeDrawThreeCoins(resolve, store);
+      }
     })
 };
 
 PhaseFunction.playCoins = {
   execute: store =>
     new Promise(resolve => {
-      executePlayCoins(resolve, store);
+      if (!GameOver.isGameOver(store)) {
+        executePlayCoins(resolve, store);
+      }
     })
 };
 
@@ -208,7 +213,9 @@ PhaseFunction.chooseMove = (moveStates, paymentCoin, resolve, store, callback) =
             MoveFunction.execute(moveState, store);
           })
           .then(() => {
-            afterMoveExecute(paymentCoin, resolve, store, callback);
+            if (!GameOver.isGameOver(store)) {
+              afterMoveExecute(paymentCoin, resolve, store, callback);
+            }
           });
       }
     });
