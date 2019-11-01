@@ -8,10 +8,9 @@ import CoinState from "../state/CoinState.js";
 import MoveState from "../state/MoveState.js";
 import Selector from "../state/Selector.js";
 
-import MoveGenerator from "../model/MoveGenerator.js";
-import TestData from "../model/TestData.js";
-
+import MoveGenerator from "./MoveGenerator.js";
 import PhaseFunction from "./PhaseFunction.js";
+import TestData from "./TestData.js";
 
 QUnit.module("PhaseFunction");
 

@@ -1,10 +1,10 @@
+import ArrayUtils from "../util/ArrayUtilities.js";
+
 import DamageTarget from "../artifact/DamageTarget.js";
 import Move from "../artifact/Move.js";
 import Resolver from "../artifact/Resolver.js";
 
 import Selector from "../state/Selector.js";
-
-import ArrayUtils from "../util/ArrayUtilities.js";
 
 const SimplePlayerStrategy = {};
 

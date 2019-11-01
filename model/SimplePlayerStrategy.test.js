@@ -1,13 +1,14 @@
 import DamageTarget from "../artifact/DamageTarget.js";
+import UnitCoin from "../artifact/UnitCoin.js";
 
+import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
 
-import MoveGenerator from "../model/MoveGenerator.js";
-import TestData from "../model/TestData.js";
+import MoveGenerator from "./MoveGenerator.js";
+import SimplePlayerStrategy from "./SimplePlayerStrategy.js";
+import TestData from "./TestData.js";
 
-import RandomPlayerStrategy from "./RandomPlayerStrategy.js";
-
-QUnit.module("RandomPlayerStrategy");
+QUnit.module("SimplePlayerStrategy");
 
 QUnit.test("chooseDamageTarget()", assert => {
   // Setup.
@@ -25,7 +26,7 @@ QUnit.test("chooseDamageTarget()", assert => {
     done();
   };
 
-  RandomPlayerStrategy.chooseDamageTarget(damageTargets, store, delay).then(callback);
+  SimplePlayerStrategy.chooseDamageTarget(damageTargets, store, delay).then(callback);
 });
 
 QUnit.test("chooseMove()", assert => {
@@ -51,7 +52,7 @@ QUnit.test("chooseMove()", assert => {
     done();
   };
 
-  RandomPlayerStrategy.chooseMove(moveStates, store, delay).then(callback);
+  SimplePlayerStrategy.chooseMove(moveStates, store, delay).then(callback);
 });
 
 QUnit.test("choosePaymentCoin()", assert => {
@@ -59,7 +60,9 @@ QUnit.test("choosePaymentCoin()", assert => {
   const store = TestData.createStore();
   const delay = 0;
   const playerId = 1;
+  store.dispatch(ActionCreator.setCurrentPlayer(playerId));
   const hand = Selector.hand(playerId, store.getState());
+  store.dispatch(ActionCreator.setUnit("e2", 6)); // Swordsman
 
   // Run.
   const done = assert.async();
@@ -68,11 +71,14 @@ QUnit.test("choosePaymentCoin()", assert => {
     // Verify.
     assert.ok(result);
     assert.equal(hand.includes(result), true);
+    const coin = Selector.coin(result, store.getState());
+    assert.ok(coin);
+    assert.equal(coin.coinKey, UnitCoin.SWORDSMAN);
     done();
   };
 
-  RandomPlayerStrategy.choosePaymentCoin(hand, store, delay).then(callback);
+  SimplePlayerStrategy.choosePaymentCoin(hand, store, delay).then(callback);
 });
 
-const RandomPlayerStrategyTest = {};
-export default RandomPlayerStrategyTest;
+const SimplePlayerStrategyTest = {};
+export default SimplePlayerStrategyTest;

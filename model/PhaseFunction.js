@@ -8,10 +8,9 @@ import UnitCoin from "../artifact/UnitCoin.js";
 import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
 
-import MoveGenerator from "../model/MoveGenerator.js";
-import MoveFunction from "../model/MoveFunction.js";
-
 import GameOver from "./GameOver.js";
+import MoveGenerator from "./MoveGenerator.js";
+import MoveFunction from "./MoveFunction.js";
 import StrategyResolver from "./StrategyResolver.js";
 
 const PhaseFunction = {};

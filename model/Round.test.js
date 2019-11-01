@@ -1,9 +1,8 @@
 import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
 
-import TestData from "../model/TestData.js";
-
 import Round from "./Round.js";
+import TestData from "./TestData.js";
 
 QUnit.module("Round");
 

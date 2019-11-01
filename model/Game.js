@@ -3,10 +3,9 @@
 import ActionCreator from "../state/ActionCreator.js";
 import Reducer from "../state/Reducer.js";
 
-import Setup from "../model/Setup.js";
-
 import GameOver from "./GameOver.js";
 import Round from "./Round.js";
+import Setup from "./Setup.js";
 
 const executeGame = (roundLimit, resolve, store) => {
   if (GameOver.isGameOver(store, roundLimit)) {

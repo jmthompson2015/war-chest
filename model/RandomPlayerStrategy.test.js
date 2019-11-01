@@ -2,17 +2,17 @@ import DamageTarget from "../artifact/DamageTarget.js";
 
 import Selector from "../state/Selector.js";
 
-import MoveGenerator from "../model/MoveGenerator.js";
-import TestData from "../model/TestData.js";
+import MoveGenerator from "./MoveGenerator.js";
+import RandomPlayerStrategy from "./RandomPlayerStrategy.js";
+import TestData from "./TestData.js";
 
-import HumanPlayerStrategy from "./HumanPlayerStrategy.js";
+QUnit.module("RandomPlayerStrategy");
 
-QUnit.module("HumanPlayerStrategy");
-
-QUnit.skip("chooseDamageTarget()", assert => {
+QUnit.test("chooseDamageTarget()", assert => {
   // Setup.
   const store = TestData.createStore();
   const damageTargets = DamageTarget.values();
+  const delay = 0;
 
   // Run.
   const done = assert.async();
@@ -24,12 +24,13 @@ QUnit.skip("chooseDamageTarget()", assert => {
     done();
   };
 
-  HumanPlayerStrategy.chooseDamageTarget(damageTargets, store).then(callback);
+  RandomPlayerStrategy.chooseDamageTarget(damageTargets, store, delay).then(callback);
 });
 
-QUnit.skip("chooseMove()", assert => {
+QUnit.test("chooseMove()", assert => {
   // Setup.
   const store = TestData.createStore();
+  const delay = 0;
   const playerId = 1;
   const player = Selector.player(playerId, store.getState());
   const hand = Selector.hand(playerId, store.getState());
@@ -49,12 +50,13 @@ QUnit.skip("chooseMove()", assert => {
     done();
   };
 
-  HumanPlayerStrategy.chooseMove(moveStates, store).then(callback);
+  RandomPlayerStrategy.chooseMove(moveStates, store, delay).then(callback);
 });
 
-QUnit.skip("choosePaymentCoin()", assert => {
+QUnit.test("choosePaymentCoin()", assert => {
   // Setup.
   const store = TestData.createStore();
+  const delay = 0;
   const playerId = 1;
   const hand = Selector.hand(playerId, store.getState());
 
@@ -68,8 +70,8 @@ QUnit.skip("choosePaymentCoin()", assert => {
     done();
   };
 
-  HumanPlayerStrategy.choosePaymentCoin(hand, store).then(callback);
+  RandomPlayerStrategy.choosePaymentCoin(hand, store, delay).then(callback);
 });
 
-const HumanPlayerStrategyTest = {};
-export default HumanPlayerStrategyTest;
+const RandomPlayerStrategyTest = {};
+export default RandomPlayerStrategyTest;
