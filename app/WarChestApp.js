@@ -1,5 +1,6 @@
 import Selector from "../state/Selector.js";
 
+import Game from "../model/Game.js";
 import Setup from "../model/Setup.js";
 
 import Endpoint from "../view/Endpoint.js";
@@ -8,8 +9,6 @@ import NewGameDialog from "../view/NewGameDialog.js";
 import BoardContainer from "../container/BoardContainer.js";
 import PlayerPanelContainer from "../container/PlayerPanelContainer.js";
 import StatusBarContainer from "../container/StatusBarContainer.js";
-
-import Game from "./Game.js";
 
 const WarChestApp = {};
 
