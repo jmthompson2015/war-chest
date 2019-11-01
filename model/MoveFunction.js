@@ -91,16 +91,21 @@ const executeMoveAUnit = (moveState, store) => {
   const paymentCoinState = Selector.coin(paymentCoinId, store.getState());
   const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
   store.dispatch(
-    ActionCreator.setUserMessage(`Player ${player.name} moves a ${paymentCoin.name}.`)
+    ActionCreator.setUserMessage(`Player ${player.name} moves a ${paymentCoin.name} to ${toAN}.`)
   );
-  store.dispatch(
-    ActionCreator.transferBetweenPlayerArrays(
-      "playerToHand",
-      "playerToDiscardFaceup",
-      playerId,
-      paymentCoinId
-    )
-  );
+
+  if (moveState.isBerserker) {
+    store.dispatch(ActionCreator.boardToDiscardFaceup(playerId, an));
+  } else {
+    store.dispatch(
+      ActionCreator.transferBetweenPlayerArrays(
+        "playerToHand",
+        "playerToDiscardFaceup",
+        playerId,
+        paymentCoinId
+      )
+    );
+  }
   store.dispatch(ActionCreator.moveAUnit(playerId, an, toAN));
 };
 
@@ -108,14 +113,19 @@ const executeControl = (moveState, store) => {
   const { an, paymentCoinId, playerId } = moveState;
   const player = Selector.player(playerId, store.getState());
   store.dispatch(ActionCreator.setUserMessage(`Player ${player.name} controls ${an}.`));
-  store.dispatch(
-    ActionCreator.transferBetweenPlayerArrays(
-      "playerToHand",
-      "playerToDiscardFaceup",
-      playerId,
-      paymentCoinId
-    )
-  );
+
+  if (moveState.isBerserker) {
+    store.dispatch(ActionCreator.boardToDiscardFaceup(playerId, an));
+  } else {
+    store.dispatch(
+      ActionCreator.transferBetweenPlayerArrays(
+        "playerToHand",
+        "playerToDiscardFaceup",
+        playerId,
+        paymentCoinId
+      )
+    );
+  }
   store.dispatch(ActionCreator.setControl(an, player.teamKey));
 };
 
@@ -135,15 +145,19 @@ const executeAttack = (moveState, store) => {
         ` to attack ${victimCoin.name} at ${toAN}.`
     )
   );
-  store.dispatch(
-    ActionCreator.transferBetweenPlayerArrays(
-      "playerToHand",
-      "playerToDiscardFaceup",
-      playerId,
-      paymentCoinId,
-      victimCoinId
-    )
-  );
+
+  if (moveState.isBerserker) {
+    store.dispatch(ActionCreator.boardToDiscardFaceup(playerId, an));
+  } else {
+    store.dispatch(
+      ActionCreator.transferBetweenPlayerArrays(
+        "playerToHand",
+        "playerToDiscardFaceup",
+        playerId,
+        paymentCoinId
+      )
+    );
+  }
 
   const damageTarget = Selector.currentDamageTarget(store.getState());
 

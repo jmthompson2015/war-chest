@@ -17,6 +17,12 @@ ActionCreator.addToPlayerArray = (arrayName, playerId, coinId) => {
   return { type: ActionType.ADD_TO_PLAYER_ARRAY, arrayName, playerId, coinId };
 };
 
+ActionCreator.boardToDiscardFaceup = makeActionCreator(
+  ActionType.BOARD_TO_DISCARD_FACEUP,
+  "playerId",
+  "an"
+);
+
 ActionCreator.boardToMorgue = makeActionCreator(ActionType.BOARD_TO_MORGUE, "playerId", "an");
 
 ActionCreator.handToBoard = makeActionCreator(ActionType.HAND_TO_BOARD, "playerId", "coinId", "an");

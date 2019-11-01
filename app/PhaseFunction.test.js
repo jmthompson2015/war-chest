@@ -104,6 +104,10 @@ QUnit.test("chooseMove() Berserker", assert => {
     assert.ok(moveState);
     assert.ok(moveState.moveKey, `moveState.moveKey = ${moveState.moveKey}`);
     assert.equal(Move.maneuverKeys().includes(moveState.moveKey), true);
+    const an2 = moveState.moveKey === Move.MOVE_A_UNIT ? moveState.toAN : moveState.an;
+    const unit2 = Selector.unit(an2, store2.getState());
+    assert.ok(unit2);
+    assert.equal(unit2.length, 1);
     assert.equal(resolve, resolve2);
     done();
   };

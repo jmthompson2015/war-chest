@@ -632,6 +632,30 @@ QUnit.test("discardFaceupToBag()", assert => {
   assert.equal(bag[0], coinId);
 });
 
+QUnit.test("boardToDiscardFaceup()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const playerId = 3;
+  const coinId = 12;
+  const an = "e2";
+  const action0 = ActionCreator.setUnit(an, coinId);
+  const state = Reducer.root(state0, action0);
+  const action = ActionCreator.boardToDiscardFaceup(playerId, an);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  const resultUnit = result.anToTokens[an];
+  assert.equal(resultUnit, undefined);
+  const resultDiscardFaceup = result.playerToDiscardFaceup[playerId];
+  assert.ok(resultDiscardFaceup);
+  assert.equal(Array.isArray(resultDiscardFaceup), true);
+  assert.equal(resultDiscardFaceup.length, 1);
+  assert.equal(resultDiscardFaceup[0], coinId);
+});
+
 QUnit.test("boardToMorgue() 1", assert => {
   // Setup.
   const state0 = AppState.create();

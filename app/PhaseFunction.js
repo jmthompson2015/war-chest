@@ -225,12 +225,10 @@ PhaseFunction.chooseMove = (moveStates, paymentCoin, resolve, store, callback) =
 PhaseFunction.executeBerserkerAttribute = (resolve, store, callback) => {
   // Discard a bolstered coin.
   const currentPlayer = Selector.currentPlayer(store.getState());
-  const moveState = Selector.currentMove(store.getState());
-  const an = moveState.moveKey === Move.MOVE_A_UNIT ? moveState.toAN : moveState.an;
-  store.dispatch(ActionCreator.boardToMorgue(currentPlayer.id, an));
 
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
-  const moveStates = MoveGenerator.generateManeuvers(currentPlayer, paymentCoin, store.getState());
+  const moveStates0 = MoveGenerator.generateManeuvers(currentPlayer, paymentCoin, store.getState());
+  const moveStates = R.map(m => R.merge(m, { isBerserker: true }), moveStates0);
   store.dispatch(ActionCreator.setCurrentMoves(moveStates));
 
   PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);

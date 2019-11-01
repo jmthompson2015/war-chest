@@ -55,6 +55,7 @@ Reducer.root = (state, action) => {
   let newANToTokens;
   let newBag;
   let newCoins;
+  let newDiscardFaceup;
   let newInputCallbackStack;
   let newMorgue;
   let newHand;
@@ -82,6 +83,30 @@ Reducer.root = (state, action) => {
       //   `Reducer ADD_TO_PLAYER_ARRAY arrayName = ${action.arrayName} coinId = ${action.coinId}`
       // );
       return addToArray(state, action.arrayName, action.playerId, action.coinId);
+    case ActionType.BOARD_TO_DISCARD_FACEUP:
+      console.log(
+        `Reducer BOARD_TO_DISCARD_FACEUP playerId = ${action.playerId} an = ${action.an}`
+      );
+      oldUnit = state.anToTokens[action.an];
+      if (oldUnit.length === 1) {
+        newANToTokens = R.dissoc(action.an, state.anToTokens);
+      } else {
+        newUnit = ArrayUtils.remove(oldUnit[0], oldUnit);
+        newANToTokens = assoc(action.an, newUnit, state.anToTokens);
+      }
+      newDiscardFaceup = state.playerToDiscardFaceup[action.playerId] || [];
+      newDiscardFaceup = R.append(oldUnit[0], newDiscardFaceup);
+      newPlayerToDiscardFaceup = assoc(
+        action.playerId,
+        newDiscardFaceup,
+        state.playerToDiscardFaceup
+      );
+      return Immutable(
+        R.pipe(
+          R.assoc("anToTokens", newANToTokens || {}),
+          R.assoc("playerToDiscardFaceup", newPlayerToDiscardFaceup)
+        )(state)
+      );
     case ActionType.BOARD_TO_MORGUE:
       console.log(`Reducer BOARD_TO_MORGUE playerId = ${action.playerId} an = ${action.an}`);
       oldUnit = state.anToTokens[action.an];

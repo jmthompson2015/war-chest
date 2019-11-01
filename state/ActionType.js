@@ -2,6 +2,7 @@ const ActionType = {};
 
 ActionType.ADD_COIN = "addCoin";
 ActionType.ADD_TO_PLAYER_ARRAY = "addToPlayerArray";
+ActionType.BOARD_TO_DISCARD_FACEUP = "boardToDiscardFaceup"; // Berserker.
 ActionType.BOARD_TO_MORGUE = "boardToMorgue"; // Attacked.
 ActionType.HAND_TO_BOARD = "handToBoard"; // Deploy or bolster.
 ActionType.MOVE_A_UNIT = "moveAUnit";
