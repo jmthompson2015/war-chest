@@ -1,7 +1,9 @@
 import Move from "../artifact/Move.js";
+import UnitCard from "../artifact/UnitCard.js";
 import UnitCoin from "../artifact/UnitCoin.js";
 
 import ActionCreator from "../state/ActionCreator.js";
+import CoinState from "../state/CoinState.js";
 import MoveState from "../state/MoveState.js";
 import Selector from "../state/Selector.js";
 
@@ -77,6 +79,35 @@ QUnit.test("execute() Light Cavalry", assert => {
   assert.equal(resultToUnit.join(""), 16);
 });
 
+QUnit.test("execute() Royal Guard", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 1;
+  store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", playerId, UnitCard.ROYAL_GUARD));
+  const coinState1 = CoinState.create({ coinKey: UnitCoin.ROYAL_GUARD, store });
+  store.dispatch(ActionCreator.addCoin(coinState1));
+  const paymentCoinId = 1; // Raven Royal Coin
+  store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
+  const an = "e2"; // Raven control location.
+  const toAN = "e3";
+  store.dispatch(ActionCreator.setUnit(an, coinState1.id)); // Royal Guard
+  const moveKey = Move.TACTIC;
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an, toAN });
+
+  // Run.
+  Tactic[UnitCoin.ROYAL_GUARD].execute(moveState, store);
+
+  // Verify.
+  const resultHand = Selector.hand(playerId, store.getState());
+  assert.ok(resultHand);
+  assert.equal(resultHand.length, 3);
+  const resultFromUnit = Selector.unit(an, store.getState());
+  assert.equal(resultFromUnit, undefined);
+  const resultToUnit = Selector.unit(toAN, store.getState());
+  assert.ok(resultToUnit);
+  assert.equal(resultToUnit.join(""), 39);
+});
+
 QUnit.test("isLegal() Archer true", assert => {
   // Setup.
   const store = TestData.createStore();
@@ -112,6 +143,29 @@ QUnit.test("isLegal() Light Cavalry true", assert => {
   const toAN = "e4";
   store.dispatch(ActionCreator.setUnit(an, 16)); // Light Cavalry
   const tactic = Tactic[UnitCoin.LIGHT_CAVALRY];
+
+  // Run.
+  const result = tactic.isLegal(player, paymentCoin, an, toAN, store.getState());
+
+  // Verify.
+  assert.equal(result, true);
+});
+
+QUnit.test("isLegal() Royal Guard true", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 1;
+  const player = Selector.player(playerId, store.getState());
+  store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", playerId, UnitCard.ROYAL_GUARD));
+  const coinState1 = CoinState.create({ coinKey: UnitCoin.ROYAL_GUARD, store });
+  store.dispatch(ActionCreator.addCoin(coinState1));
+  const paymentCoinId = 1; // Raven Royal Coin
+  const paymentCoin = Selector.coin(paymentCoinId, store.getState());
+  store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
+  const an = "e2"; // Raven control location.
+  const toAN = "e3";
+  store.dispatch(ActionCreator.setUnit(an, coinState1.id)); // Royal Guard
+  const tactic = Tactic[UnitCoin.ROYAL_GUARD];
 
   // Run.
   const result = tactic.isLegal(player, paymentCoin, an, toAN, store.getState());
@@ -161,6 +215,29 @@ QUnit.test("label() Light Cavalry", assert => {
 
   // Verify.
   assert.equal(result, "Tactic: Light Cavalry at e2 moves to e4");
+});
+
+QUnit.test("label() Royal Guard", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 1;
+  store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", playerId, UnitCard.ROYAL_GUARD));
+  const coinState1 = CoinState.create({ coinKey: UnitCoin.ROYAL_GUARD, store });
+  store.dispatch(ActionCreator.addCoin(coinState1));
+  const paymentCoinId = 1; // Raven Royal Coin
+  store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
+  const an = "e2"; // Raven control location.
+  const toAN = "e3";
+  store.dispatch(ActionCreator.setUnit(an, coinState1.id)); // Royal Guard
+  const moveKey = Move.TACTIC;
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an, toAN });
+  const tactic = Tactic[UnitCoin.ROYAL_GUARD];
+
+  // Run.
+  const result = tactic.label(moveState, store.getState());
+
+  // Verify.
+  assert.equal(result, "Tactic: Royal Guard at e2 moves to e3");
 });
 
 const TacticTest = {};

@@ -66,10 +66,10 @@ const executeAttack = (moveState, store) => {
 const executeMoveAUnit = (moveState, store) => {
   const { an, paymentCoinId, playerId, toAN } = moveState;
   const player = Selector.player(playerId, store.getState());
-  const paymentCoinState = Selector.coin(paymentCoinId, store.getState());
-  const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
+  const movementCoinState = Selector.coinForUnit(an, store.getState());
+  const movementCoin = Resolver.coin(movementCoinState.coinKey);
   store.dispatch(
-    ActionCreator.setUserMessage(`Player ${player.name} moves a ${paymentCoin.name} to ${toAN}.`)
+    ActionCreator.setUserMessage(`Player ${player.name} moves a ${movementCoin.name} to ${toAN}.`)
   );
 
   if (moveState.isBerserker) {
@@ -153,16 +153,25 @@ const Tactic = {
     label: (/* moveState, coinInstances */) => "Tactic: marshall"
   },
   royalGuard: {
-    execute: (/* moveState, store */) => {},
-    isLegal: () => false,
-    label: (/* moveState, coinInstances */) => "Tactic: royalGuard"
+    execute: executeMoveAUnit,
+    isLegal: (player, paymentCoin, an, toAN, state) =>
+      Resolver.isRoyalCoin(paymentCoin.coinKey) &&
+      Selector.isUnitType(an, UnitCoin.ROYAL_GUARD, state) &&
+      Board.isNeighbor(an, toAN, Selector.isTwoPlayer(state)) &&
+      Selector.isUnoccupied(toAN, state),
+    label: (moveState, state) => {
+      const { an, moveKey } = moveState;
+      const move = Resolver.move(moveKey);
+      const movementCoinState = Selector.coinForUnit(an, state);
+      const movementCoin = Resolver.coin(movementCoinState.coinKey);
+      return `${move.name}: ${movementCoin.name} at ${moveState.an} moves to ${moveState.toAN}`;
+    }
   }
 };
 
 Tactic.execute = (moveState, store) => {
-  const { paymentCoinId } = moveState;
-  const paymentCoin = Selector.coin(paymentCoinId, store.getState());
-  const { coinKey } = paymentCoin;
+  const coin = Selector.coinForUnit(moveState.an, store.getState());
+  const { coinKey } = coin;
   Tactic[coinKey].execute(moveState, store);
 };
 
