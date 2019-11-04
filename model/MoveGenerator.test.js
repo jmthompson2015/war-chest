@@ -8,6 +8,14 @@ import TestData from "./TestData.js";
 
 QUnit.module("MoveGenerator");
 
+// const logDebug = store => {
+//   console.log(`coinInstances = ${JSON.stringify(store.getState().coinInstances, null, 2)}`);
+//   console.log(`tableau1 = ${JSON.stringify(Selector.tableau(1, store.getState()))}`);
+//   console.log(`hand1 = ${JSON.stringify(Selector.hand(1, store.getState()))}`);
+//   console.log(`tableau2 = ${JSON.stringify(Selector.tableau(2, store.getState()))}`);
+//   console.log(`hand2 = ${JSON.stringify(Selector.hand(2, store.getState()))}`);
+// };
+
 const verifyMoveState = (
   assert,
   moveState,
@@ -449,6 +457,77 @@ QUnit.test("generateRecruits()", assert => {
     paymentCoinId,
     undefined, // an,
     16 // recruitCoinId
+  );
+});
+
+QUnit.test("generateTactics() Archer", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 2;
+  const player = Selector.player(playerId, store.getState());
+  const paymentCoinId = 25; // Archer
+  const paymentCoin = Selector.coin(paymentCoinId, store.getState());
+  store.dispatch(ActionCreator.setUnit("e2", 22)); // Archer
+  store.dispatch(ActionCreator.setUnit("e4", 2)); // Swordsman
+
+  // Run.
+  const result = MoveGenerator.generateTactics(player, paymentCoin, store.getState());
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(Array.isArray(result), true);
+  assert.equal(result.length, 1, `result.length=${result.length}`);
+  const move0 = result[0];
+  verifyMoveState(
+    assert,
+    move0,
+    Move.TACTIC,
+    playerId,
+    paymentCoinId,
+    "e2", // an,
+    undefined, // recruitCoinId
+    "e4", // toAN,
+    2 // victimCoinId
+  );
+});
+
+QUnit.test("generateTactics() Light Cavalry", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 1;
+  const player = Selector.player(playerId, store.getState());
+  const paymentCoinId = 20; // Light Cavalry
+  const paymentCoin = Selector.coin(paymentCoinId, store.getState());
+  store.dispatch(ActionCreator.setUnit("h1", 16)); // Light Cavalry
+
+  // Run.
+  const result = MoveGenerator.generateTactics(player, paymentCoin, store.getState());
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(Array.isArray(result), true);
+  assert.equal(result.length, 6, `result.length=${result.length}`);
+  const move0 = result[0];
+  verifyMoveState(
+    assert,
+    move0,
+    Move.TACTIC,
+    playerId,
+    paymentCoinId,
+    "h1", // an,
+    undefined, // recruitCoinId
+    "f1" // toAN
+  );
+  const moveLast = result[result.length - 1];
+  verifyMoveState(
+    assert,
+    moveLast,
+    Move.TACTIC,
+    playerId,
+    paymentCoinId,
+    "h1", // an,
+    undefined, // recruitCoinId
+    "i2" // toAN
   );
 });
 

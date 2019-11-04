@@ -5,6 +5,7 @@ import DamageTarget from "../artifact/DamageTarget.js";
 import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
 
+import MoveFunction from "../model/MoveFunction.js";
 import MoveGenerator from "../model/MoveGenerator.js";
 import TestData from "../model/TestData.js";
 
@@ -45,6 +46,7 @@ store.dispatch(ActionCreator.addToPlayerArray("playerToMorgue", 1, 17)); // ligh
 const state = store.getState();
 
 const player = Selector.player(1, state);
+const labelFunction = moveState => MoveFunction.label(moveState, state);
 const discardFacedown = Selector.coins(Selector.discardFacedown(1, state), state);
 const discardFaceup = Selector.coins(Selector.discardFaceup(1, state), state);
 const hand = Selector.coins(Selector.hand(1, state), state);
@@ -60,6 +62,7 @@ const moveStates = MoveGenerator.generateForCoin(player, paymentCoinState, state
 
 const element = React.createElement(PlayerPanel, {
   coinInstances: state.coinInstances,
+  labelFunction,
   player,
   discardFacedown,
   discardFaceup,

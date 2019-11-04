@@ -7,6 +7,8 @@ import UnitCoin from "../artifact/UnitCoin.js";
 import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
 
+import Tactic from "./Tactic.js";
+
 const executeClaimInitiative = (moveState, store) => {
   const { paymentCoinId, playerId } = moveState;
   const player = Selector.player(playerId, store.getState());
@@ -141,7 +143,7 @@ const executeAttack = (moveState, store) => {
   const victimPlayer = Selector.playerForCard(victimCoinState.coinKey, store.getState());
   store.dispatch(
     ActionCreator.setUserMessage(
-      `Player ${player.name} uses his ${paymentCoin.name}` +
+      `Player ${player.name} uses his ${paymentCoin.name} at ${an}` +
         ` to attack ${victimCoin.name} at ${toAN}.`
     )
   );
@@ -186,17 +188,15 @@ const executeAttack = (moveState, store) => {
   }
 };
 
-const executeTactic = (/* player, paymentCoin, an, toAN, store */) => {};
-
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 const labelClaimOrPass = moveState => {
   const move = Resolver.move(moveState.moveKey);
   return `${move.name}`;
 };
 
-const labelDeployOrBolster = (moveState, coinInstances) => {
+const labelDeployOrBolster = (moveState, state) => {
   const move = Resolver.move(moveState.moveKey);
-  const paymentCoinState = coinInstances[moveState.paymentCoinId];
+  const paymentCoinState = state.coinInstances[moveState.paymentCoinId];
   const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
   return `${move.name}: ${paymentCoin.name} to ${moveState.an}`;
 };
@@ -215,9 +215,9 @@ const MoveFunction = {
     isLegal: (player, paymentCoin, recruitCoin, state) =>
       Resolver.isUnitCoin(recruitCoin.coinKey) &&
       Selector.isInSupply(player.id, recruitCoin.id, state),
-    label: (moveState, coinInstances) => {
+    label: (moveState, state) => {
       const move = Resolver.move(moveState.moveKey);
-      const recruitCoinState = coinInstances[moveState.recruitCoinId];
+      const recruitCoinState = state.coinInstances[moveState.recruitCoinId];
       const recruitCoin = Resolver.coin(recruitCoinState.coinKey);
       return `${move.name}: ${recruitCoin.name}`;
     },
@@ -253,9 +253,9 @@ const MoveFunction = {
       Selector.isUnitType(an, paymentCoin.coinKey, state) &&
       Board.isNeighbor(an, toAN, Selector.isTwoPlayer(state)) &&
       Selector.isUnoccupied(toAN, state),
-    label: (moveState, coinInstances) => {
+    label: (moveState, state) => {
       const move = Resolver.move(moveState.moveKey);
-      const paymentCoinState = coinInstances[moveState.paymentCoinId];
+      const paymentCoinState = state.coinInstances[moveState.paymentCoinId];
       const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
       return `${move.name}: ${paymentCoin.name} from ${moveState.an} to ${moveState.toAN}`;
     },
@@ -282,22 +282,23 @@ const MoveFunction = {
       Selector.isUnitType(an, paymentCoin.coinKey, state) &&
       Board.isNeighbor(an, toAN, Selector.isTwoPlayer(state)) &&
       Selector.isEnemyUnitAt(player.id, toAN, state),
-    label: (moveState, coinInstances) => {
+    label: (moveState, state) => {
       const move = Resolver.move(moveState.moveKey);
-      const paymentCoinState = coinInstances[moveState.paymentCoinId];
+      const paymentCoinState = state.coinInstances[moveState.paymentCoinId];
       const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
-      const victimCoinState = coinInstances[moveState.victimCoinId];
+      const victimCoinState = state.coinInstances[moveState.victimCoinId];
       const victimCoin = Resolver.coin(victimCoinState.coinKey);
       return (
         `${move.name}: ${paymentCoin.name} at ${moveState.an}` +
-        ` attack ${victimCoin.name} at ${moveState.toAN}`
+        ` attacks ${victimCoin.name} at ${moveState.toAN}`
       );
     },
     key: "attack"
   },
   tactic: {
-    execute: executeTactic,
-    isLegal: (/* player, paymentCoin, an, toAN, state */) => false,
+    execute: Tactic.execute,
+    isLegal: Tactic.isLegal,
+    label: Tactic.label,
     key: "tactic"
   }
 };
@@ -307,10 +308,10 @@ MoveFunction.execute = (moveState, store) => {
   MoveFunction[moveKey].execute(moveState, store);
 };
 
-MoveFunction.label = (moveState, coinInstances) => {
+MoveFunction.label = (moveState, state) => {
   const { moveKey } = moveState;
 
-  return MoveFunction[moveKey].label(moveState, coinInstances);
+  return MoveFunction[moveKey].label(moveState, state);
 };
 
 Object.freeze(MoveFunction);

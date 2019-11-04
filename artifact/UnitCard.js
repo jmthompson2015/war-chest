@@ -158,6 +158,15 @@ UnitCard.values = () => Object.values(UnitCard.properties);
 
 UnitCard.canAttack = cardKey => cardKey && ![UnitCard.ARCHER, UnitCard.LANCER].includes(cardKey);
 
+UnitCard.keysWithTactics = () => R.map(R.prop("key"), UnitCard.valuesWithTactics());
+
+UnitCard.valuesWithTactics = () => {
+  const values = UnitCard.values();
+  const filterFunction = c => !R.isNil(c.tactic);
+
+  return R.filter(filterFunction, values);
+};
+
 Object.freeze(UnitCard);
 
 export default UnitCard;

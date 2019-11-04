@@ -88,7 +88,14 @@ const createInitiativeUI = (initiativeTeamKey, resourceBase) => {
   });
 };
 
-const createInputArea = (callback, coinInstances, moveStates, paymentCoinState, player) => {
+const createInputArea = (
+  callback,
+  coinInstances,
+  labelFunction,
+  moveStates,
+  paymentCoinState,
+  player
+) => {
   const customKey = `inputArea${player.id}`;
   const paymentCoin = paymentCoinState ? Resolver.coin(paymentCoinState.coinKey) : undefined;
   let element;
@@ -97,6 +104,7 @@ const createInputArea = (callback, coinInstances, moveStates, paymentCoinState, 
     element = React.createElement(MoveOptionDialog, {
       callback,
       coinInstances,
+      labelFunction,
       moveStates,
       paymentCoin,
       player,
@@ -152,6 +160,7 @@ class PlayerPanel extends React.Component {
   render() {
     const {
       coinInstances,
+      labelFunction,
       player,
 
       discardFacedown,
@@ -206,6 +215,7 @@ class PlayerPanel extends React.Component {
       const inputArea = createInputArea(
         inputCallback,
         coinInstances,
+        labelFunction,
         moveStates,
         paymentCoinState,
         player
@@ -233,6 +243,7 @@ class PlayerPanel extends React.Component {
 
 PlayerPanel.propTypes = {
   coinInstances: PropTypes.shape().isRequired,
+  labelFunction: PropTypes.func.isRequired,
   player: PropTypes.shape().isRequired,
 
   discardFaceup: PropTypes.arrayOf(PropTypes.shape()).isRequired,

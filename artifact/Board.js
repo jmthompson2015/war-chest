@@ -49,8 +49,22 @@ Board.WOLF_STARTER_CONTROL_POINTS_4P = Immutable(
   Board.WOLF_STARTER_CONTROL_POINTS_2P.concat(["j3"])
 );
 
+Board.FILE_COUNT = 11;
+Board.RANK_COUNT = 7;
+
 Board.boardCalculator = new BoardCalculator(Board.IS_SQUARE, Board.IS_FLAT);
-Board.coordinateCalculator = new CoordinateCalculator(11, 7);
+Board.coordinateCalculator = new CoordinateCalculator(Board.FILE_COUNT, Board.RANK_COUNT);
+
+Board.distance = (an, toAN) => {
+  const q1 = Board.coordinateCalculator.anToFile(an);
+  const r1 = Board.coordinateCalculator.anToRank(an);
+  const hex1 = { q: q1, r: r1 };
+  const q2 = Board.coordinateCalculator.anToFile(toAN);
+  const r2 = Board.coordinateCalculator.anToRank(toAN);
+  const hex2 = { q: q2, r: r2 };
+
+  return HexBoardUtilities.hexDistance(hex1, hex2);
+};
 
 Board.isNeighbor = (an, toAN, isTwoPlayer = true) =>
   Board.neighbors(an, isTwoPlayer).includes(toAN);
@@ -65,6 +79,27 @@ Board.neighbors = (an, isTwoPlayer = true) => {
     return R.isNil(neighborAN) ? accum : R.append(neighborAN, accum);
   };
   const neighbors = R.reduce(reduceFunction, [], hexNeighbors);
+  const unused = isTwoPlayer ? Board.UNUSED_2P : Board.UNUSED_4P;
+
+  return R.without(unused, neighbors).sort();
+};
+
+Board.ringANs = (an, distance = 2, isTwoPlayer = true) => {
+  const q0 = Board.coordinateCalculator.anToFile(an);
+  const r0 = Board.coordinateCalculator.anToRank(an);
+  const hex0 = { q: q0, r: r0 };
+  let neighbors = [];
+
+  for (let r = 1; r <= Board.RANK_COUNT; r += 1) {
+    for (let q = 1; q <= Board.FILE_COUNT; q += 1) {
+      const hex = { q, r };
+      if (HexBoardUtilities.hexDistance(hex, hex0) === distance) {
+        const neighborAN = Board.coordinateCalculator.fileRankToAN(q, r);
+        neighbors = R.append(neighborAN, neighbors);
+      }
+    }
+  }
+
   const unused = isTwoPlayer ? Board.UNUSED_2P : Board.UNUSED_4P;
 
   return R.without(unused, neighbors).sort();

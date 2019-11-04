@@ -37,7 +37,13 @@ SimplePlayerStrategy.chooseMove = (moveStates, store, delay = DELAY) =>
     if (moveStates.length === 1) {
       [answer] = moveStates;
     } else {
-      const priorityMoveKeys = [Move.CONTROL, Move.ATTACK, Move.DEPLOY, Move.MOVE_A_UNIT];
+      const priorityMoveKeys = [
+        Move.CONTROL,
+        Move.ATTACK,
+        Move.DEPLOY,
+        Move.TACTIC,
+        Move.MOVE_A_UNIT
+      ];
       let i = 0;
 
       while (R.isNil(answer) && i < priorityMoveKeys.length) {

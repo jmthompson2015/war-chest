@@ -9,6 +9,16 @@ QUnit.test("UnitCard properties Archer", assert => {
   const properties = UnitCard.properties[cardKey];
   assert.equal(properties.name, "Archer");
   assert.equal(properties.image, "resource/card/Archer.jpg");
+  assert.equal(properties.initialCount, 4);
+  assert.equal(
+    properties.tactic,
+    "<b>Attack</b> a unit two spaces away. The intervening space may be occupied by a unit."
+  );
+  assert.equal(properties.attribute, undefined);
+  assert.equal(
+    properties.restriction,
+    "The Archer can only <b>attack</b> by using its <b>tactic</b>."
+  );
   assert.equal(properties.key, "archer");
 });
 
@@ -32,7 +42,7 @@ QUnit.test("keys and values", assert => {
   });
 });
 
-QUnit.test("UnitCard.keys()", assert => {
+QUnit.test("keys()", assert => {
   // Run.
   const result = UnitCard.keys();
 
@@ -44,7 +54,19 @@ QUnit.test("UnitCard.keys()", assert => {
   assert.equal(result[length - 1], UnitCard.WARRIOR_PRIEST);
 });
 
-QUnit.test("report", assert => {
+QUnit.test("keysWithTactics()", assert => {
+  // Run.
+  const result = UnitCard.keysWithTactics();
+
+  // Verify.
+  assert.ok(result);
+  const length = 9;
+  assert.equal(result.length, length);
+  assert.equal(result[0], UnitCard.ARCHER);
+  assert.equal(result[length - 1], UnitCard.ROYAL_GUARD);
+});
+
+QUnit.skip("report", assert => {
   const values = UnitCard.values();
 
   console.log(`Tactic`);
@@ -69,6 +91,18 @@ QUnit.test("report", assert => {
   }, values);
 
   assert.ok(true);
+});
+
+QUnit.test("valuesWithTactics()", assert => {
+  // Run.
+  const result = UnitCard.valuesWithTactics();
+
+  // Verify.
+  assert.ok(result);
+  const length = 9;
+  assert.equal(result.length, length);
+  assert.equal(result[0].key, UnitCard.ARCHER);
+  assert.equal(result[length - 1].key, UnitCard.ROYAL_GUARD);
 });
 
 const UnitCardTest = {};

@@ -3,6 +3,8 @@ import DamageTarget from "../artifact/DamageTarget.js";
 import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
 
+import MoveFunction from "../model/MoveFunction.js";
+
 import PlayerPanel from "../view/PlayerPanel.js";
 
 function mapStateToProps(state, ownProps) {
@@ -27,9 +29,12 @@ function mapStateToProps(state, ownProps) {
     paymentCoinState = Selector.currentPaymentCoin(state);
   }
 
+  const labelFunction = moveState => MoveFunction.label(moveState, state);
+
   return {
     coinInstances: state.coinInstances,
     customKey: `playerPanel${player.id}`,
+    labelFunction,
     player,
 
     discardFacedown: Selector.coins(Selector.discardFacedown(player.id, state), state),

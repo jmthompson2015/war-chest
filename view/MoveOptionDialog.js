@@ -1,7 +1,5 @@
 /* eslint no-console: ["error", { allow: ["warn"] }] */
 
-import MoveFunction from "../model/MoveFunction.js";
-
 const RU = ReactComponent.ReactUtilities;
 
 const createButtons = (cancelOnClick, okOnClick) => {
@@ -16,7 +14,14 @@ const createButtons = (cancelOnClick, okOnClick) => {
 
 const mapIndexed = R.addIndex(R.map);
 
-const createInitialInput = (coinInstances, customKey, clientProps, moveStates, onChange) => {
+const createInitialInput = (
+  coinInstances,
+  customKey,
+  clientProps,
+  labelFunction,
+  moveStates,
+  onChange
+) => {
   const inputProps = R.merge(
     {
       name: `chooseMove${customKey}`, // needed for radio
@@ -30,7 +35,7 @@ const createInitialInput = (coinInstances, customKey, clientProps, moveStates, o
     const input = ReactDOMFactories.input(
       R.merge(inputProps, { key: customKey2, id: i, "data-index": i })
     );
-    const label = MoveFunction.label(moveState, coinInstances);
+    const label = labelFunction(moveState);
     const cells = [];
     cells.push(RU.createCell(input, cells.length, "pa1 v-mid"));
     cells.push(RU.createCell(label, cells.length, "pa1 v-mid"));
@@ -78,12 +83,20 @@ class MoveOptionDialog extends React.Component {
   }
 
   render() {
-    const { clientProps, coinInstances, customKey, moveStates, paymentCoin } = this.props;
+    const {
+      clientProps,
+      coinInstances,
+      customKey,
+      labelFunction,
+      moveStates,
+      paymentCoin
+    } = this.props;
     const message = ReactDOMFactories.div({}, `Select an action for ${paymentCoin.name}`);
     const initialInput = createInitialInput(
       coinInstances,
       customKey,
       clientProps,
+      labelFunction,
       moveStates,
       this.selectionChanged
     );
@@ -106,6 +119,7 @@ class MoveOptionDialog extends React.Component {
 MoveOptionDialog.propTypes = {
   callback: PropTypes.func.isRequired,
   coinInstances: PropTypes.shape().isRequired,
+  labelFunction: PropTypes.func.isRequired,
   moveStates: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   paymentCoin: PropTypes.shape().isRequired,
   player: PropTypes.shape().isRequired,

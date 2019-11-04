@@ -9,6 +9,7 @@ import MoveState from "../state/MoveState.js";
 import Selector from "../state/Selector.js";
 
 import MoveFunction from "./MoveFunction.js";
+import Tactic from "./Tactic.js";
 
 const MoveGenerator = {};
 
@@ -187,13 +188,50 @@ MoveGenerator.generateRecruits = (player, paymentCoin, state) => {
   return R.reduce(reduceFunction, [], tableau);
 };
 
+MoveGenerator.generateTactics = (player, paymentCoin, state) => {
+  const moveKey = Move.TACTIC;
+  const playerId = player.id;
+  const paymentCoinId = paymentCoin.id;
+  const playerUnitANs = Selector.playerUnitANs(player.id, state);
+  const reduceFunction2 = (tt, an) => (accum2, toAN) => {
+    if (tt.isLegal(player, paymentCoin, an, toAN, state)) {
+      const victimCoin = Selector.coinForUnit(toAN, state);
+      const victimCoinId = victimCoin ? victimCoin.id : undefined;
+      const moveState = MoveState.create({
+        moveKey,
+        playerId,
+        paymentCoinId,
+        an,
+        toAN,
+        victimCoinId
+      });
+      return R.append(moveState, accum2);
+    }
+    return accum2;
+  };
+  const reduceFunction1 = (accum1, an) => {
+    const { coinKey } = Selector.coinForUnit(an, state);
+    const tt = Tactic[coinKey];
+    if (tt) {
+      const neighbors = Board.neighbors(an, Selector.isTwoPlayer(state));
+      const accum2 = R.reduce(reduceFunction2(tt, an), [], neighbors);
+      const neighbors2 = Board.ringANs(an, 2);
+      const accum3 = R.reduce(reduceFunction2(tt, an), [], neighbors2);
+      return R.concat(accum1, R.concat(accum2, accum3));
+    }
+    return accum1;
+  };
+
+  return R.reduce(reduceFunction1, [], playerUnitANs);
+};
+
 MoveGenerator.generateManeuvers = (player, paymentCoin, state) => {
   const moveAUnits = MoveGenerator.generateMoveAUnits(player, paymentCoin, state);
   const controls = MoveGenerator.generateControls(player, paymentCoin, state);
   const attacks = MoveGenerator.generateAttacks(player, paymentCoin, state);
-  // const tactics = MoveGenerator.generateTactics();
+  const tactics = MoveGenerator.generateTactics(player, paymentCoin, state);
 
-  return R.concat(moveAUnits, R.concat(controls, attacks));
+  return R.concat(moveAUnits, R.concat(controls, R.concat(attacks, tactics)));
 };
 
 MoveGenerator.generateForCoin = (player, paymentCoin, state) => {
@@ -232,6 +270,7 @@ MoveGenerator.generateForCoin = (player, paymentCoin, state) => {
         newAccum = R.concat(newAccum, MoveGenerator.generateAttacks(player, paymentCoin, state));
         break;
       case Move.TACTIC:
+        newAccum = R.concat(newAccum, MoveGenerator.generateTactics(player, paymentCoin, state));
         break;
       default:
         console.warn(`Unknown move.key: ${moveKey}`);

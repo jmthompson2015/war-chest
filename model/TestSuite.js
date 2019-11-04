@@ -9,5 +9,6 @@ import RoundTest from "./Round.test.js";
 import SetupTest from "./Setup.test.js";
 import SimplePlayerStrategyTest from "./SimplePlayerStrategy.test.js";
 import StrategyResolverTest from "./StrategyResolver.test.js";
+import TacticTest from "./Tactic.test.js";
 
 QUnit.start();
