@@ -26,6 +26,32 @@ QUnit.test("isNeighbor()", assert => {
   assert.equal(Board.isNeighbor("e2", "g1"), false);
 });
 
+QUnit.test("isStraightLine()", assert => {
+  // Setup.
+  const an = "e2";
+
+  // Run / Verify.
+  assert.equal(Board.isStraightLine(an, "c4"), true);
+  assert.equal(Board.isStraightLine(an, "d4"), false);
+  assert.equal(Board.isStraightLine(an, "e4"), true);
+  assert.equal(Board.isStraightLine(an, "f3"), false);
+  assert.equal(Board.isStraightLine(an, "g1"), false);
+  assert.equal(Board.isStraightLine(an, "g2"), true);
+});
+
+QUnit.test("middleAN() e2-e4", assert => {
+  // Setup.
+  const an = "e2";
+
+  // Run / Verify.
+  assert.equal(Board.middleAN(an, "c4"), "d3", `${an} to c4`);
+  assert.equal(Board.middleAN(an, "d4"), undefined, `${an} to d4`);
+  assert.equal(Board.middleAN(an, "e4"), "e3", `${an} to e4`);
+  assert.equal(Board.middleAN(an, "f3"), undefined, `${an} to f3`);
+  assert.equal(Board.middleAN(an, "g2"), "f2", `${an} to g2`);
+  assert.equal(Board.middleAN(an, "g1"), undefined, `${an} to g1`);
+});
+
 QUnit.test("neighbors() two player", assert => {
   // Setup.
   const an = "e2";
@@ -35,7 +61,6 @@ QUnit.test("neighbors() two player", assert => {
 
   // Verify.
   assert.ok(result);
-  // console.log(`result = ${JSON.stringify(result)}`);
   assert.equal(result.length, 4);
   assert.equal(result[0], "d3");
   assert.equal(result[1], "e3");
@@ -53,7 +78,6 @@ QUnit.test("neighbors() four player", assert => {
 
   // Verify.
   assert.ok(result);
-  // console.log(`result = ${JSON.stringify(result)}`);
   assert.equal(result.length, 4);
   assert.equal(result[0], "a6");
   assert.equal(result[1], "b6");

@@ -114,9 +114,25 @@ const Tactic = {
     label: (/* moveState, coinInstances */) => "Tactic: cavalry"
   },
   crossbowman: {
-    execute: (/* moveState, store */) => {},
-    isLegal: () => false,
-    label: (/* moveState, coinInstances */) => "Tactic: crossbowman"
+    execute: executeAttack,
+    isLegal: (player, paymentCoin, an, toAN, state) =>
+      paymentCoin.coinKey === UnitCoin.CROSSBOWMAN &&
+      Selector.isUnitType(an, UnitCoin.CROSSBOWMAN, state) &&
+      Board.distance(an, toAN) === 2 &&
+      Board.isStraightLine(an, toAN) &&
+      Selector.isUnoccupied(Board.middleAN(an, toAN), state) &&
+      Selector.isEnemyUnitAt(player.id, toAN, state),
+    label: (moveState, state) => {
+      const move = Resolver.move(moveState.moveKey);
+      const paymentCoinState = state.coinInstances[moveState.paymentCoinId];
+      const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
+      const victimCoinState = state.coinInstances[moveState.victimCoinId];
+      const victimCoin = Resolver.coin(victimCoinState.coinKey);
+      return (
+        `${move.name}: ${paymentCoin.name} at ${moveState.an}` +
+        ` attacks ${victimCoin.name} at ${moveState.toAN}`
+      );
+    }
   },
   ensign: {
     execute: (/* moveState, store */) => {},

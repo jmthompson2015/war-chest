@@ -69,6 +69,36 @@ Board.distance = (an, toAN) => {
 Board.isNeighbor = (an, toAN, isTwoPlayer = true) =>
   Board.neighbors(an, isTwoPlayer).includes(toAN);
 
+Board.isStraightLine = (an, toAN) => {
+  const q1 = Board.coordinateCalculator.anToFile(an);
+  const r1 = Board.coordinateCalculator.anToRank(an);
+  const q2 = Board.coordinateCalculator.anToFile(toAN);
+  const r2 = Board.coordinateCalculator.anToRank(toAN);
+  const deltaQ = q2 - q1;
+  const deltaR = r2 - r1;
+
+  return deltaR === -deltaQ || (deltaQ === 0 && deltaR !== 0) || (deltaQ !== 0 && deltaR === 0);
+};
+
+Board.middleAN = (an, toAN) => {
+  let answer;
+
+  if (Board.distance(an, toAN) === 2 && Board.isStraightLine(an, toAN)) {
+    const q1 = Board.coordinateCalculator.anToFile(an);
+    const r1 = Board.coordinateCalculator.anToRank(an);
+    const q2 = Board.coordinateCalculator.anToFile(toAN);
+    const r2 = Board.coordinateCalculator.anToRank(toAN);
+    const deltaQ = q2 - q1;
+    const deltaR = r2 - r1;
+    const q = q1 + deltaQ / 2.0;
+    const r = r1 + deltaR / 2.0;
+
+    answer = Board.coordinateCalculator.fileRankToAN(q, r);
+  }
+
+  return answer;
+};
+
 Board.neighbors = (an, isTwoPlayer = true) => {
   const q = Board.coordinateCalculator.anToFile(an);
   const r = Board.coordinateCalculator.anToRank(an);
