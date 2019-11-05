@@ -75,7 +75,7 @@ SimplePlayerStrategy.choosePaymentCoin = (coinIds, store, delay = DELAY) =>
       const tokenANs = Object.keys(Selector.anToTokens(state));
 
       // Choose a coin that has a match on the board.
-      const boardCoins = R.map(an => Selector.coinForUnit(an, state), tokenANs);
+      const boardCoins = R.map(an1 => Selector.coinForUnit(an1, state), tokenANs);
       const boardCoinKeys = R.uniq(R.map(c => c.coinKey, boardCoins));
       const handCoins = Selector.coins(Selector.hand(currentPlayer.id, state), state);
       const handCoinKeys = R.uniq(R.map(c => c.coinKey, handCoins));

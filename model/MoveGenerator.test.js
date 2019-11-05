@@ -22,18 +22,20 @@ const verifyMoveState = (
   moveKey,
   playerId,
   paymentCoinId,
-  an,
+  an1,
+  an2,
+  an3,
   recruitCoinId,
-  toAN,
   victimCoinId
 ) => {
   assert.ok(moveState);
   assert.equal(moveState.moveKey, moveKey, "moveKey");
   assert.equal(moveState.playerId, playerId, "playerId");
   assert.equal(moveState.paymentCoinId, paymentCoinId, "paymentCoinId");
-  assert.equal(moveState.an, an, "an");
+  assert.equal(moveState.an1, an1, "an1");
+  assert.equal(moveState.an2, an2, "an2");
+  assert.equal(moveState.an3, an3, "an3");
   assert.equal(moveState.recruitCoinId, recruitCoinId, "recruitCoinId");
-  assert.equal(moveState.toAN, toAN, "toAN");
   assert.equal(moveState.victimCoinId, victimCoinId, "victimCoinId");
 };
 
@@ -57,7 +59,9 @@ QUnit.test("generate()", assert => {
     Move.RECRUIT,
     1, // playerId
     10, // paymentCoinId
-    undefined, // an
+    undefined, // an1
+    undefined, // an2
+    undefined, // an3
     2 // recruitCoinId
   );
   const moveLast = result[result.length - 1];
@@ -69,14 +73,14 @@ QUnit.test("generateAttacks()", assert => {
   const store = TestData.createStore();
   const playerId = 1;
   const player = Selector.player(playerId, store.getState());
-  const an = "e2";
-  const toAN1 = "d3";
-  const toAN2 = "e3";
-  const toAN3 = "f2";
-  store.dispatch(ActionCreator.setUnit(an, 2)); // Swordsman
-  store.dispatch(ActionCreator.setUnit(toAN1, 22)); // Archer
-  store.dispatch(ActionCreator.setUnit(toAN2, 26)); // Cavalry
-  store.dispatch(ActionCreator.setUnit(toAN3, 30)); // Lancer
+  const an1 = "e2";
+  const an21 = "d3";
+  const an22 = "e3";
+  const an23 = "f2";
+  store.dispatch(ActionCreator.setUnit(an1, 2)); // Swordsman
+  store.dispatch(ActionCreator.setUnit(an21, 22)); // Archer
+  store.dispatch(ActionCreator.setUnit(an22, 26)); // Cavalry
+  store.dispatch(ActionCreator.setUnit(an23, 30)); // Lancer
   const paymentCoinId = 6; // Swordsman
   const paymentCoin = Selector.coin(paymentCoinId, store.getState());
 
@@ -94,9 +98,10 @@ QUnit.test("generateAttacks()", assert => {
     Move.ATTACK,
     playerId,
     paymentCoinId,
-    an,
+    an1,
+    an21,
+    undefined, // an3
     undefined, // recruitCoinId
-    toAN1,
     22 // victimCoinId
   );
   const moveLast = result[result.length - 1];
@@ -106,9 +111,10 @@ QUnit.test("generateAttacks()", assert => {
     Move.ATTACK,
     playerId,
     paymentCoinId,
-    an,
+    an1,
+    an23,
+    undefined, // an3
     undefined, // recruitCoinId
-    toAN3,
     30 // victimCoinId
   );
 });
@@ -118,8 +124,8 @@ QUnit.test("generateBolsters()", assert => {
   const store = TestData.createStore();
   const playerId = 1;
   const player = Selector.player(playerId, store.getState());
-  const an = "e2";
-  store.dispatch(ActionCreator.setUnit(an, 2)); // Swordsman
+  const an1 = "e2";
+  store.dispatch(ActionCreator.setUnit(an1, 2)); // Swordsman
   const paymentCoinId = 6; // Swordsman
   const paymentCoin = Selector.coin(paymentCoinId, store.getState());
 
@@ -131,7 +137,7 @@ QUnit.test("generateBolsters()", assert => {
   assert.equal(Array.isArray(result), true);
   assert.equal(result.length, 1, `result.length=${result.length}`);
   const move0 = result[0];
-  verifyMoveState(assert, move0, Move.BOLSTER, playerId, paymentCoinId, "e2");
+  verifyMoveState(assert, move0, Move.BOLSTER, playerId, paymentCoinId, an1);
 });
 
 QUnit.test("generateClaimInitiatives()", assert => {
@@ -243,7 +249,9 @@ QUnit.test("generateForCoin()", assert => {
     Move.RECRUIT,
     1, // playerId
     1, // paymentCoinId
-    undefined, // an
+    undefined, // an1
+    undefined, // an2
+    undefined, // an3
     2 // recruitCoinId
   );
   const moveLast = result[result.length - 1];
@@ -278,14 +286,14 @@ QUnit.test("generateManeuvers()", assert => {
   const store = TestData.createStore();
   const playerId = 1;
   const player = Selector.player(playerId, store.getState());
-  const an = "e2";
-  const toAN1 = "d3";
-  const toAN2 = "e3";
-  const toAN3 = "f2";
-  store.dispatch(ActionCreator.setUnit(an, 2)); // Swordsman
-  store.dispatch(ActionCreator.setUnit(toAN1, 22)); // Archer
-  store.dispatch(ActionCreator.setUnit(toAN2, 26)); // Cavalry
-  store.dispatch(ActionCreator.setUnit(toAN3, 30)); // Lancer
+  const an1 = "e2";
+  const an21 = "d3";
+  const an22 = "e3";
+  const an23 = "f2";
+  store.dispatch(ActionCreator.setUnit(an1, 2)); // Swordsman
+  store.dispatch(ActionCreator.setUnit(an21, 22)); // Archer
+  store.dispatch(ActionCreator.setUnit(an22, 26)); // Cavalry
+  store.dispatch(ActionCreator.setUnit(an23, 30)); // Lancer
   const paymentCoinId = 6; // Swordsman
   const paymentCoin = Selector.coin(paymentCoinId, store.getState());
 
@@ -303,9 +311,10 @@ QUnit.test("generateManeuvers()", assert => {
     Move.MOVE_A_UNIT,
     playerId,
     paymentCoinId,
-    an,
-    undefined, // recruitCoinId
-    "f1"
+    an1,
+    "f1", // an2
+    undefined, // an3
+    undefined // recruitCoinId
   );
   const moveLast = result[result.length - 1];
   verifyMoveState(
@@ -314,9 +323,10 @@ QUnit.test("generateManeuvers()", assert => {
     Move.ATTACK,
     playerId,
     paymentCoinId,
-    an,
+    an1,
+    an23, // an2
+    undefined, // an3
     undefined, // recruitCoinId
-    toAN3,
     30 // victimCoinId
   );
 });
@@ -326,8 +336,8 @@ QUnit.test("generateMoveAUnits()", assert => {
   const store = TestData.createStore();
   const playerId = 1;
   const player = Selector.player(playerId, store.getState());
-  const an = "e2";
-  store.dispatch(ActionCreator.setUnit(an, 2)); // Swordsman
+  const an1 = "e2";
+  store.dispatch(ActionCreator.setUnit(an1, 2)); // Swordsman
   const paymentCoinId = 6; // Swordsman
   const paymentCoin = Selector.coin(paymentCoinId, store.getState());
 
@@ -345,9 +355,10 @@ QUnit.test("generateMoveAUnits()", assert => {
     Move.MOVE_A_UNIT,
     playerId,
     paymentCoinId,
-    an,
-    undefined, // recruitCoinId
-    "d3"
+    an1,
+    "d3", // an2
+    undefined, // an3
+    undefined // recruitCoinId
   );
   const moveLast = result[result.length - 1];
   verifyMoveState(
@@ -356,9 +367,10 @@ QUnit.test("generateMoveAUnits()", assert => {
     Move.MOVE_A_UNIT,
     playerId,
     paymentCoinId,
-    an,
-    undefined, // recruitCoinId
-    "f2"
+    an1,
+    "f2", // an2
+    undefined, // an3
+    undefined // recruitCoinId
   );
 });
 
@@ -368,8 +380,8 @@ QUnit.test("generateMoveAUnits() four player", assert => {
   const store = TestData.createStore(isTwoPlayer);
   const playerId = 1;
   const player = Selector.player(playerId, store.getState());
-  const an = "b5";
-  store.dispatch(ActionCreator.setUnit(an, 2)); // Swordsman
+  const an1 = "b5";
+  store.dispatch(ActionCreator.setUnit(an1, 2)); // Swordsman
   const paymentCoinId = 6; // Swordsman
   const paymentCoin = Selector.coin(paymentCoinId, store.getState());
 
@@ -387,9 +399,8 @@ QUnit.test("generateMoveAUnits() four player", assert => {
     Move.MOVE_A_UNIT,
     playerId,
     paymentCoinId,
-    an,
-    undefined, // recruitCoinId
-    "a6"
+    an1,
+    "a6" // an2
   );
   const moveLast = result[result.length - 1];
   verifyMoveState(
@@ -398,9 +409,8 @@ QUnit.test("generateMoveAUnits() four player", assert => {
     Move.MOVE_A_UNIT,
     playerId,
     paymentCoinId,
-    an,
-    undefined, // recruitCoinId
-    "c5"
+    an1,
+    "c5" // an2
   );
 });
 
@@ -445,7 +455,9 @@ QUnit.test("generateRecruits()", assert => {
     Move.RECRUIT,
     playerId,
     paymentCoinId,
-    undefined, // an,
+    undefined, // an1,
+    undefined, // an2,
+    undefined, // an3,
     2 // recruitCoinId
   );
   const moveLast = result[result.length - 1];
@@ -455,7 +467,9 @@ QUnit.test("generateRecruits()", assert => {
     Move.RECRUIT,
     playerId,
     paymentCoinId,
-    undefined, // an,
+    undefined, // an1,
+    undefined, // an2,
+    undefined, // an3,
     16 // recruitCoinId
   );
 });
@@ -484,9 +498,10 @@ QUnit.test("generateTactics() Archer", assert => {
     Move.TACTIC,
     playerId,
     paymentCoinId,
-    "e2", // an,
+    "e2", // an1
+    "e4", // an2
+    undefined, // an3
     undefined, // recruitCoinId
-    "e4", // toAN,
     2 // victimCoinId
   );
 });
@@ -514,9 +529,8 @@ QUnit.test("generateTactics() Light Cavalry", assert => {
     Move.TACTIC,
     playerId,
     paymentCoinId,
-    "h1", // an,
-    undefined, // recruitCoinId
-    "f1" // toAN
+    "h1", // an1
+    "f1" // an2
   );
   const moveLast = result[result.length - 1];
   verifyMoveState(
@@ -525,9 +539,8 @@ QUnit.test("generateTactics() Light Cavalry", assert => {
     Move.TACTIC,
     playerId,
     paymentCoinId,
-    "h1", // an,
-    undefined, // recruitCoinId
-    "i2" // toAN
+    "h1", // an1,
+    "i2" // an2
   );
 });
 

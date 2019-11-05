@@ -4,12 +4,12 @@ import BoardUI from "../view/BoardUI.js";
 
 function mapStateToProps(state, ownProps) {
   const anToTokens = Selector.anToTokens(state);
-  const reduceFunction = (accum, an) => {
-    const coinIds = anToTokens[an];
+  const reduceFunction = (accum, an1) => {
+    const coinIds = anToTokens[an1];
     const coinStates = Selector.coins(coinIds, state);
     const coinKeys = R.map(c => c.coinKey, coinStates);
 
-    return R.assoc(an, coinKeys, accum);
+    return R.assoc(an1, coinKeys, accum);
   };
   const myANToTokens = R.reduce(reduceFunction, {}, Object.keys(anToTokens));
 

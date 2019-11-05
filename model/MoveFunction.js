@@ -66,38 +66,38 @@ const executePass = (moveState, store) => {
 };
 
 const executeDeploy = (moveState, store) => {
-  const { an, paymentCoinId, playerId } = moveState;
+  const { an1, paymentCoinId, playerId } = moveState;
   const player = Selector.player(playerId, store.getState());
   const paymentCoinState = Selector.coin(paymentCoinId, store.getState());
   const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
   store.dispatch(
     ActionCreator.setUserMessage(`Player ${player.name} deploys a ${paymentCoin.name}.`)
   );
-  store.dispatch(ActionCreator.handToBoard(playerId, paymentCoinId, an));
+  store.dispatch(ActionCreator.handToBoard(playerId, paymentCoinId, an1));
 };
 
 const executeBolster = (moveState, store) => {
-  const { an, paymentCoinId, playerId } = moveState;
+  const { an1, paymentCoinId, playerId } = moveState;
   const player = Selector.player(playerId, store.getState());
   const paymentCoinState = Selector.coin(paymentCoinId, store.getState());
   const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
   store.dispatch(
     ActionCreator.setUserMessage(`Player ${player.name} bolsters a ${paymentCoin.name}.`)
   );
-  store.dispatch(ActionCreator.handToBoard(playerId, paymentCoinId, an));
+  store.dispatch(ActionCreator.handToBoard(playerId, paymentCoinId, an1));
 };
 
 const executeMoveAUnit = (moveState, store) => {
-  const { an, paymentCoinId, playerId, toAN } = moveState;
+  const { an1, paymentCoinId, playerId, an2 } = moveState;
   const player = Selector.player(playerId, store.getState());
   const paymentCoinState = Selector.coin(paymentCoinId, store.getState());
   const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
   store.dispatch(
-    ActionCreator.setUserMessage(`Player ${player.name} moves a ${paymentCoin.name} to ${toAN}.`)
+    ActionCreator.setUserMessage(`Player ${player.name} moves a ${paymentCoin.name} to ${an2}.`)
   );
 
   if (moveState.isBerserker) {
-    store.dispatch(ActionCreator.boardToDiscardFaceup(playerId, an));
+    store.dispatch(ActionCreator.boardToDiscardFaceup(playerId, an1));
   } else {
     store.dispatch(
       ActionCreator.transferBetweenPlayerArrays(
@@ -108,16 +108,16 @@ const executeMoveAUnit = (moveState, store) => {
       )
     );
   }
-  store.dispatch(ActionCreator.moveAUnit(playerId, an, toAN));
+  store.dispatch(ActionCreator.moveAUnit(playerId, an1, an2));
 };
 
 const executeControl = (moveState, store) => {
-  const { an, paymentCoinId, playerId } = moveState;
+  const { an1, paymentCoinId, playerId } = moveState;
   const player = Selector.player(playerId, store.getState());
-  store.dispatch(ActionCreator.setUserMessage(`Player ${player.name} controls ${an}.`));
+  store.dispatch(ActionCreator.setUserMessage(`Player ${player.name} controls ${an1}.`));
 
   if (moveState.isBerserker) {
-    store.dispatch(ActionCreator.boardToDiscardFaceup(playerId, an));
+    store.dispatch(ActionCreator.boardToDiscardFaceup(playerId, an1));
   } else {
     store.dispatch(
       ActionCreator.transferBetweenPlayerArrays(
@@ -128,28 +128,28 @@ const executeControl = (moveState, store) => {
       )
     );
   }
-  store.dispatch(ActionCreator.setControl(an, player.teamKey));
+  store.dispatch(ActionCreator.setControl(an1, player.teamKey));
 };
 
 const executeAttack = (moveState, store) => {
-  const { an, paymentCoinId, playerId, toAN } = moveState;
+  const { an1, paymentCoinId, playerId, an2 } = moveState;
   const player = Selector.player(playerId, store.getState());
   const paymentCoinState = Selector.coin(paymentCoinId, store.getState());
   const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
-  const victimUnit = Selector.unit(toAN, store.getState());
+  const victimUnit = Selector.unit(an2, store.getState());
   const victimCoinId = R.last(victimUnit);
   const victimCoinState = Selector.coin(victimCoinId, store.getState());
   const victimCoin = Resolver.coin(victimCoinState.coinKey);
   const victimPlayer = Selector.playerForCard(victimCoinState.coinKey, store.getState());
   store.dispatch(
     ActionCreator.setUserMessage(
-      `Player ${player.name} uses his ${paymentCoin.name} at ${an}` +
-        ` to attack ${victimCoin.name} at ${toAN}.`
+      `Player ${player.name} uses his ${paymentCoin.name} at ${an1}` +
+        ` to attack ${victimCoin.name} at ${an2}.`
     )
   );
 
   if (moveState.isBerserker) {
-    store.dispatch(ActionCreator.boardToDiscardFaceup(playerId, an));
+    store.dispatch(ActionCreator.boardToDiscardFaceup(playerId, an1));
   } else {
     store.dispatch(
       ActionCreator.transferBetweenPlayerArrays(
@@ -179,12 +179,12 @@ const executeAttack = (moveState, store) => {
       )
     );
   } else {
-    store.dispatch(ActionCreator.boardToMorgue(victimPlayer.id, toAN));
+    store.dispatch(ActionCreator.boardToMorgue(victimPlayer.id, an2));
   }
 
   // Pikeman attribute.
   if (victimCoin.key === UnitCoin.PIKEMAN) {
-    store.dispatch(ActionCreator.boardToMorgue(playerId, an));
+    store.dispatch(ActionCreator.boardToMorgue(playerId, an1));
   }
 };
 
@@ -198,7 +198,7 @@ const labelDeployOrBolster = (moveState, state) => {
   const move = Resolver.move(moveState.moveKey);
   const paymentCoinState = state.coinInstances[moveState.paymentCoinId];
   const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
-  return `${move.name}: ${paymentCoin.name} to ${moveState.an}`;
+  return `${move.name}: ${paymentCoin.name} to ${moveState.an1}`;
 };
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -231,57 +231,57 @@ const MoveFunction = {
   },
   deploy: {
     execute: executeDeploy,
-    isLegal: (player, paymentCoin, an, state) =>
+    isLegal: (player, paymentCoin, an1, state) =>
       Resolver.isUnitCoin(paymentCoin.coinKey) &&
       Selector.canDeploy(paymentCoin.coinKey, state) &&
-      Selector.isControlledBy(an, player.teamKey, state) &&
-      Selector.isUnoccupied(an, state),
+      Selector.isControlledBy(an1, player.teamKey, state) &&
+      Selector.isUnoccupied(an1, state),
     label: labelDeployOrBolster,
     key: "deploy"
   },
   bolster: {
     execute: executeBolster,
-    isLegal: (player, paymentCoin, an, state) =>
+    isLegal: (player, paymentCoin, an1, state) =>
       Resolver.isUnitCoin(paymentCoin.coinKey) &&
-      Selector.isUnitType(an, paymentCoin.coinKey, state),
+      Selector.isUnitType(an1, paymentCoin.coinKey, state),
     label: labelDeployOrBolster,
     key: "bolster"
   },
   moveAUnit: {
     execute: executeMoveAUnit,
-    isLegal: (player, paymentCoin, an, toAN, state) =>
-      Selector.isUnitType(an, paymentCoin.coinKey, state) &&
-      Board.isNeighbor(an, toAN, Selector.isTwoPlayer(state)) &&
-      Selector.isUnoccupied(toAN, state),
+    isLegal: (player, paymentCoin, an1, an2, state) =>
+      Selector.isUnitType(an1, paymentCoin.coinKey, state) &&
+      Board.isNeighbor(an1, an2, Selector.isTwoPlayer(state)) &&
+      Selector.isUnoccupied(an2, state),
     label: (moveState, state) => {
       const move = Resolver.move(moveState.moveKey);
       const paymentCoinState = state.coinInstances[moveState.paymentCoinId];
       const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
-      return `${move.name}: ${paymentCoin.name} from ${moveState.an} to ${moveState.toAN}`;
+      return `${move.name}: ${paymentCoin.name} from ${moveState.an1} to ${moveState.an2}`;
     },
     key: "moveAUnit"
   },
   control: {
     execute: executeControl,
-    isLegal: (player, paymentCoin, an, state) =>
+    isLegal: (player, paymentCoin, an1, state) =>
       Resolver.isUnitCoin(paymentCoin.coinKey) &&
-      Selector.isUnitType(an, paymentCoin.coinKey, state) &&
-      Selector.isControlLocation(an, state) &&
-      !Selector.isControlledBy(an, player.teamKey, state),
+      Selector.isUnitType(an1, paymentCoin.coinKey, state) &&
+      Selector.isControlLocation(an1, state) &&
+      !Selector.isControlledBy(an1, player.teamKey, state),
     label: moveState => {
       const move = Resolver.move(moveState.moveKey);
-      return `${move.name}: ${moveState.an}`;
+      return `${move.name}: ${moveState.an1}`;
     },
     key: "control"
   },
   attack: {
     execute: executeAttack,
-    isLegal: (player, paymentCoin, an, toAN, state) =>
+    isLegal: (player, paymentCoin, an1, an2, state) =>
       UnitCard.canAttack(paymentCoin.coinKey) &&
-      Selector.canBeAttacked(an, toAN, state) &&
-      Selector.isUnitType(an, paymentCoin.coinKey, state) &&
-      Board.isNeighbor(an, toAN, Selector.isTwoPlayer(state)) &&
-      Selector.isEnemyUnitAt(player.id, toAN, state),
+      Selector.canBeAttacked(an1, an2, state) &&
+      Selector.isUnitType(an1, paymentCoin.coinKey, state) &&
+      Board.isNeighbor(an1, an2, Selector.isTwoPlayer(state)) &&
+      Selector.isEnemyUnitAt(player.id, an2, state),
     label: (moveState, state) => {
       const move = Resolver.move(moveState.moveKey);
       const paymentCoinState = state.coinInstances[moveState.paymentCoinId];
@@ -289,8 +289,8 @@ const MoveFunction = {
       const victimCoinState = state.coinInstances[moveState.victimCoinId];
       const victimCoin = Resolver.coin(victimCoinState.coinKey);
       return (
-        `${move.name}: ${paymentCoin.name} at ${moveState.an}` +
-        ` attacks ${victimCoin.name} at ${moveState.toAN}`
+        `${move.name}: ${paymentCoin.name} at ${moveState.an1}` +
+        ` attacks ${victimCoin.name} at ${moveState.an2}`
       );
     },
     key: "attack"

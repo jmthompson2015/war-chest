@@ -28,28 +28,28 @@ QUnit.test("isNeighbor()", assert => {
 
 QUnit.test("isStraightLine()", assert => {
   // Setup.
-  const an = "e2";
+  const an1 = "e2";
 
   // Run / Verify.
-  assert.equal(Board.isStraightLine(an, "c4"), true);
-  assert.equal(Board.isStraightLine(an, "d4"), false);
-  assert.equal(Board.isStraightLine(an, "e4"), true);
-  assert.equal(Board.isStraightLine(an, "f3"), false);
-  assert.equal(Board.isStraightLine(an, "g1"), false);
-  assert.equal(Board.isStraightLine(an, "g2"), true);
+  assert.equal(Board.isStraightLine(an1, "c4"), true);
+  assert.equal(Board.isStraightLine(an1, "d4"), false);
+  assert.equal(Board.isStraightLine(an1, "e4"), true);
+  assert.equal(Board.isStraightLine(an1, "f3"), false);
+  assert.equal(Board.isStraightLine(an1, "g1"), false);
+  assert.equal(Board.isStraightLine(an1, "g2"), true);
 });
 
 QUnit.test("middleAN() e2-e4", assert => {
   // Setup.
-  const an = "e2";
+  const an1 = "e2";
 
   // Run / Verify.
-  assert.equal(Board.middleAN(an, "c4"), "d3", `${an} to c4`);
-  assert.equal(Board.middleAN(an, "d4"), undefined, `${an} to d4`);
-  assert.equal(Board.middleAN(an, "e4"), "e3", `${an} to e4`);
-  assert.equal(Board.middleAN(an, "f3"), undefined, `${an} to f3`);
-  assert.equal(Board.middleAN(an, "g2"), "f2", `${an} to g2`);
-  assert.equal(Board.middleAN(an, "g1"), undefined, `${an} to g1`);
+  assert.equal(Board.middleAN(an1, "c4"), "d3", `${an1} to c4`);
+  assert.equal(Board.middleAN(an1, "d4"), undefined, `${an1} to d4`);
+  assert.equal(Board.middleAN(an1, "e4"), "e3", `${an1} to e4`);
+  assert.equal(Board.middleAN(an1, "f3"), undefined, `${an1} to f3`);
+  assert.equal(Board.middleAN(an1, "g2"), "f2", `${an1} to g2`);
+  assert.equal(Board.middleAN(an1, "g1"), undefined, `${an1} to g1`);
 });
 
 QUnit.test("neighbors() two player", assert => {

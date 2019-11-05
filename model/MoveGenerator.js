@@ -19,25 +19,25 @@ MoveGenerator.generateAttacks = (player, paymentCoin, state) => {
   const paymentCoinId = paymentCoin.id;
   const mm = MoveFunction[moveKey];
   const playerUnitANs = Selector.playerUnitANs(player.id, state);
-  const reduceFunction2 = an => (accum2, toAN) => {
-    if (mm.isLegal(player, paymentCoin, an, toAN, state)) {
-      const victimCoin = Selector.coinForUnit(toAN, state);
+  const reduceFunction2 = an1 => (accum2, an2) => {
+    if (mm.isLegal(player, paymentCoin, an1, an2, state)) {
+      const victimCoin = Selector.coinForUnit(an2, state);
       const victimCoinId = victimCoin.id;
       const moveState = MoveState.create({
         moveKey,
         playerId,
         paymentCoinId,
-        an,
-        toAN,
+        an1,
+        an2,
         victimCoinId
       });
       return R.append(moveState, accum2);
     }
     return accum2;
   };
-  const reduceFunction1 = (accum1, an) => {
-    const neighbors = Board.neighbors(an, Selector.isTwoPlayer(state));
-    const accum2 = R.reduce(reduceFunction2(an), [], neighbors);
+  const reduceFunction1 = (accum1, an1) => {
+    const neighbors = Board.neighbors(an1, Selector.isTwoPlayer(state));
+    const accum2 = R.reduce(reduceFunction2(an1), [], neighbors);
     return R.concat(accum1, accum2);
   };
 
@@ -50,9 +50,9 @@ MoveGenerator.generateBolsters = (player, paymentCoin, state) => {
   const paymentCoinId = paymentCoin.id;
   const mm = MoveFunction[moveKey];
   const controlANs = Selector.controlANs(player.teamKey, state);
-  const reduceFunction = (accum, an) => {
-    if (mm.isLegal(player, paymentCoin, an, state)) {
-      const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an });
+  const reduceFunction = (accum, an1) => {
+    if (mm.isLegal(player, paymentCoin, an1, state)) {
+      const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1 });
       return R.append(moveState, accum);
     }
     return accum;
@@ -82,9 +82,9 @@ MoveGenerator.generateControls = (player, paymentCoin, state) => {
   const paymentCoinId = paymentCoin.id;
   const mm = MoveFunction[moveKey];
   const possibleControlANs = Selector.possibleControlANs(player.id, state);
-  const reduceFunction = (accum, an) => {
-    if (mm.isLegal(player, paymentCoin, an, state)) {
-      const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an });
+  const reduceFunction = (accum, an1) => {
+    if (mm.isLegal(player, paymentCoin, an1, state)) {
+      const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1 });
       return R.append(moveState, accum);
     }
     return accum;
@@ -99,9 +99,9 @@ MoveGenerator.generateDeploys = (player, paymentCoin, state) => {
   const paymentCoinId = paymentCoin.id;
   const mm = MoveFunction[moveKey];
   const controlANs = Selector.controlANs(player.teamKey, state);
-  const reduceFunction1 = (accum, an) => {
-    if (mm.isLegal(player, paymentCoin, an, state)) {
-      const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an });
+  const reduceFunction1 = (accum, an1) => {
+    if (mm.isLegal(player, paymentCoin, an1, state)) {
+      const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1 });
       return R.append(moveState, accum);
     }
     return accum;
@@ -117,9 +117,9 @@ MoveGenerator.generateDeploys = (player, paymentCoin, state) => {
   ) {
     const teamAdjacentANs = Selector.teamAdjacentANs(player.teamKey, state);
     const neighborANs = R.without(controlANs, teamAdjacentANs);
-    const reduceFunction2 = (accum, an) => {
-      if (Selector.isUnoccupied(an, state)) {
-        const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an });
+    const reduceFunction2 = (accum, an1) => {
+      if (Selector.isUnoccupied(an1, state)) {
+        const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1 });
         return R.append(moveState, accum);
       }
       return accum;
@@ -137,16 +137,16 @@ MoveGenerator.generateMoveAUnits = (player, paymentCoin, state) => {
   const paymentCoinId = paymentCoin.id;
   const mm = MoveFunction[moveKey];
   const playerUnitANs = Selector.playerUnitANs(player.id, state);
-  const reduceFunction2 = an => (accum2, toAN) => {
-    if (mm.isLegal(player, paymentCoin, an, toAN, state)) {
-      const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an, toAN });
+  const reduceFunction2 = an1 => (accum2, an2) => {
+    if (mm.isLegal(player, paymentCoin, an1, an2, state)) {
+      const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, an2 });
       return R.append(moveState, accum2);
     }
     return accum2;
   };
-  const reduceFunction1 = (accum1, an) => {
-    const neighbors = Board.neighbors(an, Selector.isTwoPlayer(state));
-    const accum2 = R.reduce(reduceFunction2(an), [], neighbors);
+  const reduceFunction1 = (accum1, an1) => {
+    const neighbors = Board.neighbors(an1, Selector.isTwoPlayer(state));
+    const accum2 = R.reduce(reduceFunction2(an1), [], neighbors);
     return R.concat(accum1, accum2);
   };
 
@@ -193,30 +193,30 @@ MoveGenerator.generateTactics = (player, paymentCoin, state) => {
   const playerId = player.id;
   const paymentCoinId = paymentCoin.id;
   const playerUnitANs = Selector.playerUnitANs(player.id, state);
-  const reduceFunction2 = (tt, an) => (accum2, toAN) => {
-    if (tt.isLegal(player, paymentCoin, an, toAN, state)) {
-      const victimCoin = Selector.coinForUnit(toAN, state);
+  const reduceFunction2 = (tt, an1) => (accum2, an2) => {
+    if (tt.isLegal(player, paymentCoin, an1, an2, state)) {
+      const victimCoin = Selector.coinForUnit(an2, state);
       const victimCoinId = victimCoin ? victimCoin.id : undefined;
       const moveState = MoveState.create({
         moveKey,
         playerId,
         paymentCoinId,
-        an,
-        toAN,
+        an1,
+        an2,
         victimCoinId
       });
       return R.append(moveState, accum2);
     }
     return accum2;
   };
-  const reduceFunction1 = (accum1, an) => {
-    const { coinKey } = Selector.coinForUnit(an, state);
+  const reduceFunction1 = (accum1, an1) => {
+    const { coinKey } = Selector.coinForUnit(an1, state);
     const tt = Tactic[coinKey];
     if (tt) {
-      const neighbors = Board.neighbors(an, Selector.isTwoPlayer(state));
-      const accum2 = R.reduce(reduceFunction2(tt, an), [], neighbors);
-      const neighbors2 = Board.ringANs(an, 2);
-      const accum3 = R.reduce(reduceFunction2(tt, an), [], neighbors2);
+      const neighbors = Board.neighbors(an1, Selector.isTwoPlayer(state));
+      const accum2 = R.reduce(reduceFunction2(tt, an1), [], neighbors);
+      const neighbors2 = Board.ringANs(an1, 2);
+      const accum3 = R.reduce(reduceFunction2(tt, an1), [], neighbors2);
       return R.concat(accum1, R.concat(accum2, accum3));
     }
     return accum1;

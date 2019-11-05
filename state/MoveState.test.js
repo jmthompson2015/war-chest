@@ -6,9 +6,10 @@ const PROPS = [
   "moveKey",
   "playerId",
   "paymentCoinId",
-  "an",
+  "an1",
+  "an2",
+  "an3",
   "recruitCoinId",
-  "toAN",
   "victimCoinId"
 ];
 
@@ -17,10 +18,11 @@ const createTestData = () =>
     moveKey: 1,
     playerId: 2,
     paymentCoinId: 3,
-    an: 4,
-    recruitCoinId: 5,
-    toAN: 6,
-    victimCoinId: 7
+    an1: 4,
+    an2: 5,
+    an3: 6,
+    recruitCoinId: 7,
+    victimCoinId: 8
   });
 
 QUnit.test("create()", assert => {

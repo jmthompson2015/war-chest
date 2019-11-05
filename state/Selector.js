@@ -27,14 +27,14 @@ Selector.ansByType = (coinKey, state) => {
   return R.filter(filterFunction, Object.keys(state.anToTokens));
 };
 
-Selector.canBeAttacked = (an, toAN, state) => {
-  const attackUnit = Selector.unit(an, state);
-  const victimUnit = Selector.unit(toAN, state);
+Selector.canBeAttacked = (an1, an2, state) => {
+  const attackUnit = Selector.unit(an1, state);
+  const victimUnit = Selector.unit(an2, state);
   let answer = false;
 
   if (attackUnit && victimUnit) {
-    const isKnight = Selector.isUnitType(toAN, UnitCoin.KNIGHT, state);
-    answer = isKnight ? Selector.isBolstered(an, state) : true;
+    const isKnight = Selector.isUnitType(an2, UnitCoin.KNIGHT, state);
+    answer = isKnight ? Selector.isBolstered(an1, state) : true;
   }
 
   return answer;

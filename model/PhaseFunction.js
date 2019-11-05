@@ -160,7 +160,7 @@ const beforeMoveExecute = store =>
 const afterMoveExecute = (paymentCoin, resolve, store, callback) => {
   const moveState = Selector.currentMove(store.getState());
   const move = Resolver.move(moveState.moveKey);
-  const an = moveState.moveKey === Move.MOVE_A_UNIT ? moveState.toAN : moveState.an;
+  const an = moveState.moveKey === Move.MOVE_A_UNIT ? moveState.an2 : moveState.an1;
   const unit = Selector.unit(an, store.getState());
   const recruitCoin = moveState.recruitCoinId
     ? Selector.coin(moveState.recruitCoinId, store.getState())

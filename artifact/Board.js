@@ -55,39 +55,39 @@ Board.RANK_COUNT = 7;
 Board.boardCalculator = new BoardCalculator(Board.IS_SQUARE, Board.IS_FLAT);
 Board.coordinateCalculator = new CoordinateCalculator(Board.FILE_COUNT, Board.RANK_COUNT);
 
-Board.distance = (an, toAN) => {
-  const q1 = Board.coordinateCalculator.anToFile(an);
-  const r1 = Board.coordinateCalculator.anToRank(an);
+Board.distance = (an1, an2) => {
+  const q1 = Board.coordinateCalculator.anToFile(an1);
+  const r1 = Board.coordinateCalculator.anToRank(an1);
   const hex1 = { q: q1, r: r1 };
-  const q2 = Board.coordinateCalculator.anToFile(toAN);
-  const r2 = Board.coordinateCalculator.anToRank(toAN);
+  const q2 = Board.coordinateCalculator.anToFile(an2);
+  const r2 = Board.coordinateCalculator.anToRank(an2);
   const hex2 = { q: q2, r: r2 };
 
   return HexBoardUtilities.hexDistance(hex1, hex2);
 };
 
-Board.isNeighbor = (an, toAN, isTwoPlayer = true) =>
-  Board.neighbors(an, isTwoPlayer).includes(toAN);
+Board.isNeighbor = (an1, an2, isTwoPlayer = true) =>
+  Board.neighbors(an1, isTwoPlayer).includes(an2);
 
-Board.isStraightLine = (an, toAN) => {
-  const q1 = Board.coordinateCalculator.anToFile(an);
-  const r1 = Board.coordinateCalculator.anToRank(an);
-  const q2 = Board.coordinateCalculator.anToFile(toAN);
-  const r2 = Board.coordinateCalculator.anToRank(toAN);
+Board.isStraightLine = (an1, an2) => {
+  const q1 = Board.coordinateCalculator.anToFile(an1);
+  const r1 = Board.coordinateCalculator.anToRank(an1);
+  const q2 = Board.coordinateCalculator.anToFile(an2);
+  const r2 = Board.coordinateCalculator.anToRank(an2);
   const deltaQ = q2 - q1;
   const deltaR = r2 - r1;
 
   return deltaR === -deltaQ || (deltaQ === 0 && deltaR !== 0) || (deltaQ !== 0 && deltaR === 0);
 };
 
-Board.middleAN = (an, toAN) => {
+Board.middleAN = (an1, an2) => {
   let answer;
 
-  if (Board.distance(an, toAN) === 2 && Board.isStraightLine(an, toAN)) {
-    const q1 = Board.coordinateCalculator.anToFile(an);
-    const r1 = Board.coordinateCalculator.anToRank(an);
-    const q2 = Board.coordinateCalculator.anToFile(toAN);
-    const r2 = Board.coordinateCalculator.anToRank(toAN);
+  if (Board.distance(an1, an2) === 2 && Board.isStraightLine(an1, an2)) {
+    const q1 = Board.coordinateCalculator.anToFile(an1);
+    const r1 = Board.coordinateCalculator.anToRank(an1);
+    const q2 = Board.coordinateCalculator.anToFile(an2);
+    const r2 = Board.coordinateCalculator.anToRank(an2);
     const deltaQ = q2 - q1;
     const deltaR = r2 - r1;
     const q = q1 + deltaQ / 2.0;

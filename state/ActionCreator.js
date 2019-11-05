@@ -20,14 +20,19 @@ ActionCreator.addToPlayerArray = (arrayName, playerId, coinId) => {
 ActionCreator.boardToDiscardFaceup = makeActionCreator(
   ActionType.BOARD_TO_DISCARD_FACEUP,
   "playerId",
-  "an"
+  "an1"
 );
 
-ActionCreator.boardToMorgue = makeActionCreator(ActionType.BOARD_TO_MORGUE, "playerId", "an");
+ActionCreator.boardToMorgue = makeActionCreator(ActionType.BOARD_TO_MORGUE, "playerId", "an1");
 
-ActionCreator.handToBoard = makeActionCreator(ActionType.HAND_TO_BOARD, "playerId", "coinId", "an");
+ActionCreator.handToBoard = makeActionCreator(
+  ActionType.HAND_TO_BOARD,
+  "playerId",
+  "coinId",
+  "an2"
+);
 
-ActionCreator.moveAUnit = makeActionCreator(ActionType.MOVE_A_UNIT, "playerId", "an", "toAN");
+ActionCreator.moveAUnit = makeActionCreator(ActionType.MOVE_A_UNIT, "playerId", "an1", "an2");
 
 ActionCreator.popInputCallback = makeActionCreator(ActionType.POP_INPUT_CALLBACK);
 

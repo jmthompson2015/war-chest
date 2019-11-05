@@ -28,12 +28,12 @@ QUnit.test("execute() Archer", assert => {
   const paymentCoinId = hand2[1]; // Archer
   const hand1 = Selector.hand(1, store.getState());
   const victimCoinId = hand1[1]; // Swordsman
-  const an = "e2"; // Raven control location.
-  const toAN = "e4";
-  store.dispatch(ActionCreator.setUnit(an, 22)); // Archer
-  store.dispatch(ActionCreator.setUnit(toAN, victimCoinId));
+  const an1 = "e2"; // Raven control location.
+  const an2 = "e4";
+  store.dispatch(ActionCreator.setUnit(an1, 22)); // Archer
+  store.dispatch(ActionCreator.setUnit(an2, victimCoinId));
   const moveKey = Move.TACTIC;
-  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an, toAN, victimCoinId });
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, an2, victimCoinId });
 
   // Run.
   Tactic[UnitCoin.ARCHER].execute(moveState, store);
@@ -42,10 +42,10 @@ QUnit.test("execute() Archer", assert => {
   const resultHand = Selector.hand(playerId, store.getState());
   assert.ok(resultHand);
   assert.equal(resultHand.length, 2);
-  const resultFromUnit = Selector.unit(an, store.getState());
+  const resultFromUnit = Selector.unit(an1, store.getState());
   assert.ok(resultFromUnit);
   assert.equal(resultFromUnit.join(), 22);
-  const resultToUnit = Selector.unit(toAN, store.getState());
+  const resultToUnit = Selector.unit(an2, store.getState());
   assert.equal(resultToUnit, undefined);
   const resultMorgue = Selector.morgue(1, store.getState());
   assert.ok(resultMorgue);
@@ -60,12 +60,12 @@ QUnit.test("execute() Crossbowman", assert => {
   const paymentCoinId = 15; // Crossbowman
   store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
   const victimCoinId = 25; // Archer
-  const an = "e2"; // Raven control location.
-  const toAN = "e4";
-  store.dispatch(ActionCreator.setUnit(an, 11)); // Crossbowman
-  store.dispatch(ActionCreator.setUnit(toAN, victimCoinId)); // Archer
+  const an1 = "e2"; // Raven control location.
+  const an2 = "e4";
+  store.dispatch(ActionCreator.setUnit(an1, 11)); // Crossbowman
+  store.dispatch(ActionCreator.setUnit(an2, victimCoinId)); // Archer
   const moveKey = Move.TACTIC;
-  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an, toAN, victimCoinId });
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, an2, victimCoinId });
 
   // Run.
   Tactic[UnitCoin.CROSSBOWMAN].execute(moveState, store);
@@ -74,10 +74,10 @@ QUnit.test("execute() Crossbowman", assert => {
   const resultHand = Selector.hand(playerId, store.getState());
   assert.ok(resultHand);
   assert.equal(resultHand.length, 3);
-  const resultFromUnit = Selector.unit(an, store.getState());
+  const resultFromUnit = Selector.unit(an1, store.getState());
   assert.ok(resultFromUnit);
   assert.equal(resultFromUnit.join(), 11);
-  const resultToUnit = Selector.unit(toAN, store.getState());
+  const resultToUnit = Selector.unit(an2, store.getState());
   assert.equal(resultToUnit, undefined);
   const resultMorgue = Selector.morgue(2, store.getState());
   assert.ok(resultMorgue);
@@ -91,11 +91,11 @@ QUnit.test("execute() Light Cavalry", assert => {
   const playerId = 1;
   const paymentCoinId = 20; // Light Cavalry
   store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
-  const an = "e2"; // Raven control location.
-  const toAN = "e4";
-  store.dispatch(ActionCreator.setUnit(an, 16)); // Light Cavalry
+  const an1 = "e2"; // Raven control location.
+  const an2 = "e4";
+  store.dispatch(ActionCreator.setUnit(an1, 16)); // Light Cavalry
   const moveKey = Move.TACTIC;
-  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an, toAN });
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, an2 });
 
   // Run.
   Tactic[UnitCoin.LIGHT_CAVALRY].execute(moveState, store);
@@ -104,9 +104,9 @@ QUnit.test("execute() Light Cavalry", assert => {
   const resultHand = Selector.hand(playerId, store.getState());
   assert.ok(resultHand);
   assert.equal(resultHand.length, 3);
-  const resultFromUnit = Selector.unit(an, store.getState());
+  const resultFromUnit = Selector.unit(an1, store.getState());
   assert.equal(resultFromUnit, undefined);
-  const resultToUnit = Selector.unit(toAN, store.getState());
+  const resultToUnit = Selector.unit(an2, store.getState());
   assert.ok(resultToUnit);
   assert.equal(resultToUnit.join(""), 16);
 });
@@ -120,11 +120,11 @@ QUnit.test("execute() Royal Guard", assert => {
   store.dispatch(ActionCreator.addCoin(coinState1));
   const paymentCoinId = 1; // Raven Royal Coin
   store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
-  const an = "e2"; // Raven control location.
-  const toAN = "e3";
-  store.dispatch(ActionCreator.setUnit(an, coinState1.id)); // Royal Guard
+  const an1 = "e2"; // Raven control location.
+  const an2 = "e3";
+  store.dispatch(ActionCreator.setUnit(an1, coinState1.id)); // Royal Guard
   const moveKey = Move.TACTIC;
-  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an, toAN });
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, an2 });
 
   // Run.
   Tactic[UnitCoin.ROYAL_GUARD].execute(moveState, store);
@@ -133,9 +133,9 @@ QUnit.test("execute() Royal Guard", assert => {
   const resultHand = Selector.hand(playerId, store.getState());
   assert.ok(resultHand);
   assert.equal(resultHand.length, 3);
-  const resultFromUnit = Selector.unit(an, store.getState());
+  const resultFromUnit = Selector.unit(an1, store.getState());
   assert.equal(resultFromUnit, undefined);
-  const resultToUnit = Selector.unit(toAN, store.getState());
+  const resultToUnit = Selector.unit(an2, store.getState());
   assert.ok(resultToUnit);
   assert.equal(resultToUnit.join(""), 39);
 });
@@ -150,14 +150,14 @@ QUnit.test("isLegal() Archer true", assert => {
   const paymentCoin = Selector.coin(paymentCoinId, store.getState());
   const hand1 = Selector.hand(1, store.getState());
   const victimCoinId = hand1[1]; // Swordsman
-  const an = "e2"; // Raven control location.
-  const toAN = "e4";
-  store.dispatch(ActionCreator.setUnit(an, paymentCoinId));
-  store.dispatch(ActionCreator.setUnit(toAN, victimCoinId));
+  const an1 = "e2"; // Raven control location.
+  const an2 = "e4";
+  store.dispatch(ActionCreator.setUnit(an1, paymentCoinId));
+  store.dispatch(ActionCreator.setUnit(an2, victimCoinId));
   const tactic = Tactic[UnitCoin.ARCHER];
 
   // Run.
-  const result = tactic.isLegal(player, paymentCoin, an, toAN, store.getState());
+  const result = tactic.isLegal(player, paymentCoin, an1, an2, store.getState());
 
   // Verify.
   assert.equal(result, true);
@@ -172,14 +172,14 @@ QUnit.test("isLegal() Crossbowman true", assert => {
   store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
   const paymentCoin = Selector.coin(paymentCoinId, store.getState());
   const victimCoinId = 25; // Archer
-  const an = "e2"; // Raven control location.
-  const toAN = "e4";
-  store.dispatch(ActionCreator.setUnit(an, 11)); // Crossbowman
-  store.dispatch(ActionCreator.setUnit(toAN, victimCoinId)); // Archer
+  const an1 = "e2"; // Raven control location.
+  const an2 = "e4";
+  store.dispatch(ActionCreator.setUnit(an1, 11)); // Crossbowman
+  store.dispatch(ActionCreator.setUnit(an2, victimCoinId)); // Archer
   const tactic = Tactic[UnitCoin.CROSSBOWMAN];
 
   // Run.
-  const result = tactic.isLegal(player, paymentCoin, an, toAN, store.getState());
+  const result = tactic.isLegal(player, paymentCoin, an1, an2, store.getState());
 
   // Verify.
   assert.equal(result, true);
@@ -193,13 +193,13 @@ QUnit.test("isLegal() Light Cavalry true", assert => {
   const paymentCoinId = 20; // Light Cavalry
   const paymentCoin = Selector.coin(paymentCoinId, store.getState());
   store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
-  const an = "e2"; // Raven control location.
-  const toAN = "e4";
-  store.dispatch(ActionCreator.setUnit(an, 16)); // Light Cavalry
+  const an1 = "e2"; // Raven control location.
+  const an2 = "e4";
+  store.dispatch(ActionCreator.setUnit(an1, 16)); // Light Cavalry
   const tactic = Tactic[UnitCoin.LIGHT_CAVALRY];
 
   // Run.
-  const result = tactic.isLegal(player, paymentCoin, an, toAN, store.getState());
+  const result = tactic.isLegal(player, paymentCoin, an1, an2, store.getState());
 
   // Verify.
   assert.equal(result, true);
@@ -216,13 +216,13 @@ QUnit.test("isLegal() Royal Guard true", assert => {
   const paymentCoinId = 1; // Raven Royal Coin
   const paymentCoin = Selector.coin(paymentCoinId, store.getState());
   store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
-  const an = "e2"; // Raven control location.
-  const toAN = "e3";
-  store.dispatch(ActionCreator.setUnit(an, coinState1.id)); // Royal Guard
+  const an1 = "e2"; // Raven control location.
+  const an2 = "e3";
+  store.dispatch(ActionCreator.setUnit(an1, coinState1.id)); // Royal Guard
   const tactic = Tactic[UnitCoin.ROYAL_GUARD];
 
   // Run.
-  const result = tactic.isLegal(player, paymentCoin, an, toAN, store.getState());
+  const result = tactic.isLegal(player, paymentCoin, an1, an2, store.getState());
 
   // Verify.
   assert.equal(result, true);
@@ -236,12 +236,12 @@ QUnit.test("label() Archer", assert => {
   const paymentCoinId = hand2[1];
   const hand1 = Selector.hand(1, store.getState());
   const victimCoinId = hand1[1];
-  const an = "e2"; // Raven control location.
-  const toAN = "e4";
-  store.dispatch(ActionCreator.setUnit(an, paymentCoinId));
-  store.dispatch(ActionCreator.setUnit(toAN, victimCoinId));
+  const an1 = "e2"; // Raven control location.
+  const an2 = "e4";
+  store.dispatch(ActionCreator.setUnit(an1, paymentCoinId));
+  store.dispatch(ActionCreator.setUnit(an2, victimCoinId));
   const moveKey = Move.TACTIC;
-  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an, toAN, victimCoinId });
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, an2, victimCoinId });
   const tactic = Tactic[UnitCoin.ARCHER];
 
   // Run.
@@ -258,12 +258,12 @@ QUnit.test("label() Crossbowman", assert => {
   const paymentCoinId = 15; // Crossbowman
   store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
   const victimCoinId = 25; // Archer
-  const an = "e2"; // Raven control location.
-  const toAN = "e4";
-  store.dispatch(ActionCreator.setUnit(an, 11)); // Crossbowman
-  store.dispatch(ActionCreator.setUnit(toAN, victimCoinId)); // Archer
+  const an1 = "e2"; // Raven control location.
+  const an2 = "e4";
+  store.dispatch(ActionCreator.setUnit(an1, 11)); // Crossbowman
+  store.dispatch(ActionCreator.setUnit(an2, victimCoinId)); // Archer
   const moveKey = Move.TACTIC;
-  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an, toAN, victimCoinId });
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, an2, victimCoinId });
   const tactic = Tactic[UnitCoin.CROSSBOWMAN];
 
   // Run.
@@ -279,11 +279,11 @@ QUnit.test("label() Light Cavalry", assert => {
   const playerId = 1;
   const paymentCoinId = 20; // Light Cavalry
   store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
-  const an = "e2"; // Raven control location.
-  const toAN = "e4";
-  store.dispatch(ActionCreator.setUnit(an, 16)); // Light Cavalry
+  const an1 = "e2"; // Raven control location.
+  const an2 = "e4";
+  store.dispatch(ActionCreator.setUnit(an1, 16)); // Light Cavalry
   const moveKey = Move.TACTIC;
-  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an, toAN });
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, an2 });
   const tactic = Tactic[UnitCoin.LIGHT_CAVALRY];
 
   // Run.
@@ -302,11 +302,11 @@ QUnit.test("label() Royal Guard", assert => {
   store.dispatch(ActionCreator.addCoin(coinState1));
   const paymentCoinId = 1; // Raven Royal Coin
   store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
-  const an = "e2"; // Raven control location.
-  const toAN = "e3";
-  store.dispatch(ActionCreator.setUnit(an, coinState1.id)); // Royal Guard
+  const an1 = "e2"; // Raven control location.
+  const an2 = "e3";
+  store.dispatch(ActionCreator.setUnit(an1, coinState1.id)); // Royal Guard
   const moveKey = Move.TACTIC;
-  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an, toAN });
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, an2 });
   const tactic = Tactic[UnitCoin.ROYAL_GUARD];
 
   // Run.

@@ -30,16 +30,16 @@ const initializePlayerControlMarkers = (isTwoPlayer, isRaven, store) => {
       : Board.WOLF_STARTER_CONTROL_POINTS_4P;
   }
 
-  R.forEach(an => {
-    store.dispatch(ActionCreator.setControl(an, controlKey));
+  R.forEach(an1 => {
+    store.dispatch(ActionCreator.setControl(an1, controlKey));
   }, controlANs);
 };
 
 const initializeControlMarkers = (store, isTwoPlayer) => {
   // Place neutral control marker on locations.
   const controlPoints = isTwoPlayer ? Board.CONTROL_POINTS_2P : Board.CONTROL_POINTS_4P;
-  R.forEach(an => {
-    store.dispatch(ActionCreator.setControl(an, ControlMarker.NEUTRAL));
+  R.forEach(an1 => {
+    store.dispatch(ActionCreator.setControl(an1, ControlMarker.NEUTRAL));
   }, controlPoints);
 
   initializePlayerControlMarkers(isTwoPlayer, true, store);

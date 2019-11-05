@@ -72,13 +72,13 @@ QUnit.test("chooseMove() Berserker", assert => {
   store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", playerId, UnitCard.BERSERKER));
   store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, coinState4.id));
   store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
-  const an = "e2";
-  store.dispatch(ActionCreator.setUnit(an, coinState1.id)); // Berserker
-  store.dispatch(ActionCreator.setUnit(an, coinState2.id)); // Berserker
-  store.dispatch(ActionCreator.setUnit(an, coinState3.id)); // Berserker
+  const an1 = "e2";
+  store.dispatch(ActionCreator.setUnit(an1, coinState1.id)); // Berserker
+  store.dispatch(ActionCreator.setUnit(an1, coinState2.id)); // Berserker
+  store.dispatch(ActionCreator.setUnit(an1, coinState3.id)); // Berserker
   const victimCoinId = 22; // Archer
-  const toAN = "e3";
-  store.dispatch(ActionCreator.setUnit(toAN, victimCoinId)); // Archer
+  const an2 = "e3";
+  store.dispatch(ActionCreator.setUnit(an2, victimCoinId)); // Archer
 
   const players = Selector.playersInOrder(store.getState());
   const playerIds = R.map(R.prop("id"), players);
@@ -88,7 +88,7 @@ QUnit.test("chooseMove() Berserker", assert => {
 
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates = [
-    MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, an, toAN, victimCoinId })
+    MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, an1, an2, victimCoinId })
   ];
   const resolve = 12;
 
@@ -103,8 +103,8 @@ QUnit.test("chooseMove() Berserker", assert => {
     assert.ok(moveState);
     assert.ok(moveState.moveKey, `moveState.moveKey = ${moveState.moveKey}`);
     assert.equal(Move.maneuverKeys().includes(moveState.moveKey), true);
-    const an2 = moveState.moveKey === Move.MOVE_A_UNIT ? moveState.toAN : moveState.an;
-    const unit2 = Selector.unit(an2, store2.getState());
+    const resultAN = moveState.moveKey === Move.MOVE_A_UNIT ? moveState.an2 : moveState.an1;
+    const unit2 = Selector.unit(resultAN, store2.getState());
     assert.ok(unit2);
     assert.equal(unit2.length, 1);
     assert.equal(resolve, resolve2);
@@ -125,8 +125,8 @@ QUnit.test("chooseMove() Mercenary", assert => {
   store.dispatch(ActionCreator.addCoin(coinState3));
   const paymentCoinId = coinState2.id; // Mercenary
   store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
-  const an = "d4";
-  store.dispatch(ActionCreator.setUnit(an, coinState1.id)); // Mercenary
+  const an1 = "d4";
+  store.dispatch(ActionCreator.setUnit(an1, coinState1.id)); // Mercenary
   const recruitCoinId = coinState3.id;
   store.dispatch(ActionCreator.addToPlayerArray("playerToSupply", playerId, recruitCoinId));
 
@@ -166,14 +166,14 @@ QUnit.test("chooseMove() Royal Guard", assert => {
   const paymentCoinId = hand[2]; // Pikeman
   store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", 2, UnitCard.ROYAL_GUARD));
   store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
-  const an = "e2";
-  const toAN = "e3";
+  const an1 = "e2";
+  const an2 = "e3";
   const coinState1 = CoinState.create({ coinKey: UnitCoin.ROYAL_GUARD, store });
   store.dispatch(ActionCreator.addCoin(coinState1));
   store.dispatch(ActionCreator.addToPlayerArray("playerToSupply", 2, coinState1.id));
   const victimCoinId = coinState1.id; // Royal Guard
-  store.dispatch(ActionCreator.setUnit(an, 7)); // Pikeman
-  store.dispatch(ActionCreator.setUnit(toAN, victimCoinId)); // Royal Guard
+  store.dispatch(ActionCreator.setUnit(an1, 7)); // Pikeman
+  store.dispatch(ActionCreator.setUnit(an2, victimCoinId)); // Royal Guard
   const players = Selector.playersInOrder(store.getState());
   const playerIds = R.map(R.prop("id"), players);
   store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
@@ -182,7 +182,7 @@ QUnit.test("chooseMove() Royal Guard", assert => {
 
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates = [
-    MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, an, toAN, victimCoinId })
+    MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, an1, an2, victimCoinId })
   ];
   const resolve = 12;
 
@@ -201,11 +201,11 @@ QUnit.test("chooseMove() Royal Guard", assert => {
       10,
       `moveState.paymentCoinId = ${moveState.paymentCoinId}`
     );
-    assert.equal(moveState.an, "e2", `moveState.an = ${moveState.an}`);
+    assert.equal(moveState.an1, "e2", `moveState.an1 = ${moveState.an1}`);
     assert.equal(
-      ["d3", "e3", "f1", "f2"].includes(moveState.toAN),
+      ["d3", "e3", "f1", "f2"].includes(moveState.an2),
       true,
-      `moveState.toAN = ${moveState.toAN}`
+      `moveState.an2 = ${moveState.an2}`
     );
     done();
   };
@@ -219,11 +219,11 @@ QUnit.test("chooseMove() Swordsman", assert => {
   const hand = Selector.hand(playerId, store.getState());
   const paymentCoinId = hand[1]; // Swordsman
   store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
-  const an = "e2";
-  const toAN = "e3";
+  const an1 = "e2";
+  const an2 = "e3";
   const victimCoinId = 22; // Archer
-  store.dispatch(ActionCreator.setUnit(an, 2)); // Swordsman
-  store.dispatch(ActionCreator.setUnit(toAN, victimCoinId)); // Archer
+  store.dispatch(ActionCreator.setUnit(an1, 2)); // Swordsman
+  store.dispatch(ActionCreator.setUnit(an2, victimCoinId)); // Archer
   const players = Selector.playersInOrder(store.getState());
   const playerIds = R.map(R.prop("id"), players);
   store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
@@ -232,7 +232,7 @@ QUnit.test("chooseMove() Swordsman", assert => {
 
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates = [
-    MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, an, toAN, victimCoinId })
+    MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, an1, an2, victimCoinId })
   ];
   const resolve = 12;
 
@@ -252,13 +252,13 @@ QUnit.test("chooseMove() Swordsman", assert => {
       6,
       `moveState.paymentCoinId = ${moveState.paymentCoinId}`
     );
-    assert.equal(moveState.an, "e2", `moveState.an = ${moveState.an}`);
+    assert.equal(moveState.an1, "e2", `moveState.an1 = ${moveState.an1}`);
     assert.equal(
-      ["d3", "e3", "f1", "f2"].includes(moveState.toAN),
+      ["d3", "e3", "f1", "f2"].includes(moveState.an2),
       true,
-      `moveState.toAN = ${moveState.toAN}`
+      `moveState.an2 = ${moveState.an2}`
     );
-    const toCoin = Selector.coinForUnit(moveState.toAN, store.getState());
+    const toCoin = Selector.coinForUnit(moveState.an2, store.getState());
     assert.equal(toCoin.coinKey, UnitCoin.SWORDSMAN, `toCoin.coinKey = ${toCoin.coinKey}`);
     done();
   };
@@ -275,8 +275,8 @@ QUnit.test("chooseMove() Warrior Priest", assert => {
   store.dispatch(ActionCreator.addCoin(coinState2));
   const paymentCoinId = coinState2.id; // Warrior Priest
   store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
-  const an = "d4";
-  store.dispatch(ActionCreator.setUnit(an, coinState1.id)); // Warrior Priest
+  const an1 = "d4";
+  store.dispatch(ActionCreator.setUnit(an1, coinState1.id)); // Warrior Priest
 
   const players = Selector.playersInOrder(store.getState());
   const playerIds = R.map(R.prop("id"), players);
@@ -285,7 +285,7 @@ QUnit.test("chooseMove() Warrior Priest", assert => {
   store.dispatch(ActionCreator.setCurrentPlayer(playerId));
 
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
-  const moveStates = [MoveState.create({ moveKey: Move.CONTROL, playerId, paymentCoinId, an })];
+  const moveStates = [MoveState.create({ moveKey: Move.CONTROL, playerId, paymentCoinId, an1 })];
   const resolve = 12;
 
   // Run.
@@ -333,16 +333,16 @@ QUnit.test("executeSwordsmanAttribute()", assert => {
   const paymentCoinId = hand[1]; // Swordsman
   store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
   const unitCoinId = 2; // Swordsman
-  const an = "e3"; // Raven control location.
-  const toAN = "e4";
-  store.dispatch(ActionCreator.setUnit(an, unitCoinId));
+  const an1 = "e3"; // Raven control location.
+  const an2 = "e4";
+  store.dispatch(ActionCreator.setUnit(an1, unitCoinId));
   const players = Selector.playersInOrder(store.getState());
   const playerIds = R.map(R.prop("id"), players);
   store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
   store.dispatch(ActionCreator.setDelay(0));
   store.dispatch(
     ActionCreator.setCurrentMove(
-      MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, an, toAN })
+      MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, an1, an2 })
     )
   );
   const resolve = 12;

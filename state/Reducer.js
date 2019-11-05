@@ -85,14 +85,14 @@ Reducer.root = (state, action) => {
       return addToArray(state, action.arrayName, action.playerId, action.coinId);
     case ActionType.BOARD_TO_DISCARD_FACEUP:
       console.log(
-        `Reducer BOARD_TO_DISCARD_FACEUP playerId = ${action.playerId} an = ${action.an}`
+        `Reducer BOARD_TO_DISCARD_FACEUP playerId = ${action.playerId} an = ${action.an1}`
       );
-      oldUnit = state.anToTokens[action.an];
+      oldUnit = state.anToTokens[action.an1];
       if (oldUnit.length === 1) {
-        newANToTokens = R.dissoc(action.an, state.anToTokens);
+        newANToTokens = R.dissoc(action.an1, state.anToTokens);
       } else {
         newUnit = ArrayUtils.remove(oldUnit[0], oldUnit);
-        newANToTokens = assoc(action.an, newUnit, state.anToTokens);
+        newANToTokens = assoc(action.an1, newUnit, state.anToTokens);
       }
       newDiscardFaceup = state.playerToDiscardFaceup[action.playerId] || [];
       newDiscardFaceup = R.append(oldUnit[0], newDiscardFaceup);
@@ -108,13 +108,13 @@ Reducer.root = (state, action) => {
         )(state)
       );
     case ActionType.BOARD_TO_MORGUE:
-      console.log(`Reducer BOARD_TO_MORGUE playerId = ${action.playerId} an = ${action.an}`);
-      oldUnit = state.anToTokens[action.an];
+      console.log(`Reducer BOARD_TO_MORGUE playerId = ${action.playerId} an = ${action.an1}`);
+      oldUnit = state.anToTokens[action.an1];
       if (oldUnit.length === 1) {
-        newANToTokens = R.dissoc(action.an, state.anToTokens);
+        newANToTokens = R.dissoc(action.an1, state.anToTokens);
       } else {
         newUnit = ArrayUtils.remove(oldUnit[0], oldUnit);
-        newANToTokens = assoc(action.an, newUnit, state.anToTokens);
+        newANToTokens = assoc(action.an1, newUnit, state.anToTokens);
       }
       newMorgue = state.playerToMorgue[action.playerId] || [];
       newMorgue = R.append(oldUnit[0], newMorgue);
@@ -128,10 +128,10 @@ Reducer.root = (state, action) => {
     case ActionType.HAND_TO_BOARD:
       oldHand = state.playerToHand[action.playerId] || [];
       newHand = ArrayUtils.remove(action.coinId, oldHand);
-      oldUnit = state.anToTokens[action.an] || [];
+      oldUnit = state.anToTokens[action.an2] || [];
       newUnit = R.append(action.coinId, oldUnit);
       newPlayerToHand = assoc(action.playerId, newHand, state.playerToHand);
-      newANToTokens = assoc(action.an, newUnit, state.anToTokens);
+      newANToTokens = assoc(action.an2, newUnit, state.anToTokens);
       return Immutable(
         R.pipe(
           R.assoc("playerToHand", newPlayerToHand),
@@ -139,10 +139,10 @@ Reducer.root = (state, action) => {
         )(state)
       );
     case ActionType.MOVE_A_UNIT:
-      console.log(`Reducer MOVE_A_UNIT an = ${action.an} toAN = ${action.toAN}`);
-      unit = state.anToTokens[action.an];
-      newANToTokens = R.dissoc(action.an, state.anToTokens);
-      newANToTokens = assoc(action.toAN, unit, newANToTokens);
+      console.log(`Reducer MOVE_A_UNIT an = ${action.an1} an2 = ${action.an2}`);
+      unit = state.anToTokens[action.an1];
+      newANToTokens = R.dissoc(action.an1, state.anToTokens);
+      newANToTokens = assoc(action.an2, unit, newANToTokens);
       return assoc("anToTokens", newANToTokens, state);
     case ActionType.POP_INPUT_CALLBACK:
       console.log(`Reducer POP_INPUT_CALLBACK`);

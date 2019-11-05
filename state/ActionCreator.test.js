@@ -135,17 +135,17 @@ QUnit.test("bagToHand()", assert => {
 
 QUnit.test("boardToMorgue()", assert => {
   // Setup.
-  const an = "a1";
+  const an1 = "a1";
   const playerId = 3;
 
   // Run.
-  const result = ActionCreator.boardToMorgue(playerId, an);
+  const result = ActionCreator.boardToMorgue(playerId, an1);
 
   // Verify.
   assert.ok(result);
   assert.equal(result.type, ActionType.BOARD_TO_MORGUE);
   assert.equal(result.playerId, playerId);
-  assert.equal(result.an, an);
+  assert.equal(result.an1, an1);
 });
 
 QUnit.test("discardToBag()", assert => {
@@ -174,34 +174,34 @@ QUnit.test("handToBoard()", assert => {
   // Setup.
   const playerId = 3;
   const coinId = 12;
-  const an = "a1";
+  const an2 = "a1";
 
   // Run.
-  const result = ActionCreator.handToBoard(playerId, coinId, an);
+  const result = ActionCreator.handToBoard(playerId, coinId, an2);
 
   // Verify.
   assert.ok(result);
   assert.equal(result.type, ActionType.HAND_TO_BOARD);
   assert.equal(result.playerId, playerId);
   assert.equal(result.coinId, coinId);
-  assert.equal(result.an, an);
+  assert.equal(result.an2, an2);
 });
 
 QUnit.test("moveAUnit()", assert => {
   // Setup.
   const playerId = 3;
-  const an = "a1";
-  const toAN = "b1";
+  const an1 = "a1";
+  const an2 = "b1";
 
   // Run.
-  const result = ActionCreator.moveAUnit(playerId, an, toAN);
+  const result = ActionCreator.moveAUnit(playerId, an1, an2);
 
   // Verify.
   assert.ok(result);
   assert.equal(result.type, ActionType.MOVE_A_UNIT);
   assert.equal(result.playerId, playerId);
-  assert.equal(result.an, an);
-  assert.equal(result.toAN, toAN);
+  assert.equal(result.an1, an1);
+  assert.equal(result.an2, an2);
 });
 
 QUnit.test("setControl()", assert => {
