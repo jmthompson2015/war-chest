@@ -94,6 +94,7 @@ const Tactic = {
     isLegal: (player, paymentCoin, an1, an2, state) =>
       paymentCoin.coinKey === UnitCoin.ARCHER &&
       Selector.isUnitType(an1, UnitCoin.ARCHER, state) &&
+      Selector.canBeAttacked(an1, an2, state) &&
       Board.distance(an1, an2) === 2 &&
       Selector.isEnemyUnitAt(player.id, an2, state),
     label: (moveState, state) => {
