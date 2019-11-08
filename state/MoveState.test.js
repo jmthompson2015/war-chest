@@ -8,7 +8,7 @@ const PROPS = [
   "paymentCoinId",
   "an1",
   "an2",
-  "an3",
+  "moveStates",
   "recruitCoinId",
   "victimCoinId"
 ];
@@ -20,7 +20,7 @@ const createTestData = () =>
     paymentCoinId: 3,
     an1: 4,
     an2: 5,
-    an3: 6,
+    moveStates: 6,
     recruitCoinId: 7,
     victimCoinId: 8
   });

@@ -99,14 +99,18 @@ const executeMoveAUnit = (moveState, store) => {
   if (moveState.isBerserker) {
     store.dispatch(ActionCreator.boardToDiscardFaceup(playerId, an1));
   } else {
-    store.dispatch(
-      ActionCreator.transferBetweenPlayerArrays(
-        "playerToHand",
-        "playerToDiscardFaceup",
-        playerId,
-        paymentCoinId
-      )
-    );
+    const discardFaceup = Selector.discardFaceup(playerId, store.getState());
+
+    if (!discardFaceup.includes(paymentCoinId)) {
+      store.dispatch(
+        ActionCreator.transferBetweenPlayerArrays(
+          "playerToHand",
+          "playerToDiscardFaceup",
+          playerId,
+          paymentCoinId
+        )
+      );
+    }
   }
   store.dispatch(ActionCreator.moveAUnit(playerId, an1, an2));
 };
@@ -151,14 +155,18 @@ const executeAttack = (moveState, store) => {
   if (moveState.isBerserker) {
     store.dispatch(ActionCreator.boardToDiscardFaceup(playerId, an1));
   } else {
-    store.dispatch(
-      ActionCreator.transferBetweenPlayerArrays(
-        "playerToHand",
-        "playerToDiscardFaceup",
-        playerId,
-        paymentCoinId
-      )
-    );
+    const discardFaceup = Selector.discardFaceup(playerId, store.getState());
+
+    if (!discardFaceup.includes(paymentCoinId)) {
+      store.dispatch(
+        ActionCreator.transferBetweenPlayerArrays(
+          "playerToHand",
+          "playerToDiscardFaceup",
+          playerId,
+          paymentCoinId
+        )
+      );
+    }
   }
 
   const damageTarget = Selector.currentDamageTarget(store.getState());
@@ -304,8 +312,16 @@ const MoveFunction = {
 };
 
 MoveFunction.execute = (moveState, store) => {
-  const { moveKey } = moveState;
-  MoveFunction[moveKey].execute(moveState, store);
+  const { moveKey, moveStates } = moveState;
+
+  if (moveStates && moveStates.length > 0) {
+    const forEachFunction = m => {
+      MoveFunction[m.moveKey].execute(m, store);
+    };
+    R.forEach(forEachFunction, moveStates);
+  } else {
+    MoveFunction[moveKey].execute(moveState, store);
+  }
 };
 
 MoveFunction.label = (moveState, state) => {

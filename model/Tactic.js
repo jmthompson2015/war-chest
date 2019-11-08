@@ -110,9 +110,23 @@ const Tactic = {
     }
   },
   cavalry: {
-    execute: (/* moveState, store */) => {},
-    isLegal: () => false,
-    label: (/* moveState, coinInstances */) => "Tactic: cavalry"
+    // execute: MoveFunction.execute() used instead.
+    // isLegal: MoveFunction.isLegal() used instead.
+    label: (moveState, state) => {
+      const { moveKey, moveStates, paymentCoinId } = moveState;
+      const { an1, an2 } = moveStates[0];
+      const { an2: an3, victimCoinId } = moveStates[1];
+      const move = Resolver.move(moveKey);
+      const paymentCoinState = state.coinInstances[paymentCoinId];
+      const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
+      const victimCoinState = state.coinInstances[victimCoinId];
+      const victimCoin = Resolver.coin(victimCoinState.coinKey);
+      return (
+        `${move.name}: ${paymentCoin.name} at ${an1}` +
+        ` moves to ${an2} and` +
+        ` attacks ${victimCoin.name} at ${an3}`
+      );
+    }
   },
   crossbowman: {
     execute: executeAttack,

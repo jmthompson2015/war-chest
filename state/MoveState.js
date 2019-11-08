@@ -3,8 +3,8 @@ const MoveState = {};
 MoveState.create = ({
   an1,
   an2,
-  an3,
   moveKey,
+  moveStates,
   paymentCoinId,
   playerId,
   recruitCoinId,
@@ -18,7 +18,7 @@ MoveState.create = ({
     // Situational.
     an1,
     an2,
-    an3,
+    moveStates,
     recruitCoinId,
     victimCoinId
   });

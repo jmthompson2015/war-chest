@@ -276,6 +276,39 @@ QUnit.test("label() Archer", assert => {
   assert.equal(result, "Tactic: Archer at e2 attacks Swordsman at e4");
 });
 
+QUnit.test("label() Cavalry", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 2;
+  const paymentCoinId = 29; // Cavalry
+  store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
+  const victimCoinId = 2; // Swordsman
+  const an1 = "e2";
+  const an2 = "e3";
+  const an3 = "e4";
+  store.dispatch(ActionCreator.setUnit(an1, 26)); // Cavalry
+  store.dispatch(ActionCreator.setUnit(an3, victimCoinId)); // Swordsman
+  const moveKey = Move.TACTIC;
+  const moveStates = [
+    { moveKey: "moveAUnit", playerId: 2, paymentCoinId: 29, an1, an2 },
+    { moveKey: "attack", playerId: 2, paymentCoinId: 29, an1: an2, an2: an3, victimCoinId: 2 }
+  ];
+  const moveState = MoveState.create({
+    moveKey,
+    playerId,
+    paymentCoinId,
+    an1,
+    moveStates
+  });
+  const tactic = Tactic[UnitCoin.CAVALRY];
+
+  // Run.
+  const result = tactic.label(moveState, store.getState());
+
+  // Verify.
+  assert.equal(result, "Tactic: Cavalry at e2 moves to e3 and attacks Swordsman at e4");
+});
+
 QUnit.test("label() Crossbowman", assert => {
   // Setup.
   const store = TestData.createStore();
