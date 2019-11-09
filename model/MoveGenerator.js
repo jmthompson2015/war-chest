@@ -14,13 +14,13 @@ import Tactic from "./Tactic.js";
 
 const MoveGenerator = {};
 
-const generateAttacksForAN = (player, paymentCoin, an1, state) => {
+const generateAttacksForAN = (player, paymentCoin, an1, state, isLegalFunction0, neighbors0) => {
   const moveKey = Move.ATTACK;
   const playerId = player.id;
   const paymentCoinId = paymentCoin.id;
-  const mm = MoveFunction[moveKey];
+  const isLegalFunction = isLegalFunction0 || MoveFunction[moveKey].isLegal;
   const reduceFunction = (accum, an2) => {
-    if (mm.isLegal(player, paymentCoin, an1, an2, state)) {
+    if (isLegalFunction(player, paymentCoin, an1, an2, state)) {
       const victimCoin = Selector.coinForUnit(an2, state);
       const victimCoinId = victimCoin.id;
       const moveState = MoveState.create({
@@ -35,24 +35,24 @@ const generateAttacksForAN = (player, paymentCoin, an1, state) => {
     }
     return accum;
   };
-  const neighbors = Board.neighbors(an1, Selector.isTwoPlayer(state));
+  const neighbors = neighbors0 || Board.neighbors(an1, Selector.isTwoPlayer(state));
 
   return R.reduce(reduceFunction, [], neighbors);
 };
 
-const generateMoveAUnitsForAN = (player, paymentCoin, an1, state) => {
+const generateMoveAUnitsForAN = (player, paymentCoin, an1, state, isLegalFunction0, neighbors0) => {
   const moveKey = Move.MOVE_A_UNIT;
   const playerId = player.id;
   const paymentCoinId = paymentCoin.id;
-  const mm = MoveFunction[moveKey];
+  const isLegalFunction = isLegalFunction0 || MoveFunction[moveKey].isLegal;
   const reduceFunction = (accum, an2) => {
-    if (mm.isLegal(player, paymentCoin, an1, an2, state)) {
+    if (isLegalFunction(player, paymentCoin, an1, an2, state)) {
       const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, an2 });
       return R.append(moveState, accum);
     }
     return accum;
   };
-  const neighbors = Board.neighbors(an1, Selector.isTwoPlayer(state));
+  const neighbors = neighbors0 || Board.neighbors(an1, Selector.isTwoPlayer(state));
 
   return R.reduce(reduceFunction, [], neighbors);
 };
@@ -72,26 +72,15 @@ const generateTacticsBowman = (player, paymentCoin, an1, state) => {
         an1,
         moveStates: [attackState]
       });
-
-    const moveKey2 = Move.ATTACK;
-    const reduceFunction = (accum, an2) => {
-      if (tt.isLegal(player, paymentCoin, an1, an2, state)) {
-        const victimCoin = Selector.coinForUnit(an2, state);
-        const victimCoinId = victimCoin ? victimCoin.id : undefined;
-        const moveState = MoveState.create({
-          moveKey: moveKey2,
-          playerId,
-          paymentCoinId,
-          an1,
-          an2,
-          victimCoinId
-        });
-        return R.append(moveState, accum);
-      }
-      return accum;
-    };
     const neighbors = Board.ringANs(an1, 2);
-    const attackStates = R.reduce(reduceFunction, [], neighbors);
+    const attackStates = generateAttacksForAN(
+      player,
+      paymentCoin,
+      an1,
+      state,
+      tt.isLegal,
+      neighbors
+    );
 
     return R.map(mapFunction, attackStates);
   }
@@ -141,18 +130,16 @@ const generateTacticsLightCavalry = (player, paymentCoin, an1, state) => {
       an1,
       moveStates: [moveState]
     });
-
-  const moveKey2 = Move.MOVE_A_UNIT;
   const tt = Tactic[UnitCoin.LIGHT_CAVALRY];
-  const reduceFunction = (accum, an2) => {
-    if (tt.isLegal(player, paymentCoin, an1, an2, state)) {
-      const moveState = MoveState.create({ moveKey: moveKey2, playerId, paymentCoinId, an1, an2 });
-      return R.append(moveState, accum);
-    }
-    return accum;
-  };
   const neighbors = Board.ringANs(an1, 2);
-  const moveStates = R.reduce(reduceFunction, [], neighbors);
+  const moveStates = generateMoveAUnitsForAN(
+    player,
+    paymentCoin,
+    an1,
+    state,
+    tt.isLegal,
+    neighbors
+  );
 
   return R.map(mapFunction, moveStates);
 };
