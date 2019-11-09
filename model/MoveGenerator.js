@@ -57,6 +57,48 @@ const generateMoveAUnitsForAN = (player, paymentCoin, an1, state) => {
   return R.reduce(reduceFunction, [], neighbors);
 };
 
+const generateTacticsBowman = (player, paymentCoin, an1, state) => {
+  const tt = Tactic[paymentCoin.coinKey];
+
+  if (tt && tt.isLegal) {
+    const moveKey = Move.TACTIC;
+    const playerId = player.id;
+    const paymentCoinId = paymentCoin.id;
+    const mapFunction = attackState =>
+      MoveState.create({
+        moveKey,
+        playerId,
+        paymentCoinId,
+        an1,
+        moveStates: [attackState]
+      });
+
+    const moveKey2 = Move.ATTACK;
+    const reduceFunction = (accum, an2) => {
+      if (tt.isLegal(player, paymentCoin, an1, an2, state)) {
+        const victimCoin = Selector.coinForUnit(an2, state);
+        const victimCoinId = victimCoin ? victimCoin.id : undefined;
+        const moveState = MoveState.create({
+          moveKey: moveKey2,
+          playerId,
+          paymentCoinId,
+          an1,
+          an2,
+          victimCoinId
+        });
+        return R.append(moveState, accum);
+      }
+      return accum;
+    };
+    const neighbors = Board.ringANs(an1, 2);
+    const attackStates = R.reduce(reduceFunction, [], neighbors);
+
+    return R.map(mapFunction, attackStates);
+  }
+
+  return [];
+};
+
 const generateTacticsCavalry = (player, paymentCoin, an1, state) => {
   const moveKey = Move.TACTIC;
   const playerId = player.id;
@@ -85,6 +127,53 @@ const generateTacticsCavalry = (player, paymentCoin, an1, state) => {
   const moveStates = generateMoveAUnitsForAN(player, paymentCoin, an1, state);
 
   return R.reduce(reduceFunction, [], moveStates);
+};
+
+const generateTacticsLightCavalry = (player, paymentCoin, an1, state) => {
+  const moveKey = Move.TACTIC;
+  const playerId = player.id;
+  const paymentCoinId = paymentCoin.id;
+  const mapFunction = moveState =>
+    MoveState.create({
+      moveKey,
+      playerId,
+      paymentCoinId,
+      an1,
+      moveStates: [moveState]
+    });
+
+  const moveKey2 = Move.MOVE_A_UNIT;
+  const tt = Tactic[UnitCoin.LIGHT_CAVALRY];
+  const reduceFunction = (accum, an2) => {
+    if (tt.isLegal(player, paymentCoin, an1, an2, state)) {
+      const moveState = MoveState.create({ moveKey: moveKey2, playerId, paymentCoinId, an1, an2 });
+      return R.append(moveState, accum);
+    }
+    return accum;
+  };
+  const neighbors = Board.ringANs(an1, 2);
+  const moveStates = R.reduce(reduceFunction, [], neighbors);
+
+  return R.map(mapFunction, moveStates);
+};
+
+const generateTacticsRoyalGuard = (player, paymentCoin, an1, state) => {
+  const moveKey = Move.TACTIC;
+  const playerId = player.id;
+  const paymentCoinId = paymentCoin.id;
+  const mapFunction = moveState =>
+    MoveState.create({
+      moveKey,
+      playerId,
+      paymentCoinId,
+      an1,
+      moveStates: [R.merge(moveState, { paymentCoinId: paymentCoin.id })]
+    });
+
+  const coin = Selector.coinForUnit(an1, state);
+  const moveStates = generateMoveAUnitsForAN(player, coin, an1, state);
+
+  return R.map(mapFunction, moveStates);
 };
 
 MoveGenerator.generateAttacks = (player, paymentCoin, state) => {
@@ -230,45 +319,43 @@ MoveGenerator.generateRecruits = (player, paymentCoin, state) => {
 };
 
 MoveGenerator.generateTactics = (player, paymentCoin, state) => {
-  const moveKey = Move.TACTIC;
-  const playerId = player.id;
-  const paymentCoinId = paymentCoin.id;
   const playerUnitANs = Selector.playerUnitANs(player.id, state);
-  const reduceFunction2 = (tt, an1) => (accum2, an2) => {
-    if (tt.isLegal(player, paymentCoin, an1, an2, state)) {
-      const victimCoin = Selector.coinForUnit(an2, state);
-      const victimCoinId = victimCoin ? victimCoin.id : undefined;
-      const moveState = MoveState.create({
-        moveKey,
-        playerId,
-        paymentCoinId,
-        an1,
-        an2,
-        victimCoinId
-      });
-      return R.append(moveState, accum2);
-    }
-    return accum2;
-  };
-  const reduceFunction1 = (accum1, an1) => {
+  const reduceFunction = (accum, an1) => {
     const { coinKey } = Selector.coinForUnit(an1, state);
     const tt = Tactic[coinKey];
+
     if (tt) {
-      if (coinKey === UnitCoin.CAVALRY) {
-        const accum3 = generateTacticsCavalry(player, paymentCoin, an1, state);
-        return R.concat(accum1, accum3);
+      if ([UnitCoin.ARCHER, UnitCoin.CROSSBOWMAN].includes(coinKey)) {
+        const accum3 = generateTacticsBowman(player, paymentCoin, an1, state);
+        return R.concat(accum, accum3);
       }
 
-      const neighbors = Board.neighbors(an1, Selector.isTwoPlayer(state));
-      const accum2 = R.reduce(reduceFunction2(tt, an1), [], neighbors);
-      const neighbors2 = Board.ringANs(an1, 2);
-      const accum3 = R.reduce(reduceFunction2(tt, an1), [], neighbors2);
-      return R.concat(accum1, R.concat(accum2, accum3));
+      if (coinKey === UnitCoin.CAVALRY) {
+        const accum3 = generateTacticsCavalry(player, paymentCoin, an1, state);
+        return R.concat(accum, accum3);
+      }
+
+      if (coinKey === UnitCoin.LIGHT_CAVALRY) {
+        const accum3 = generateTacticsLightCavalry(player, paymentCoin, an1, state);
+        return R.concat(accum, accum3);
+      }
+
+      if (Resolver.isRoyalCoin(paymentCoin.coinKey) && coinKey === UnitCoin.ROYAL_GUARD) {
+        const accum3 = generateTacticsRoyalGuard(player, paymentCoin, an1, state);
+        return R.concat(accum, accum3);
+      }
+
+      console.warn(
+        `Can't generate tactics for player=${JSON.stringify(player)} paymentCoin=${JSON.stringify(
+          paymentCoin
+        )}`
+      );
     }
-    return accum1;
+
+    return accum;
   };
 
-  return R.reduce(reduceFunction1, [], playerUnitANs);
+  return R.reduce(reduceFunction, [], playerUnitANs);
 };
 
 MoveGenerator.generateManeuvers = (player, paymentCoin, state) => {

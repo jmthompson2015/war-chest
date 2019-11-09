@@ -1,6 +1,9 @@
 import Move from "../artifact/Move.js";
+import UnitCard from "../artifact/UnitCard.js";
+import UnitCoin from "../artifact/UnitCoin.js";
 
 import ActionCreator from "../state/ActionCreator.js";
+import CoinState from "../state/CoinState.js";
 import Selector from "../state/Selector.js";
 
 import MoveGenerator from "./MoveGenerator.js";
@@ -498,6 +501,15 @@ QUnit.test("generateTactics() Archer", assert => {
     Move.TACTIC,
     playerId,
     paymentCoinId,
+    "e2" // an1
+  );
+  assert.equal(move0.moveStates.length, 1);
+  verifyMoveState(
+    assert,
+    move0.moveStates[0],
+    Move.ATTACK,
+    playerId,
+    paymentCoinId,
     "e2", // an1
     "e4", // an2
     undefined, // an3
@@ -539,6 +551,47 @@ QUnit.test("generateTactics() Cavalry", assert => {
   assert.equal(moveStateLast.moveKey, Move.ATTACK);
 });
 
+QUnit.test("generateTactics() Crossbowman", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 1;
+  const player = Selector.player(playerId, store.getState());
+  const paymentCoinId = 15; // Crossbowman
+  const paymentCoin = Selector.coin(paymentCoinId, store.getState());
+  store.dispatch(ActionCreator.setUnit("e2", 11)); // Crossbowman
+  store.dispatch(ActionCreator.setUnit("e4", 22)); // Archer
+
+  // Run.
+  const result = MoveGenerator.generateTactics(player, paymentCoin, store.getState());
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(Array.isArray(result), true);
+  assert.equal(result.length, 1, `result.length=${result.length}`);
+  const move0 = result[0];
+  verifyMoveState(
+    assert,
+    move0,
+    Move.TACTIC,
+    playerId,
+    paymentCoinId,
+    "e2" // an1
+  );
+  assert.equal(move0.moveStates.length, 1);
+  verifyMoveState(
+    assert,
+    move0.moveStates[0],
+    Move.ATTACK,
+    playerId,
+    paymentCoinId,
+    "e2", // an1
+    "e4", // an2
+    undefined, // an3
+    undefined, // recruitCoinId
+    22 // victimCoinId
+  );
+});
+
 QUnit.test("generateTactics() Light Cavalry", assert => {
   // Setup.
   const store = TestData.createStore();
@@ -562,6 +615,15 @@ QUnit.test("generateTactics() Light Cavalry", assert => {
     Move.TACTIC,
     playerId,
     paymentCoinId,
+    "h1" // an1
+  );
+  assert.equal(move0.moveStates.length, 1);
+  verifyMoveState(
+    assert,
+    move0.moveStates[0],
+    Move.MOVE_A_UNIT,
+    playerId,
+    paymentCoinId,
     "h1", // an1
     "f1" // an2
   );
@@ -572,8 +634,76 @@ QUnit.test("generateTactics() Light Cavalry", assert => {
     Move.TACTIC,
     playerId,
     paymentCoinId,
+    "h1" // an1,
+  );
+  assert.equal(moveLast.moveStates.length, 1);
+  verifyMoveState(
+    assert,
+    moveLast.moveStates[0],
+    Move.MOVE_A_UNIT,
+    playerId,
+    paymentCoinId,
     "h1", // an1,
     "i2" // an2
+  );
+});
+
+QUnit.test("generateTactics() Royal Guard", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 1;
+  const player = Selector.player(playerId, store.getState());
+  store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", playerId, UnitCard.ROYAL_GUARD));
+  const coinState1 = CoinState.create({ coinKey: UnitCoin.ROYAL_GUARD, store });
+  store.dispatch(ActionCreator.addCoin(coinState1));
+  const paymentCoinId = 1; // Raven Royal Coin
+  const paymentCoin = Selector.coin(paymentCoinId, store.getState());
+  store.dispatch(ActionCreator.setUnit("h1", coinState1.id)); // Royal Guard
+
+  // Run.
+  const result = MoveGenerator.generateTactics(player, paymentCoin, store.getState());
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(Array.isArray(result), true);
+  assert.equal(result.length, 4, `result.length=${result.length}`);
+  const move0 = result[0];
+  verifyMoveState(
+    assert,
+    move0,
+    Move.TACTIC,
+    playerId,
+    paymentCoinId,
+    "h1" // an1
+  );
+  assert.equal(move0.moveStates.length, 1);
+  verifyMoveState(
+    assert,
+    move0.moveStates[0],
+    Move.MOVE_A_UNIT,
+    playerId,
+    paymentCoinId,
+    "h1", // an1
+    "g1" // an2
+  );
+  const moveLast = result[result.length - 1];
+  verifyMoveState(
+    assert,
+    moveLast,
+    Move.TACTIC,
+    playerId,
+    paymentCoinId,
+    "h1" // an1,
+  );
+  assert.equal(moveLast.moveStates.length, 1);
+  verifyMoveState(
+    assert,
+    moveLast.moveStates[0],
+    Move.MOVE_A_UNIT,
+    playerId,
+    paymentCoinId,
+    "h1", // an1,
+    "i1" // an2
   );
 });
 
