@@ -55,6 +55,37 @@ Board.RANK_COUNT = 7;
 Board.boardCalculator = new BoardCalculator(Board.IS_SQUARE, Board.IS_FLAT);
 Board.coordinateCalculator = new CoordinateCalculator(Board.FILE_COUNT, Board.RANK_COUNT);
 
+Board.cubeDirection = (an1, an2) => {
+  const q1 = Board.coordinateCalculator.anToFile(an1);
+  const r1 = Board.coordinateCalculator.anToRank(an1);
+  const cube1 = HexBoardUtilities.axialToCube({ q: q1, r: r1 });
+
+  const q2 = Board.coordinateCalculator.anToFile(an2);
+  const r2 = Board.coordinateCalculator.anToRank(an2);
+  const cube2 = HexBoardUtilities.axialToCube({ q: q2, r: r2 });
+
+  const diff = HexBoardUtilities.createCube({
+    x: cube2.x - cube1.x,
+    y: cube2.y - cube1.y,
+    z: cube2.z - cube1.z
+  });
+  const max = Math.max(Math.abs(diff.x), Math.max(Math.abs(diff.y), Math.abs(diff.z)));
+
+  return HexBoardUtilities.createCube({
+    x: diff.x / max,
+    y: diff.y / max,
+    z: diff.z / max
+  });
+};
+
+Board.cubeDirectionIndex = (an1, an2) => {
+  const direction = Board.cubeDirection(an1, an2);
+  const filterFunction = i => R.equals(direction, HexBoardUtilities.cubeDirection(i));
+  const indices = R.filter(filterFunction, [0, 1, 2, 3, 4, 5]);
+
+  return indices.length > 0 ? indices[0] : undefined;
+};
+
 Board.distance = (an1, an2) => {
   const q1 = Board.coordinateCalculator.anToFile(an1);
   const r1 = Board.coordinateCalculator.anToRank(an1);
@@ -97,6 +128,22 @@ Board.middleAN = (an1, an2) => {
   }
 
   return answer;
+};
+
+Board.neighborInDirection = (an, directionIndex) => {
+  const q = Board.coordinateCalculator.anToFile(an);
+  const r = Board.coordinateCalculator.anToRank(an);
+  const cube = HexBoardUtilities.axialToCube({ q, r });
+  const direction = HexBoardUtilities.cubeDirection(directionIndex);
+
+  const cube2 = HexBoardUtilities.createCube({
+    x: cube.x + direction.x,
+    y: cube.y + direction.y,
+    z: cube.z + direction.z
+  });
+  const hex2 = HexBoardUtilities.cubeToAxial(cube2);
+
+  return Board.coordinateCalculator.fileRankToAN(hex2.q, hex2.r);
 };
 
 Board.neighbors = (an, isTwoPlayer = true) => {

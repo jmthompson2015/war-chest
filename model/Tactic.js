@@ -69,8 +69,32 @@ const Tactic = {
     label: (/* moveState, coinInstances */) => "Tactic: footman"
   },
   lancer: {
-    isLegal: () => false,
-    label: (/* moveState, coinInstances */) => "Tactic: lancer"
+    isLegalLancerAttack: (player, paymentCoin, an1, an2, state) => {
+      const directionIndex = Board.cubeDirectionIndex(an1, an2);
+      const neighbor = Board.neighborInDirection(an2, directionIndex);
+      return Selector.isEnemyUnitAt(player.id, neighbor, state);
+    },
+    isLegalLancerMove2: (player, paymentCoin, an1, an2, state) =>
+      Selector.isUnitType(an1, UnitCoin.LANCER, state) &&
+      Board.distance(an1, an2) === 2 &&
+      Board.isStraightLine(an1, an2) &&
+      Selector.isUnoccupied(Board.middleAN(an1, an2), state) &&
+      Selector.isUnoccupied(an2, state),
+    label: (moveState, state) => {
+      const { moveKey, moveStates, paymentCoinId } = moveState;
+      const { an1, an2 } = moveStates[0];
+      const { an2: an3, victimCoinId } = moveStates[1];
+      const move = Resolver.move(moveKey);
+      const paymentCoinState = state.coinInstances[paymentCoinId];
+      const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
+      const victimCoinState = state.coinInstances[victimCoinId];
+      const victimCoin = Resolver.coin(victimCoinState.coinKey);
+      return (
+        `${move.name}: ${paymentCoin.name} at ${an1}` +
+        ` moves to ${an2} and` +
+        ` attacks ${victimCoin.name} at ${an3}`
+      );
+    }
   },
   lightCavalry: {
     isLegal: (player, paymentCoin, an1, an2, state) =>

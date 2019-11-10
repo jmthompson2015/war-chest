@@ -173,8 +173,8 @@ QUnit.test("label() Cavalry", assert => {
   store.dispatch(ActionCreator.setUnit(an3, victimCoinId)); // Swordsman
   const moveKey = Move.TACTIC;
   const moveStates = [
-    { moveKey: "moveAUnit", playerId: 2, paymentCoinId: 29, an1, an2 },
-    { moveKey: "attack", playerId: 2, paymentCoinId: 29, an1: an2, an2: an3, victimCoinId: 2 }
+    { moveKey: Move.MOVE_A_UNIT, playerId, paymentCoinId, an1, an2 },
+    { moveKey: Move.ATTACK, playerId, paymentCoinId, an1: an2, an2: an3, victimCoinId }
   ];
   const moveState = MoveState.create({
     moveKey,
@@ -215,6 +215,46 @@ QUnit.test("label() Crossbowman", assert => {
 
   // Verify.
   assert.equal(result, "Tactic: Crossbowman at e2 attacks Archer at e4");
+});
+
+QUnit.test("label() Lancer", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 2;
+  const paymentCoinId = 33; // Lancer
+  store.dispatch(
+    ActionCreator.transferBetweenPlayerArrays(
+      "playerToSupply",
+      "playerToHand",
+      playerId,
+      paymentCoinId
+    )
+  );
+  const victimCoinId = 2; // Swordsman
+  const an1 = "e2";
+  const an2 = "e4";
+  const an3 = "e5";
+  store.dispatch(ActionCreator.setUnit(an1, 30)); // Lancer
+  store.dispatch(ActionCreator.setUnit(an3, 2)); // Swordsman
+  const moveKey = Move.TACTIC;
+  const moveStates = [
+    { moveKey: Move.MOVE_A_UNIT, playerId, paymentCoinId, an1, an2 },
+    { moveKey: Move.ATTACK, playerId, paymentCoinId, an1: an2, an2: an3, victimCoinId }
+  ];
+  const moveState = MoveState.create({
+    moveKey,
+    playerId,
+    paymentCoinId,
+    an1,
+    moveStates
+  });
+  const tactic = Tactic[UnitCoin.CAVALRY];
+
+  // Run.
+  const result = tactic.label(moveState, store.getState());
+
+  // Verify.
+  assert.equal(result, "Tactic: Lancer at e2 moves to e4 and attacks Swordsman at e5");
 });
 
 QUnit.test("label() Light Cavalry", assert => {

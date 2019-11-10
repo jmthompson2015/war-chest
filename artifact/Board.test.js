@@ -10,6 +10,45 @@ QUnit.test("Board.coordinateCalculator", assert => {
   assert.ok(Board.coordinateCalculator);
 });
 
+QUnit.test("cubeDirection() 1", assert => {
+  // Setup.
+  const an1 = "e2";
+  const an2 = "e3";
+
+  // Run.
+  const result = Board.cubeDirection(an1, an2);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.x, 0);
+  assert.equal(result.y, -1);
+  assert.equal(result.z, +1);
+});
+
+QUnit.test("cubeDirection() 2", assert => {
+  // Setup.
+  const an1 = "e2";
+  const an2 = "e4";
+
+  // Run.
+  const result = Board.cubeDirection(an1, an2);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.x, 0);
+  assert.equal(result.y, -1);
+  assert.equal(result.z, +1);
+});
+
+QUnit.test("cubeDirectionIndex()", assert => {
+  assert.equal(Board.cubeDirectionIndex("f4", "g4"), 0);
+  assert.equal(Board.cubeDirectionIndex("f4", "g3"), 1);
+  assert.equal(Board.cubeDirectionIndex("f4", "f3"), 2);
+  assert.equal(Board.cubeDirectionIndex("f4", "e4"), 3);
+  assert.equal(Board.cubeDirectionIndex("f4", "e5"), 4);
+  assert.equal(Board.cubeDirectionIndex("f4", "f5"), 5);
+});
+
 QUnit.test("distance()", assert => {
   assert.equal(Board.distance("e2", "d3"), 1);
   assert.equal(Board.distance("e2", "e4"), 2);
@@ -50,6 +89,25 @@ QUnit.test("middleAN() e2-e4", assert => {
   assert.equal(Board.middleAN(an1, "f3"), undefined, `${an1} to f3`);
   assert.equal(Board.middleAN(an1, "g2"), "f2", `${an1} to g2`);
   assert.equal(Board.middleAN(an1, "g1"), undefined, `${an1} to g1`);
+});
+
+QUnit.test("neighborInDirection()", assert => {
+  // Setup.
+  const an = "f4";
+  const directionIndex = 5;
+
+  // Run.
+  const result = Board.neighborInDirection(an, directionIndex);
+
+  // Verify.
+  assert.equal(result, "f5");
+
+  assert.equal(Board.neighborInDirection(an, 0), "g4");
+  assert.equal(Board.neighborInDirection(an, 1), "g3");
+  assert.equal(Board.neighborInDirection(an, 2), "f3");
+  assert.equal(Board.neighborInDirection(an, 3), "e4");
+  assert.equal(Board.neighborInDirection(an, 4), "e5");
+  assert.equal(Board.neighborInDirection(an, 5), "f5");
 });
 
 QUnit.test("neighbors() two player", assert => {

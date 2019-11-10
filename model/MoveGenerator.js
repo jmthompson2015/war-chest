@@ -118,6 +118,59 @@ const generateTacticsCavalry = (player, paymentCoin, an1, state) => {
   return R.reduce(reduceFunction, [], moveStates);
 };
 
+const generateTacticsLancer = (player, paymentCoin, an1, state) => {
+  const moveKey = Move.TACTIC;
+  const playerId = player.id;
+  const paymentCoinId = paymentCoin.id;
+  const mapFunction = moveState0 => attackState =>
+    MoveState.create({
+      moveKey,
+      playerId,
+      paymentCoinId,
+      an1,
+      moveStates: [moveState0, attackState]
+    });
+  const tt = Tactic[UnitCoin.LANCER];
+  const reduceFunction = (accum, moveState) => {
+    const store2 = Redux.createStore(Reducer.root, state);
+    MoveFunction.execute(moveState, store2);
+    const directionIndex = Board.cubeDirectionIndex(an1, moveState.an2);
+    const neighbor = Board.neighborInDirection(moveState.an2, directionIndex);
+
+    if (tt.isLegalLancerAttack(player, paymentCoin, an1, moveState.an2, state)) {
+      const victimCoin = Selector.coinForUnit(neighbor, state);
+      const victimCoinId = victimCoin.id;
+      const attackStates = [
+        MoveState.create({
+          moveKey: Move.ATTACK,
+          playerId,
+          paymentCoinId,
+          an1: moveState.an2,
+          an2: neighbor,
+          victimCoinId
+        })
+      ];
+      const tacticStates = R.map(mapFunction(moveState), attackStates);
+      return R.concat(accum, tacticStates);
+    }
+    return accum;
+  };
+
+  const moveStates1 = generateMoveAUnitsForAN(player, paymentCoin, an1, state);
+  const neighbors2 = Board.ringANs(an1, 2);
+  const moveStates2 = generateMoveAUnitsForAN(
+    player,
+    paymentCoin,
+    an1,
+    state,
+    tt.isLegalLancerMove2,
+    neighbors2
+  );
+  const moveStates = R.concat(moveStates1, moveStates2);
+
+  return R.reduce(reduceFunction, [], moveStates);
+};
+
 const generateTacticsLightCavalry = (player, paymentCoin, an1, state) => {
   const moveKey = Move.TACTIC;
   const playerId = player.id;
@@ -317,8 +370,13 @@ MoveGenerator.generateTactics = (player, paymentCoin, state) => {
         return R.concat(accum, accum3);
       }
 
-      if (coinKey === UnitCoin.CAVALRY) {
+      if (paymentCoin.coinKey === UnitCoin.CAVALRY && coinKey === UnitCoin.CAVALRY) {
         const accum3 = generateTacticsCavalry(player, paymentCoin, an1, state);
+        return R.concat(accum, accum3);
+      }
+
+      if (paymentCoin.coinKey === UnitCoin.LANCER && coinKey === UnitCoin.LANCER) {
+        const accum3 = generateTacticsLancer(player, paymentCoin, an1, state);
         return R.concat(accum, accum3);
       }
 

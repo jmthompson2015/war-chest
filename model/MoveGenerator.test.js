@@ -592,6 +592,65 @@ QUnit.test("generateTactics() Crossbowman", assert => {
   );
 });
 
+QUnit.test("generateTactics() Lancer", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 2;
+  const player = Selector.player(playerId, store.getState());
+  const paymentCoinId = 33; // Lancer
+  const paymentCoin = Selector.coin(paymentCoinId, store.getState());
+  store.dispatch(
+    ActionCreator.transferBetweenPlayerArrays(
+      "playerToSupply",
+      "playerToHand",
+      playerId,
+      paymentCoinId
+    )
+  );
+  const an1 = "e2";
+  store.dispatch(ActionCreator.setUnit(an1, 30)); // Lancer
+  store.dispatch(ActionCreator.setUnit("e5", 2)); // Swordsman
+  store.dispatch(ActionCreator.setUnit("f4", 3)); // Swordsman
+  store.dispatch(ActionCreator.setUnit("g2", 4)); // Swordsman
+
+  // Run.
+  const result = MoveGenerator.generateTactics(player, paymentCoin, store.getState());
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(Array.isArray(result), true);
+  assert.equal(result.length, 2, `result.length=${result.length}`);
+  const move0 = result[0];
+  verifyMoveState(assert, move0, Move.TACTIC, playerId, paymentCoinId, an1);
+  const { moveStates: moveStates0 } = move0;
+  assert.ok(moveStates0, `moveStates0 = ${JSON.stringify(moveStates0)}`);
+  assert.equal(Array.isArray(moveStates0), true);
+  assert.equal(moveStates0.length, 2, `moveStates0.length = ${moveStates0.length}`);
+  const moveState00 = moveStates0[0];
+  assert.ok(moveState00, `moveState0 = ${JSON.stringify(moveState00)}`);
+  assert.equal(moveState00.moveKey, Move.MOVE_A_UNIT);
+  assert.equal(moveState00.an2, "f2");
+  const moveState0Last = moveStates0[moveStates0.length - 1];
+  assert.ok(moveState0Last, `moveStateLast = ${JSON.stringify(moveState0Last)}`);
+  assert.equal(moveState0Last.moveKey, Move.ATTACK);
+  assert.equal(moveState0Last.an2, "g2");
+
+  const move1 = result[1];
+  verifyMoveState(assert, move0, Move.TACTIC, playerId, paymentCoinId, an1);
+  const { moveStates: moveStates1 } = move1;
+  assert.ok(moveStates1, `moveStates1 = ${JSON.stringify(moveStates1)}`);
+  assert.equal(Array.isArray(moveStates1), true);
+  assert.equal(moveStates1.length, 2, `moveStates1.length = ${moveStates1.length}`);
+  const moveState10 = moveStates1[0];
+  assert.ok(moveState10, `moveState10 = ${JSON.stringify(moveState10)}`);
+  assert.equal(moveState10.moveKey, Move.MOVE_A_UNIT);
+  assert.equal(moveState10.an2, "e4");
+  const moveState1Last = moveStates1[moveStates1.length - 1];
+  assert.ok(moveState1Last, `moveState1Last = ${JSON.stringify(moveState1Last)}`);
+  assert.equal(moveState1Last.moveKey, Move.ATTACK);
+  assert.equal(moveState1Last.an2, "e5");
+});
+
 QUnit.test("generateTactics() Light Cavalry", assert => {
   // Setup.
   const store = TestData.createStore();
