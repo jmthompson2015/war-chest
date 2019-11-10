@@ -188,19 +188,14 @@ class PlayerPanel extends React.Component {
       cells = R.append(initiativeUI, cells);
     }
 
-    if (!R.isEmpty(discardFacedown) || !R.isEmpty(discardFaceup)) {
-      const discardUI = createDiscardUI(player, discardFacedown, discardFaceup, resourceBase);
-      cells = R.append(discardUI, cells);
-    }
-
-    if (!R.isEmpty(hand)) {
-      const handUI = createHandUI(hand, paymentCoinState, resourceBase, this.handOnClick);
-      cells = R.append(handUI, cells);
-    }
-
     if (!R.isEmpty(morgue)) {
       const morgueUI = createMorgueUI(morgue, resourceBase);
       cells = R.append(morgueUI, cells);
+    }
+
+    if (!R.isEmpty(discardFacedown) || !R.isEmpty(discardFaceup)) {
+      const discardUI = createDiscardUI(player, discardFacedown, discardFaceup, resourceBase);
+      cells = R.append(discardUI, cells);
     }
 
     if (!R.isEmpty(supply)) {
@@ -210,6 +205,11 @@ class PlayerPanel extends React.Component {
 
     const tableauUI = React.createElement(TableauUI, { key: "tableau", tableau, resourceBase });
     cells = R.append(tableauUI, cells);
+
+    if (!R.isEmpty(hand)) {
+      const handUI = createHandUI(hand, paymentCoinState, resourceBase, this.handOnClick);
+      cells = R.append(handUI, cells);
+    }
 
     if (!R.isNil(moveStates)) {
       const inputArea = createInputArea(
