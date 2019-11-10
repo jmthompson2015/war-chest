@@ -45,6 +45,7 @@ const Tactic = {
     isLegal: (player, paymentCoin, an1, an2, state) =>
       paymentCoin.coinKey === UnitCoin.CROSSBOWMAN &&
       Selector.isUnitType(an1, UnitCoin.CROSSBOWMAN, state) &&
+      Selector.canBeAttacked(an1, an2, state) &&
       Board.distance(an1, an2) === 2 &&
       Board.isStraightLine(an1, an2) &&
       Selector.isUnoccupied(Board.middleAN(an1, an2), state) &&

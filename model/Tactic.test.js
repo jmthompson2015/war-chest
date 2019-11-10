@@ -90,6 +90,31 @@ QUnit.test("isLegal() Crossbowman true", assert => {
   assert.equal(result, true);
 });
 
+QUnit.test("isLegal() Crossbowman-Knight false", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 1;
+  const player = Selector.player(playerId, store.getState());
+  store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", 2, UnitCard.KNIGHT));
+  const coinState1 = CoinState.create({ coinKey: UnitCoin.KNIGHT, store });
+  store.dispatch(ActionCreator.addCoin(coinState1));
+  const paymentCoinId = 15; // Crossbowman
+  store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
+  const paymentCoin = Selector.coin(paymentCoinId, store.getState());
+  const victimCoinId = coinState1.id; // Knight
+  const an1 = "e2"; // Raven control location.
+  const an2 = "e4";
+  store.dispatch(ActionCreator.setUnit(an1, 11)); // Crossbowman
+  store.dispatch(ActionCreator.setUnit(an2, victimCoinId));
+  const tactic = Tactic[UnitCoin.CROSSBOWMAN];
+
+  // Run.
+  const result = tactic.isLegal(player, paymentCoin, an1, an2, store.getState());
+
+  // Verify.
+  assert.equal(result, false);
+});
+
 QUnit.test("isLegal() Light Cavalry true", assert => {
   // Setup.
   const store = TestData.createStore();
