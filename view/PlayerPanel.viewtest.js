@@ -45,7 +45,7 @@ store.dispatch(ActionCreator.addToPlayerArray("playerToMorgue", 1, 16)); // ligh
 store.dispatch(ActionCreator.addToPlayerArray("playerToMorgue", 1, 17)); // light cavalry
 const state = store.getState();
 
-const player = Selector.player(1, state);
+const player = R.merge(Selector.player(1, state), { isComputer: false });
 const labelFunction = moveState => MoveFunction.label(moveState, state);
 const discardFacedown = Selector.coins(Selector.discardFacedown(1, state), state);
 const discardFaceup = Selector.coins(Selector.discardFaceup(1, state), state);

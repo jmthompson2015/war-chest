@@ -207,7 +207,8 @@ class PlayerPanel extends React.Component {
     cells = R.append(tableauUI, cells);
 
     if (!R.isEmpty(hand)) {
-      const handUI = createHandUI(hand, paymentCoinState, resourceBase, this.handOnClick);
+      const myHand = player.isComputer ? R.map(c => R.merge(c, { isFaceup: false }), hand) : hand;
+      const handUI = createHandUI(myHand, paymentCoinState, resourceBase, this.handOnClick);
       cells = R.append(handUI, cells);
     }
 
