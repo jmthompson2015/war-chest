@@ -61,14 +61,14 @@ const Tactic = {
       return `${move.name}: ${paymentCoin.name} at ${an1} attacks ${victimCoin.name} at ${an2}`;
     }
   },
-  ensign: {
-    isLegal: () => false,
-    label: (/* moveState, coinInstances */) => "Tactic: ensign"
-  },
-  footman: {
-    isLegal: () => false,
-    label: (/* moveState, coinInstances */) => "Tactic: footman"
-  },
+  // ensign: {
+  //   isLegal: () => false,
+  //   label: (/* moveState, coinInstances */) => "Tactic: ensign"
+  // },
+  // footman: {
+  //   isLegal: () => false,
+  //   label: (/* moveState, coinInstances */) => "Tactic: footman"
+  // },
   lancer: {
     isLegalLancerAttack: (player, paymentCoin, an1, an2, state) => {
       const directionIndex = Board.cubeDirectionIndex(an1, an2);
@@ -113,8 +113,22 @@ const Tactic = {
     }
   },
   marshall: {
-    isLegal: () => false,
-    label: (/* moveState, coinInstances */) => "Tactic: marshall"
+    // isLegal: MoveFunction.isLegal() used instead.
+    label: (moveState, state) => {
+      const { an1: an0, moveKey, moveStates, paymentCoinId } = moveState;
+      const { an1, an2, paymentCoinId: attackerCoinId, victimCoinId } = moveStates[0];
+      const move = Resolver.move(moveKey);
+      const paymentCoinState = state.coinInstances[paymentCoinId];
+      const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
+      const attackerCoinState = state.coinInstances[attackerCoinId];
+      const attackerCoin = Resolver.coin(attackerCoinState.coinKey);
+      const victimCoinState = state.coinInstances[victimCoinId];
+      const victimCoin = Resolver.coin(victimCoinState.coinKey);
+      return (
+        `${move.name}: ${paymentCoin.name} at ${an0} orders ${attackerCoin.name} at ${an1}` +
+        ` to attack ${victimCoin.name} at ${an2}`
+      );
+    }
   },
   royalGuard: {
     isLegal: (player, paymentCoin, an1, an2, state) =>

@@ -197,6 +197,34 @@ const generateTacticsLightCavalry = (player, paymentCoin, an1, state) => {
   return R.map(mapFunction, moveStates);
 };
 
+const generateTacticsMarshall = (player, paymentCoin, an1, state) => {
+  const moveKey = Move.TACTIC;
+  const playerId = player.id;
+  const paymentCoinId = paymentCoin.id;
+  const mapFunction = attackState =>
+    MoveState.create({
+      moveKey,
+      playerId,
+      paymentCoinId,
+      an1,
+      moveStates: [attackState]
+    });
+  const teamANs = Selector.teamANs(player.teamKey, state);
+  const reduceFunction1 = (accum, an) =>
+    Board.distance(an1, an) <= 2 ? R.append(an, accum) : accum;
+  const filterFunction = an => an !== an1;
+  const nearANs0 = R.reduce(reduceFunction1, [], teamANs);
+  const nearANs = R.filter(filterFunction, nearANs0);
+  const reduceFunction2 = (accum, an) => {
+    const myPaymentCoin = Selector.coinForUnit(an, state);
+    const attackStates = generateAttacksForAN(player, myPaymentCoin, an, state);
+    return R.concat(attackStates, accum);
+  };
+  const attackStates = R.reduce(reduceFunction2, [], nearANs);
+
+  return R.map(mapFunction, attackStates);
+};
+
 const generateTacticsRoyalGuard = (player, paymentCoin, an1, state) => {
   const moveKey = Move.TACTIC;
   const playerId = player.id;
@@ -377,6 +405,11 @@ MoveGenerator.generateTactics = (player, paymentCoin, state) => {
 
       if (paymentCoin.coinKey === UnitCoin.LANCER && coinKey === UnitCoin.LANCER) {
         const accum3 = generateTacticsLancer(player, paymentCoin, an1, state);
+        return R.concat(accum, accum3);
+      }
+
+      if (paymentCoin.coinKey === UnitCoin.MARSHALL && coinKey === UnitCoin.MARSHALL) {
+        const accum3 = generateTacticsMarshall(player, paymentCoin, an1, state);
         return R.concat(accum, accum3);
       }
 

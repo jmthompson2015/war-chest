@@ -305,6 +305,44 @@ QUnit.test("label() Light Cavalry", assert => {
   assert.equal(result, "Tactic: Light Cavalry at e2 moves to e4");
 });
 
+QUnit.test("label() Marshall", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 1;
+  store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", playerId, UnitCard.MARSHALL));
+  const coinState1 = CoinState.create({ coinKey: UnitCoin.MARSHALL, store });
+  store.dispatch(ActionCreator.addCoin(coinState1));
+  const coinState2 = CoinState.create({ coinKey: UnitCoin.MARSHALL, store });
+  store.dispatch(ActionCreator.addCoin(coinState2));
+  const paymentCoinId = coinState1.id; // Marshall
+  const attackerCoinId = 6; // Swordsman
+  const victimCoinId = 25; // Archer
+  const an0 = "e2"; // Raven control location.
+  const an1 = "e4";
+  const an2 = "f4";
+  store.dispatch(ActionCreator.setUnit(an1, paymentCoinId));
+  store.dispatch(ActionCreator.setUnit(an2, victimCoinId));
+  const moveKey = Move.TACTIC;
+  const moveStates = [
+    MoveState.create({
+      moveKey: Move.ATTACK,
+      playerId,
+      paymentCoinId: attackerCoinId,
+      an1,
+      an2,
+      victimCoinId
+    })
+  ];
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1: an0, moveStates });
+  const tactic = Tactic[UnitCoin.MARSHALL];
+
+  // Run.
+  const result = tactic.label(moveState, store.getState());
+
+  // Verify.
+  assert.equal(result, "Tactic: Marshall at e2 orders Swordsman at e4 to attack Archer at f4");
+});
+
 QUnit.test("label() Royal Guard", assert => {
   // Setup.
   const store = TestData.createStore();
