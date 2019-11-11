@@ -592,6 +592,69 @@ QUnit.test("generateTactics() Crossbowman", assert => {
   );
 });
 
+QUnit.test("generateTactics() Ensign", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 1;
+  const player = Selector.player(playerId, store.getState());
+  store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", playerId, UnitCard.ENSIGN));
+  const coinState1 = CoinState.create({ coinKey: UnitCoin.ENSIGN, store });
+  store.dispatch(ActionCreator.addCoin(coinState1));
+  const coinState2 = CoinState.create({ coinKey: UnitCoin.ENSIGN, store });
+  store.dispatch(ActionCreator.addCoin(coinState2));
+  const paymentCoinId = coinState1.id; // Ensign
+  const paymentCoin = Selector.coin(paymentCoinId, store.getState());
+  store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
+  store.dispatch(ActionCreator.setUnit("e2", coinState2.id)); // Ensign
+  store.dispatch(ActionCreator.setUnit("e4", 6)); // Swordsman
+
+  // Run.
+  const result = MoveGenerator.generateTactics(player, paymentCoin, store.getState());
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(Array.isArray(result), true);
+  assert.equal(result.length, 3, `result.length=${result.length}`);
+  const move0 = result[0];
+  verifyMoveState(
+    assert,
+    move0,
+    Move.TACTIC,
+    playerId,
+    paymentCoinId,
+    "e2" // an1
+  );
+  assert.equal(move0.moveStates.length, 1);
+  verifyMoveState(
+    assert,
+    move0.moveStates[0],
+    Move.MOVE_A_UNIT,
+    playerId,
+    paymentCoinId, // Ensign
+    "e4", // an1
+    "d4" // an2
+  );
+  const moveLast = result[result.length - 1];
+  verifyMoveState(
+    assert,
+    moveLast,
+    Move.TACTIC,
+    playerId,
+    paymentCoinId,
+    "e2" // an1,
+  );
+  assert.equal(moveLast.moveStates.length, 1);
+  verifyMoveState(
+    assert,
+    moveLast.moveStates[0],
+    Move.MOVE_A_UNIT,
+    playerId,
+    paymentCoinId, // Ensign
+    "e4", // an1,
+    "f3" // an2
+  );
+});
+
 QUnit.test("generateTactics() Lancer", assert => {
   // Setup.
   const store = TestData.createStore();
@@ -746,7 +809,7 @@ QUnit.test("generateTactics() Marshall", assert => {
     move0.moveStates[0],
     Move.ATTACK,
     playerId,
-    6, // Swordsman
+    paymentCoinId, // Marshall
     "e4", // an1
     "f4", // an2
     undefined, // an3

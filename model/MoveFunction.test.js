@@ -547,6 +547,44 @@ QUnit.test("tactic execute() Crossbowman", assert => {
   assert.equal(resultMorgue.join(), victimCoinId);
 });
 
+QUnit.test("tactic execute() Ensign", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 1;
+  store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", playerId, UnitCard.ENSIGN));
+  const coinState1 = CoinState.create({ coinKey: UnitCoin.ENSIGN, store });
+  store.dispatch(ActionCreator.addCoin(coinState1));
+  const coinState2 = CoinState.create({ coinKey: UnitCoin.ENSIGN, store });
+  store.dispatch(ActionCreator.addCoin(coinState2));
+  const paymentCoinId = coinState1.id; // Ensign
+  store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
+  const moveCoinId = 6; // Swordsman
+  const an1 = "e2"; // Raven control location.
+  const an2 = "e4";
+  const an3 = "f4";
+  store.dispatch(ActionCreator.setUnit(an1, coinState2.id)); // Marshall
+  store.dispatch(ActionCreator.setUnit(an2, moveCoinId)); // Swordsman
+  const moveKey = Move.TACTIC;
+  const moveStates = [{ moveKey: Move.MOVE_A_UNIT, playerId, paymentCoinId, an1: an2, an2: an3 }];
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, moveStates });
+
+  // Run.
+  MoveFunction.execute(moveState, store);
+
+  // Verify.
+  const resultHand = Selector.hand(playerId, store.getState());
+  assert.ok(resultHand);
+  assert.equal(resultHand.length, 3, `resultHand.length = ${resultHand.length}`);
+  const resultFromUnit = Selector.unit(an2, store.getState());
+  assert.equal(resultFromUnit, undefined, `resultFromUnit = ${resultFromUnit}`);
+  const resultToUnit = Selector.unit(an3, store.getState());
+  assert.ok(resultToUnit);
+  assert.equal(resultToUnit.join(), moveCoinId, `resultToUnit = ${resultToUnit.join()}`);
+  const resultMorgue = Selector.morgue(2, store.getState());
+  assert.ok(resultMorgue);
+  assert.equal(resultMorgue.length, 0);
+});
+
 QUnit.test("tactic execute() Light Cavalry", assert => {
   // Setup.
   const store = TestData.createStore();
@@ -572,6 +610,53 @@ QUnit.test("tactic execute() Light Cavalry", assert => {
   const resultToUnit = Selector.unit(an2, store.getState());
   assert.ok(resultToUnit);
   assert.equal(resultToUnit.join(""), 16);
+});
+
+QUnit.test("tactic execute() Marshall", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 1;
+  store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", playerId, UnitCard.MARSHALL));
+  const coinState1 = CoinState.create({ coinKey: UnitCoin.MARSHALL, store });
+  store.dispatch(ActionCreator.addCoin(coinState1));
+  const coinState2 = CoinState.create({ coinKey: UnitCoin.MARSHALL, store });
+  store.dispatch(ActionCreator.addCoin(coinState2));
+  const paymentCoinId = coinState1.id; // Marshall
+  store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
+  const attackerCoinId = 6; // Swordsman
+  const victimCoinId = 22; // Archer
+  const an1 = "e2"; // Raven control location.
+  const an2 = "e4";
+  const an3 = "f4";
+  store.dispatch(ActionCreator.setUnit(an1, coinState2.id)); // Marshall
+  store.dispatch(ActionCreator.setUnit(an2, attackerCoinId)); // Swordsman
+  store.dispatch(ActionCreator.setUnit(an3, victimCoinId)); // Archer
+  const moveKey = Move.TACTIC;
+  const moveStates = [
+    { moveKey: Move.ATTACK, playerId, paymentCoinId, an1: an2, an2: an3, victimCoinId }
+  ];
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, moveStates });
+
+  // Run.
+  MoveFunction.execute(moveState, store);
+
+  // Verify.
+  const resultHand = Selector.hand(playerId, store.getState());
+  assert.ok(resultHand);
+  assert.equal(resultHand.length, 3, `resultHand.length = ${resultHand.length}`);
+  const resultAttackUnit = Selector.unit(an2, store.getState());
+  assert.ok(resultAttackUnit);
+  assert.equal(
+    resultAttackUnit.join(),
+    attackerCoinId,
+    `resultAttackUnit = ${resultAttackUnit.join()}`
+  );
+  const resultVictimUnit = Selector.unit(an3, store.getState());
+  assert.equal(resultVictimUnit, undefined, `resultVictimUnit = ${resultVictimUnit}`);
+  const resultMorgue = Selector.morgue(2, store.getState());
+  assert.ok(resultMorgue);
+  assert.equal(resultMorgue.length, 1);
+  assert.equal(resultMorgue.join(), victimCoinId);
 });
 
 QUnit.test("tactic execute() Royal Guard", assert => {

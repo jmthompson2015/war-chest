@@ -118,6 +118,44 @@ const generateTacticsCavalry = (player, paymentCoin, an1, state) => {
   return R.reduce(reduceFunction, [], moveStates);
 };
 
+const isLegalEnsignMove = an0 => (player, paymentCoin, an1, an2, state) =>
+  Board.distance(an0, an2) <= 2 &&
+  MoveFunction[Move.MOVE_A_UNIT].isLegal(player, paymentCoin, an1, an2, state);
+
+const generateTacticsEnsign = (player, paymentCoin, an1, state) => {
+  const moveKey = Move.TACTIC;
+  const playerId = player.id;
+  const paymentCoinId = paymentCoin.id;
+  const mapFunction = moveState =>
+    MoveState.create({
+      moveKey,
+      playerId,
+      paymentCoinId,
+      an1,
+      moveStates: [R.merge(moveState, { paymentCoinId })]
+    });
+  const teamANs = Selector.teamANs(player.teamKey, state);
+  const reduceFunction1 = (accum, an) =>
+    Board.distance(an1, an) <= 2 ? R.append(an, accum) : accum;
+  const filterFunction = an => an !== an1;
+  const nearANs0 = R.reduce(reduceFunction1, [], teamANs);
+  const nearANs = R.filter(filterFunction, nearANs0);
+  const reduceFunction2 = (accum, an) => {
+    const myPaymentCoin = Selector.coinForUnit(an, state);
+    const moveStates = generateMoveAUnitsForAN(
+      player,
+      myPaymentCoin,
+      an,
+      state,
+      isLegalEnsignMove(an1)
+    );
+    return R.concat(moveStates, accum);
+  };
+  const moveStates = R.reduce(reduceFunction2, [], nearANs);
+
+  return R.map(mapFunction, moveStates);
+};
+
 const generateTacticsLancer = (player, paymentCoin, an1, state) => {
   const moveKey = Move.TACTIC;
   const playerId = player.id;
@@ -207,7 +245,7 @@ const generateTacticsMarshall = (player, paymentCoin, an1, state) => {
       playerId,
       paymentCoinId,
       an1,
-      moveStates: [attackState]
+      moveStates: [R.merge(attackState, { paymentCoinId })]
     });
   const teamANs = Selector.teamANs(player.teamKey, state);
   const reduceFunction1 = (accum, an) =>
@@ -400,6 +438,11 @@ MoveGenerator.generateTactics = (player, paymentCoin, state) => {
 
       if (paymentCoin.coinKey === UnitCoin.CAVALRY && coinKey === UnitCoin.CAVALRY) {
         const accum3 = generateTacticsCavalry(player, paymentCoin, an1, state);
+        return R.concat(accum, accum3);
+      }
+
+      if (paymentCoin.coinKey === UnitCoin.ENSIGN && coinKey === UnitCoin.ENSIGN) {
+        const accum3 = generateTacticsEnsign(player, paymentCoin, an1, state);
         return R.concat(accum, accum3);
       }
 

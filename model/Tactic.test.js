@@ -242,6 +242,42 @@ QUnit.test("label() Crossbowman", assert => {
   assert.equal(result, "Tactic: Crossbowman at e2 attacks Archer at e4");
 });
 
+QUnit.test("label() Ensign", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 1;
+  store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", playerId, UnitCard.ENSIGN));
+  const coinState1 = CoinState.create({ coinKey: UnitCoin.ENSIGN, store });
+  store.dispatch(ActionCreator.addCoin(coinState1));
+  const coinState2 = CoinState.create({ coinKey: UnitCoin.ENSIGN, store });
+  store.dispatch(ActionCreator.addCoin(coinState2));
+  const paymentCoinId = coinState1.id; // Marshall
+  const moveCoinId = 6; // Swordsman
+  const an1 = "e2"; // Raven control location.
+  const an2 = "e4";
+  const an3 = "f3";
+  store.dispatch(ActionCreator.setUnit(an1, paymentCoinId));
+  store.dispatch(ActionCreator.setUnit(an2, moveCoinId));
+  const moveKey = Move.TACTIC;
+  const moveStates = [
+    MoveState.create({
+      moveKey: Move.MOVE_A_UNIT,
+      playerId,
+      paymentCoinId,
+      an1: an2,
+      an2: an3
+    })
+  ];
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, moveStates });
+  const tactic = Tactic[UnitCoin.ENSIGN];
+
+  // Run.
+  const result = tactic.label(moveState, store.getState());
+
+  // Verify.
+  assert.equal(result, "Tactic: Ensign at e2 orders Swordsman at e4 to move to f3");
+});
+
 QUnit.test("label() Lancer", assert => {
   // Setup.
   const store = TestData.createStore();
@@ -273,7 +309,7 @@ QUnit.test("label() Lancer", assert => {
     an1,
     moveStates
   });
-  const tactic = Tactic[UnitCoin.CAVALRY];
+  const tactic = Tactic[UnitCoin.LANCER];
 
   // Run.
   const result = tactic.label(moveState, store.getState());
@@ -317,23 +353,24 @@ QUnit.test("label() Marshall", assert => {
   const paymentCoinId = coinState1.id; // Marshall
   const attackerCoinId = 6; // Swordsman
   const victimCoinId = 25; // Archer
-  const an0 = "e2"; // Raven control location.
-  const an1 = "e4";
-  const an2 = "f4";
+  const an1 = "e2"; // Raven control location.
+  const an2 = "e4";
+  const an3 = "f4";
   store.dispatch(ActionCreator.setUnit(an1, paymentCoinId));
-  store.dispatch(ActionCreator.setUnit(an2, victimCoinId));
+  store.dispatch(ActionCreator.setUnit(an2, attackerCoinId));
+  store.dispatch(ActionCreator.setUnit(an3, victimCoinId));
   const moveKey = Move.TACTIC;
   const moveStates = [
     MoveState.create({
       moveKey: Move.ATTACK,
       playerId,
-      paymentCoinId: attackerCoinId,
-      an1,
-      an2,
+      paymentCoinId,
+      an1: an2,
+      an2: an3,
       victimCoinId
     })
   ];
-  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1: an0, moveStates });
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, moveStates });
   const tactic = Tactic[UnitCoin.MARSHALL];
 
   // Run.
