@@ -655,6 +655,82 @@ QUnit.test("generateTactics() Ensign", assert => {
   );
 });
 
+QUnit.test("generateTactics() Footman", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 1;
+  const player = Selector.player(playerId, store.getState());
+  store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", playerId, UnitCard.FOOTMAN));
+  const coinState1 = CoinState.create({ coinKey: UnitCoin.FOOTMAN, store });
+  store.dispatch(ActionCreator.addCoin(coinState1));
+  const coinState2 = CoinState.create({ coinKey: UnitCoin.FOOTMAN, store });
+  store.dispatch(ActionCreator.addCoin(coinState2));
+  const coinState3 = CoinState.create({ coinKey: UnitCoin.FOOTMAN, store });
+  store.dispatch(ActionCreator.addCoin(coinState3));
+  const paymentCoinId = coinState1.id; // Footman
+  const paymentCoin = Selector.coin(paymentCoinId, store.getState());
+  store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, paymentCoinId));
+  const an1 = "e2";
+  const an2 = "h1";
+  store.dispatch(ActionCreator.setUnit(an1, coinState2.id)); // Footman
+  store.dispatch(ActionCreator.setUnit(an2, coinState3.id)); // Footman
+
+  // Run.
+  const result = MoveGenerator.generateTactics(player, paymentCoin, store.getState());
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(Array.isArray(result), true);
+  assert.equal(result.length, 16, `result.length=${result.length}`);
+  const move0 = result[0];
+  verifyMoveState(assert, move0, Move.TACTIC, playerId, paymentCoinId, an1);
+  assert.equal(move0.moveStates.length, 2, `move0.moveStates.length = ${move0.moveStates.length}`);
+  verifyMoveState(
+    assert,
+    move0.moveStates[0],
+    Move.MOVE_A_UNIT,
+    playerId,
+    paymentCoinId,
+    an1,
+    "d3" // an2
+  );
+  verifyMoveState(
+    assert,
+    move0.moveStates[1],
+    Move.MOVE_A_UNIT,
+    playerId,
+    paymentCoinId,
+    an2,
+    "g1" // an2
+  );
+
+  const moveLast = result[result.length - 1];
+  verifyMoveState(assert, moveLast, Move.TACTIC, playerId, paymentCoinId, an1);
+  assert.equal(
+    moveLast.moveStates.length,
+    2,
+    `moveLast.moveStates.length = ${moveLast.moveStates.length}`
+  );
+  verifyMoveState(
+    assert,
+    moveLast.moveStates[0],
+    Move.MOVE_A_UNIT,
+    playerId,
+    paymentCoinId,
+    an1,
+    "f2" // an2
+  );
+  verifyMoveState(
+    assert,
+    moveLast.moveStates[1],
+    Move.MOVE_A_UNIT,
+    playerId,
+    paymentCoinId,
+    an2,
+    "i1" // an2
+  );
+});
+
 QUnit.test("generateTactics() Lancer", assert => {
   // Setup.
   const store = TestData.createStore();

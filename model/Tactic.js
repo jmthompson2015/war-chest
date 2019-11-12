@@ -1,8 +1,41 @@
+/* eslint no-console: ["error", { allow: ["warn"] }] */
+
 import Board from "../artifact/Board.js";
+import Move from "../artifact/Move.js";
 import Resolver from "../artifact/Resolver.js";
 import UnitCoin from "../artifact/UnitCoin.js";
 
 import Selector from "../state/Selector.js";
+
+const labelFootman = (moveState, state) => {
+  const { moveKey, moveStates, paymentCoinId } = moveState;
+  const paymentCoinState = state.coinInstances[paymentCoinId];
+  const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
+  const move = Resolver.move(moveKey);
+  const mapFunction = m => {
+    let answer = "";
+    const victimCoinState = Selector.coin(m.victimCoinId, state);
+    const victimCoin = victimCoinState ? Resolver.coin(victimCoinState.coinKey) : undefined;
+    const victimCoinName = victimCoin ? victimCoin.name : undefined;
+    switch (m.moveKey) {
+      case Move.MOVE_A_UNIT:
+        answer = `Move ${paymentCoin.name} from ${m.an1} to ${m.an2}`;
+        break;
+      case Move.CONTROL:
+        answer = `Control ${m.an1}`;
+        break;
+      case Move.ATTACK:
+        answer = `${paymentCoin.name} at ${m.an1} attacks ${victimCoinName} at ${m.an2}`;
+        break;
+      default:
+        console.warn(`Unknown label moveKey: ${m.moveKey}`);
+    }
+    return answer;
+  };
+  const suffix = R.map(mapFunction, moveStates);
+
+  return `${move.name}: ${suffix.join("; ")}`;
+};
 
 const Tactic = {
   archer: {
@@ -77,10 +110,9 @@ const Tactic = {
       );
     }
   },
-  // footman: {
-  //   isLegal: () => false,
-  //   label: (/* moveState, coinInstances */) => "Tactic: footman"
-  // },
+  footman: {
+    label: labelFootman
+  },
   lancer: {
     isLegalLancerAttack: (player, paymentCoin, an1, an2, state) => {
       const directionIndex = Board.cubeDirectionIndex(an1, an2);

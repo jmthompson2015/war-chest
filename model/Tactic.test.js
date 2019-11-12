@@ -251,7 +251,7 @@ QUnit.test("label() Ensign", assert => {
   store.dispatch(ActionCreator.addCoin(coinState1));
   const coinState2 = CoinState.create({ coinKey: UnitCoin.ENSIGN, store });
   store.dispatch(ActionCreator.addCoin(coinState2));
-  const paymentCoinId = coinState1.id; // Marshall
+  const paymentCoinId = coinState1.id; // Ensign
   const moveCoinId = 6; // Swordsman
   const an1 = "e2"; // Raven control location.
   const an2 = "e4";
@@ -276,6 +276,61 @@ QUnit.test("label() Ensign", assert => {
 
   // Verify.
   assert.equal(result, "Tactic: Ensign at e2 orders Swordsman at e4 to move to f3");
+});
+
+QUnit.test("label() Footman", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 1;
+  store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", playerId, UnitCard.FOOTMAN));
+  const coinState1 = CoinState.create({ coinKey: UnitCoin.FOOTMAN, store });
+  store.dispatch(ActionCreator.addCoin(coinState1));
+  const coinState2 = CoinState.create({ coinKey: UnitCoin.FOOTMAN, store });
+  store.dispatch(ActionCreator.addCoin(coinState2));
+  const coinState3 = CoinState.create({ coinKey: UnitCoin.FOOTMAN, store });
+  store.dispatch(ActionCreator.addCoin(coinState3));
+  const paymentCoinId = coinState1.id; // Footman
+  const victimCoinId = 25; // Archer
+  const an1 = "e2";
+  const an2 = "h1";
+  store.dispatch(ActionCreator.setUnit(an1, coinState2.id)); // Footman
+  store.dispatch(ActionCreator.setUnit(an2, coinState3.id)); // Footman
+  store.dispatch(ActionCreator.setUnit("h2", victimCoinId)); // Archer
+  const moveKey = Move.TACTIC;
+  const moveStates = [
+    MoveState.create({
+      moveKey: Move.CONTROL,
+      playerId,
+      paymentCoinId,
+      an1: "e2"
+    }),
+    MoveState.create({
+      moveKey: Move.MOVE_A_UNIT,
+      playerId,
+      paymentCoinId,
+      an1: "e2",
+      an2: "e3"
+    }),
+    MoveState.create({
+      moveKey: Move.ATTACK,
+      playerId,
+      paymentCoinId,
+      an1: "h1",
+      an2: "h2",
+      victimCoinId
+    })
+  ];
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, moveStates });
+  const tactic = Tactic[UnitCoin.FOOTMAN];
+
+  // Run.
+  const result = tactic.label(moveState, store.getState());
+
+  // Verify.
+  assert.equal(
+    result,
+    "Tactic: Control e2; Move Footman from e2 to e3; Footman at h1 attacks Archer at h2"
+  );
 });
 
 QUnit.test("label() Lancer", assert => {

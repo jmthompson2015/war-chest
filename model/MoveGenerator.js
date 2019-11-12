@@ -40,6 +40,20 @@ const generateAttacksForAN = (player, paymentCoin, an1, state, isLegalFunction0,
   return R.reduce(reduceFunction, [], neighbors);
 };
 
+const generateControlForAN = (player, paymentCoin, an1, state, isLegalFunction0) => {
+  const moveKey = Move.CONTROL;
+  const playerId = player.id;
+  const paymentCoinId = paymentCoin.id;
+  const isLegalFunction = isLegalFunction0 || MoveFunction[moveKey].isLegal;
+  let answer;
+
+  if (isLegalFunction(player, paymentCoin, an1, state)) {
+    answer = MoveState.create({ moveKey, playerId, paymentCoinId, an1 });
+  }
+
+  return answer;
+};
+
 const generateMoveAUnitsForAN = (player, paymentCoin, an1, state, isLegalFunction0, neighbors0) => {
   const moveKey = Move.MOVE_A_UNIT;
   const playerId = player.id;
@@ -154,6 +168,59 @@ const generateTacticsEnsign = (player, paymentCoin, an1, state) => {
   const moveStates = R.reduce(reduceFunction2, [], nearANs);
 
   return R.map(mapFunction, moveStates);
+};
+
+const generateTacticsFootman = (player, paymentCoin, an1, state) => {
+  const moveKey = Move.TACTIC;
+  const playerId = player.id;
+  const paymentCoinId = paymentCoin.id;
+  const playerUnitANs = Selector.playerUnitANs(player.id, state);
+  const filterFunction = an => Selector.isUnitType(an, UnitCoin.FOOTMAN, state);
+  const footmanANs = R.filter(filterFunction, playerUnitANs);
+
+  if (footmanANs.length === 2) {
+    let maneuverStates1 = [];
+    let maneuverStates2 = [];
+
+    if (footmanANs.length > 0) {
+      const an = footmanANs[0];
+      const moveStates0 = generateMoveAUnitsForAN(player, paymentCoin, an, state);
+      const moveStates = R.sortBy(R.prop("an1"), R.sortBy(R.prop("an2"), moveStates0));
+      const controlState = generateControlForAN(player, paymentCoin, an, state);
+      const controlStates = controlState ? [controlState] : [];
+      const attackStates0 = generateAttacksForAN(player, paymentCoin, an, state);
+      const attackStates = R.sortBy(R.prop("an1"), R.sortBy(R.prop("an2"), attackStates0));
+      maneuverStates1 = R.concat(moveStates, R.concat(controlStates, attackStates));
+    }
+
+    if (footmanANs.length > 1) {
+      const an = footmanANs[1];
+      const moveStates0 = generateMoveAUnitsForAN(player, paymentCoin, an, state);
+      const moveStates = R.sortBy(R.prop("an1"), R.sortBy(R.prop("an2"), moveStates0));
+      const controlState = generateControlForAN(player, paymentCoin, an, state);
+      const controlStates = controlState ? [controlState] : [];
+      const attackStates0 = generateAttacksForAN(player, paymentCoin, an, state);
+      const attackStates = R.sortBy(R.prop("an1"), R.sortBy(R.prop("an2"), attackStates0));
+      maneuverStates2 = R.concat(moveStates, R.concat(controlStates, attackStates));
+    }
+
+    const mapFunction = moveState1 => moveState2 =>
+      MoveState.create({
+        moveKey,
+        playerId,
+        paymentCoinId,
+        an1,
+        moveStates: [moveState1, moveState2]
+      });
+    const reduceFunction = (accum, moveState1) => {
+      const tacticStates = R.map(mapFunction(moveState1), maneuverStates2);
+      return R.concat(accum, tacticStates);
+    };
+
+    return R.reduce(reduceFunction, [], maneuverStates1);
+  }
+
+  return [];
 };
 
 const generateTacticsLancer = (player, paymentCoin, an1, state) => {
@@ -325,17 +392,10 @@ MoveGenerator.generateClaimInitiatives = (player, paymentCoin, state) => {
 };
 
 MoveGenerator.generateControls = (player, paymentCoin, state) => {
-  const moveKey = Move.CONTROL;
-  const playerId = player.id;
-  const paymentCoinId = paymentCoin.id;
-  const mm = MoveFunction[moveKey];
   const possibleControlANs = Selector.possibleControlANs(player.id, state);
   const reduceFunction = (accum, an1) => {
-    if (mm.isLegal(player, paymentCoin, an1, state)) {
-      const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1 });
-      return R.append(moveState, accum);
-    }
-    return accum;
+    const moveState = generateControlForAN(player, paymentCoin, an1, state);
+    return moveState ? R.append(moveState, accum) : accum;
   };
 
   return R.reduce(reduceFunction, [], possibleControlANs);
@@ -426,6 +486,7 @@ MoveGenerator.generateRecruits = (player, paymentCoin, state) => {
 
 MoveGenerator.generateTactics = (player, paymentCoin, state) => {
   const playerUnitANs = Selector.playerUnitANs(player.id, state);
+  let isFootmanDone = false;
   const reduceFunction = (accum, an1) => {
     const { coinKey } = Selector.coinForUnit(an1, state);
     const tt = Tactic[coinKey];
@@ -443,6 +504,16 @@ MoveGenerator.generateTactics = (player, paymentCoin, state) => {
 
       if (paymentCoin.coinKey === UnitCoin.ENSIGN && coinKey === UnitCoin.ENSIGN) {
         const accum3 = generateTacticsEnsign(player, paymentCoin, an1, state);
+        return R.concat(accum, accum3);
+      }
+
+      if (
+        !isFootmanDone &&
+        paymentCoin.coinKey === UnitCoin.FOOTMAN &&
+        coinKey === UnitCoin.FOOTMAN
+      ) {
+        const accum3 = generateTacticsFootman(player, paymentCoin, an1, state);
+        isFootmanDone = true;
         return R.concat(accum, accum3);
       }
 
