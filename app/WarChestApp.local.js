@@ -12,7 +12,7 @@ import StatusBarContainer from "../container/StatusBarContainer.js";
 
 const WarChestApp = {};
 
-const isLocal = false;
+const isLocal = true;
 const endpoint = isLocal ? Endpoint.LOCAL_RESOURCE : Endpoint.NETWORK_RESOURCE;
 const resourceBase = endpoint;
 const helpBase = `${endpoint}view/`;
