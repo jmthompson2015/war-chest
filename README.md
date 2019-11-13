@@ -1,6 +1,6 @@
 # War Chest Online
 
-Play the game: [War Chest Online](https://cdn.jsdelivr.net/gh/jmthompson2015/war-chest/app/WarChestApp.html)
+Play the game: [War Chest Online](https://jmthompson2015.github.io/war-chest/app/WarChestApp.html)
 
 ## Built With
 
