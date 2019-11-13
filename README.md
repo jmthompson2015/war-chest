@@ -1,6 +1,6 @@
-# War Chest Board Game
+# War Chest Online
 
-Play the game: [War Chest](https://cdn.jsdelivr.net/gh/jmthompson2015/war-chest/app/src/WarChestApp.html)
+Play the game: [War Chest Online](https://cdn.jsdelivr.net/gh/jmthompson2015/war-chest/app/WarChestApp.html)
 
 ## Built With
 
@@ -40,7 +40,7 @@ Provides integration of components to form the application.
 
 ## License
 
-War Chest Board Game is released under the terms of the [MIT License](https://github.com/jmthompson2015/war-chest/blob/master/LICENSE).
+War Chest Online is released under the terms of the [MIT License](https://github.com/jmthompson2015/war-chest/blob/master/LICENSE).
 
 ---
 
