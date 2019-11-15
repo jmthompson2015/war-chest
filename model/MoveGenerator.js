@@ -536,12 +536,6 @@ MoveGenerator.generateTactics = (player, paymentCoin, state) => {
         const accum3 = generateTacticsRoyalGuard(player, paymentCoin, an1, state);
         return R.concat(accum, accum3);
       }
-
-      console.warn(
-        `Can't generate tactics for player=${JSON.stringify(player)} paymentCoin=${JSON.stringify(
-          paymentCoin
-        )}`
-      );
     }
 
     return accum;

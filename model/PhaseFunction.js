@@ -83,7 +83,7 @@ const hasCoinsInHand = state => {
   return R.reduce(reduceFunction, false, playerIds);
 };
 
-const executePlayCoin = (resolve, store, callback) => {
+PhaseFunction.executePlayCoin = (resolve, store, callback) => {
   const currentPlayer = Selector.currentPlayer(store.getState());
   const strategy = StrategyResolver.resolve(currentPlayer.strategy);
   const hand = Selector.hand(currentPlayer.id, store.getState());
@@ -91,29 +91,30 @@ const executePlayCoin = (resolve, store, callback) => {
   if (hand.length > 0) {
     const delay = Selector.delay(store.getState());
     strategy.choosePaymentCoin(hand, store, delay).then(paymentCoinId => {
-      if (!R.isNil(paymentCoinId)) {
-        store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
-        const paymentCoin = Selector.coin(paymentCoinId, store.getState());
-        const moveStates = MoveGenerator.generateForCoin(
-          currentPlayer,
-          paymentCoin,
-          store.getState()
-        );
-        store.dispatch(ActionCreator.setCurrentMoves(moveStates));
-
-        PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
-      }
+      PhaseFunction.finishChoosePaymentCoin(paymentCoinId, resolve, store, callback);
     });
   }
 };
 
-const executePlayCoins = (resolve, store) => {
+PhaseFunction.finishChoosePaymentCoin = (paymentCoinId, resolve, store, callback) => {
+  if (!R.isNil(paymentCoinId)) {
+    const currentPlayer = Selector.currentPlayer(store.getState());
+    store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
+    const paymentCoin = Selector.coin(paymentCoinId, store.getState());
+    const moveStates = MoveGenerator.generateForCoin(currentPlayer, paymentCoin, store.getState());
+    store.dispatch(ActionCreator.setCurrentMoves(moveStates));
+
+    PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
+  }
+};
+
+PhaseFunction.executePlayCoins = (resolve, store) => {
   advanceCurrentPlayer(store);
 
   const hasCoins = hasCoinsInHand(store.getState());
 
   if (hasCoins) {
-    executePlayCoin(resolve, store, executePlayCoins);
+    PhaseFunction.executePlayCoin(resolve, store, PhaseFunction.executePlayCoins);
   } else {
     resolve();
   }
@@ -132,7 +133,7 @@ PhaseFunction.playCoins = {
   execute: store =>
     new Promise(resolve => {
       if (!GameOver.isGameOver(store)) {
-        executePlayCoins(resolve, store);
+        PhaseFunction.executePlayCoins(resolve, store);
       }
     })
 };
@@ -200,24 +201,30 @@ PhaseFunction.chooseMove = (moveStates, paymentCoin, resolve, store, callback) =
     const delay = Selector.delay(store.getState());
 
     strategy.chooseMove(moveStates, store, delay).then(moveState => {
-      store.dispatch(ActionCreator.setCurrentMove(moveState));
-
-      if (R.isNil(moveState)) {
-        store.dispatch(ActionCreator.setCurrentMoves([]));
-        store.dispatch(ActionCreator.setCurrentPaymentCoin(null));
-        executePlayCoin(resolve, store, callback);
-      } else {
-        beforeMoveExecute(store)
-          .then(() => {
-            MoveFunction.execute(moveState, store);
-          })
-          .then(() => {
-            if (!GameOver.isGameOver(store)) {
-              afterMoveExecute(paymentCoin, resolve, store, callback);
-            }
-          });
-      }
+      PhaseFunction.finishChooseMove(moveState, moveStates, paymentCoin, resolve, store, callback);
     });
+  }
+};
+
+PhaseFunction.finishChooseMove = (moveState, moveStates, paymentCoin, resolve, store, callback) => {
+  store.dispatch(ActionCreator.setCurrentMove(moveState));
+
+  if (R.isNil(moveState)) {
+    store.dispatch(ActionCreator.setCurrentMoves([]));
+    store.dispatch(ActionCreator.setCurrentPaymentCoin(null));
+    PhaseFunction.executePlayCoin(resolve, store, callback);
+  } else {
+    beforeMoveExecute(store)
+      .then(() => {
+        MoveFunction.execute(moveState, store);
+      })
+      .then(() => {
+        if (GameOver.isGameOver(store)) {
+          resolve();
+        } else {
+          afterMoveExecute(paymentCoin, resolve, store, callback);
+        }
+      });
   }
 };
 

@@ -51,6 +51,11 @@ Reducer.root = (state, action) => {
     return AppState.create();
   }
 
+  if (action.type.startsWith("@@redux/INIT")) {
+    // Nothing to do.
+    return state;
+  }
+
   let newAnToControl;
   let newANToTokens;
   let newBag;

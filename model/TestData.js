@@ -41,7 +41,7 @@ const createPlayers = isTwoPlayer => {
       teamKey: Team.WOLF
     });
 
-    answer.push([player3, player4]);
+    answer.push(player3, player4);
   }
 
   return answer;

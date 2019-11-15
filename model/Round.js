@@ -39,7 +39,7 @@ const advanceRound = store => {
   store.dispatch(ActionCreator.setInitiativeChangedThisRound(false));
 };
 
-const executePhase = (resolve, store) => {
+Round.executePhase = (resolve, store) => {
   advancePhase(store);
   const phase = Selector.currentPhase(store.getState());
   const phaseKey = phase ? phase.key : undefined;
@@ -49,7 +49,7 @@ const executePhase = (resolve, store) => {
   } else {
     const phaseFunction = PhaseFunction[phaseKey];
     phaseFunction.execute(store).then(() => {
-      executePhase(resolve, store);
+      Round.executePhase(resolve, store);
     });
   }
 };
@@ -57,7 +57,7 @@ const executePhase = (resolve, store) => {
 Round.execute = store =>
   new Promise(resolve => {
     advanceRound(store);
-    executePhase(resolve, store);
+    Round.executePhase(resolve, store);
   });
 
 Object.freeze(Round);
