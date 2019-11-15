@@ -550,6 +550,20 @@ QUnit.test("setUserMessage()", assert => {
   assert.equal(result.userMessage, userMessage);
 });
 
+QUnit.test("setVerbose()", assert => {
+  // Setup.
+  const state = AppState.create();
+  const isVerbose = false;
+  const action = ActionCreator.setVerbose(isVerbose);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.isVerbose, isVerbose);
+});
+
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 QUnit.test("bagToHand()", assert => {
   // Setup.

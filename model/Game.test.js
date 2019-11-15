@@ -41,6 +41,7 @@ QUnit.test("execute()", assert => {
   const game = new Game(players, playerToTableau, roundLimit);
   const { store } = game;
   store.dispatch(ActionCreator.setDelay(0));
+  store.dispatch(ActionCreator.setVerbose(false));
 
   // Run.
   const done = assert.async();

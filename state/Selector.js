@@ -155,6 +155,8 @@ Selector.isFriendlyUnitAt = (playerId, an, state) => {
   return coin0 ? Selector.isFriendlyUnit(playerId, coin0.coinKey, state) : false;
 };
 
+Selector.isGameOver = state => state.isGameOver;
+
 Selector.isHumanPlayer = (playerId, state) => {
   const player = Selector.player(playerId, state);
 
@@ -194,6 +196,8 @@ Selector.isUnoccupied = (an, state) => {
 
   return R.isNil(unit);
 };
+
+Selector.isVerbose = state => state.isVerbose;
 
 Selector.peekInputCallback = state => state.inputCallbackStack[state.inputCallbackStack.length - 1];
 

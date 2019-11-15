@@ -8,6 +8,7 @@ AppState.create = ({
   initiativeChangedThisRound = false,
   initiativePlayerId,
   isGameOver = false,
+  isVerbose = true,
   userMessage = null,
   winnerTeamKey = null,
 
@@ -42,6 +43,7 @@ AppState.create = ({
     initiativeChangedThisRound,
     initiativePlayerId,
     isGameOver,
+    isVerbose,
     userMessage,
     winnerTeamKey,
 

@@ -374,6 +374,7 @@ QUnit.test("playCoins()", assert => {
   store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
   const phase = PhaseFunction[Phase.PLAY_COINS];
   store.dispatch(ActionCreator.setDelay(0));
+  store.dispatch(ActionCreator.setVerbose(false));
 
   // Run.
   const done = assert.async();

@@ -10,6 +10,7 @@ QUnit.test("execute() ", assert => {
   // Setup.
   const store = TestData.createStore(true, false);
   store.dispatch(ActionCreator.setDelay(0));
+  store.dispatch(ActionCreator.setVerbose(false));
 
   // Run.
   const done = assert.async();
