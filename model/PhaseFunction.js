@@ -51,10 +51,14 @@ const drawCoin = (playerId, store) => {
     bag = Selector.bag(playerId, store.getState());
   }
 
-  const coinId = ArrayUtils.randomElement(bag);
-  store.dispatch(
-    ActionCreator.transferBetweenPlayerArrays("playerToBag", "playerToHand", playerId, coinId)
-  );
+  // Bag may still be empty.
+  if (!R.isEmpty(bag)) {
+    const coinId = ArrayUtils.randomElement(bag);
+
+    store.dispatch(
+      ActionCreator.transferBetweenPlayerArrays("playerToBag", "playerToHand", playerId, coinId)
+    );
+  }
 };
 
 const drawThreeCoins = (playerId, store) => {
@@ -93,6 +97,8 @@ PhaseFunction.executePlayCoin = (resolve, store, callback) => {
     strategy.choosePaymentCoin(hand, store, delay).then(paymentCoinId => {
       PhaseFunction.finishChoosePaymentCoin(paymentCoinId, resolve, store, callback);
     });
+  } else {
+    resolve();
   }
 };
 

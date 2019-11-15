@@ -1,4 +1,4 @@
-/* eslint no-console: ["error", { allow: ["log", "warn"] }] */
+/* eslint no-console: ["error", { allow: ["error", "log", "warn"] }] */
 
 import ArrayUtils from "../util/ArrayUtilities.js";
 
@@ -35,6 +35,10 @@ const removeFromArray = (state, arrayName, playerId, coinId) => {
 };
 
 const transferBetweenArrays = (state, fromKey, toKey, playerId, coinId) => {
+  if (R.isNil(coinId)) {
+    console.error(`ERROR: invalid coinId: ${coinId}`);
+  }
+
   const oldFrom = state[fromKey][playerId] || [];
   const newFrom = ArrayUtils.remove(coinId, oldFrom);
   const oldTo = state[toKey][playerId] || [];
