@@ -123,7 +123,9 @@ PhaseFunction.executePlayCoins = (resolve, store) => {
 PhaseFunction.drawThreeCoins = {
   execute: store =>
     new Promise(resolve => {
-      if (!GameOver.isGameOver(store)) {
+      if (GameOver.isGameOver(store)) {
+        resolve();
+      } else {
         executeDrawThreeCoins(resolve, store);
       }
     })
@@ -132,7 +134,9 @@ PhaseFunction.drawThreeCoins = {
 PhaseFunction.playCoins = {
   execute: store =>
     new Promise(resolve => {
-      if (!GameOver.isGameOver(store)) {
+      if (GameOver.isGameOver(store)) {
+        resolve();
+      } else {
         PhaseFunction.executePlayCoins(resolve, store);
       }
     })
