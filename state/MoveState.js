@@ -9,19 +9,18 @@ MoveState.create = ({
   playerId,
   recruitCoinId,
   victimCoinId
-}) =>
-  Immutable({
-    // Required.
-    moveKey,
-    playerId,
-    paymentCoinId,
-    // Situational.
-    an1,
-    an2,
-    moveStates,
-    recruitCoinId,
-    victimCoinId
-  });
+}) => ({
+  // Required.
+  moveKey,
+  playerId,
+  paymentCoinId,
+  // Situational.
+  an1,
+  an2,
+  moveStates,
+  recruitCoinId,
+  victimCoinId
+});
 
 Object.freeze(MoveState);
 

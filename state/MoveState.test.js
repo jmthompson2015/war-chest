@@ -35,18 +35,5 @@ QUnit.test("create()", assert => {
   });
 });
 
-QUnit.test("create() immutable", assert => {
-  // Setup.
-  const player = createTestData();
-
-  // Run / Verify.
-  try {
-    player.playerId = 12;
-    assert.ok(false, "Should have thrown an exception");
-  } catch (e) {
-    assert.ok(true);
-  }
-});
-
 const PlayerStateTest = {};
 export default PlayerStateTest;

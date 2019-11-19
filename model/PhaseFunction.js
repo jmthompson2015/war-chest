@@ -1,6 +1,5 @@
 import ArrayUtils from "../util/ArrayUtilities.js";
 
-import DamageTarget from "../artifact/DamageTarget.js";
 import Move from "../artifact/Move.js";
 import Resolver from "../artifact/Resolver.js";
 import UnitCoin from "../artifact/UnitCoin.js";
@@ -11,7 +10,6 @@ import Selector from "../state/Selector.js";
 import GameOver from "./GameOver.js";
 import MoveGenerator from "./MoveGenerator.js";
 import MoveFunction from "./MoveFunction.js";
-import StrategyResolver from "./StrategyResolver.js";
 
 const PhaseFunction = {};
 
@@ -89,7 +87,7 @@ const hasCoinsInHand = state => {
 
 PhaseFunction.executePlayCoin = (resolve, store, callback) => {
   const currentPlayer = Selector.currentPlayer(store.getState());
-  const strategy = StrategyResolver.resolve(currentPlayer.strategy);
+  const strategy = Selector.playerStrategy(currentPlayer.id, store.getState());
   const hand = Selector.hand(currentPlayer.id, store.getState());
 
   if (hand.length > 0) {
@@ -207,7 +205,7 @@ const afterMoveExecute = (paymentCoin, resolve, store, callback) => {
 PhaseFunction.chooseMove = (moveStates, paymentCoin, resolve, store, callback) => {
   if (!R.isEmpty(moveStates)) {
     const currentPlayer = Selector.currentPlayer(store.getState());
-    const strategy = StrategyResolver.resolve(currentPlayer.strategy);
+    const strategy = Selector.playerStrategy(currentPlayer.id, store.getState());
     const delay = Selector.delay(store.getState());
 
     strategy.chooseMove(moveStates, store, delay).then(moveState => {
@@ -264,9 +262,10 @@ PhaseFunction.executeRoyalGuardAttribute = store =>
       ? Selector.coin(moveState.victimCoinId, store.getState())
       : undefined;
     const victimPlayer = Selector.playerForCard(victimCoin.coinKey, store.getState());
-    const strategy = StrategyResolver.resolve(victimPlayer.strategy);
+    const strategy = Selector.playerStrategy(victimPlayer.id, store.getState());
     const delay = Selector.delay(store.getState());
-    strategy.chooseDamageTarget(DamageTarget.values(), store, delay).then(damageTarget => {
+    const damageTargets = Selector.damageTargets(victimPlayer.id, store.getState());
+    strategy.chooseDamageTarget(damageTargets, store, delay).then(damageTarget => {
       store.dispatch(ActionCreator.setCurrentDamageTarget(damageTarget.key));
       resolve();
     });

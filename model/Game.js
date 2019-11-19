@@ -6,6 +6,7 @@ import Reducer from "../state/Reducer.js";
 import GameOver from "./GameOver.js";
 import Round from "./Round.js";
 import Setup from "./Setup.js";
+import StrategyResolver from "./StrategyResolver.js";
 
 const executeGame = (roundLimit, resolve, store) => {
   if (GameOver.isGameOver(store, roundLimit)) {
@@ -23,6 +24,10 @@ class Game {
     this._store = Redux.createStore(Reducer.root);
     this._store.dispatch(ActionCreator.setPlayers(players));
     this._store.dispatch(ActionCreator.setPlayerToTableau(playerToTableau));
+    R.forEach(player => {
+      const strategy = StrategyResolver.resolve(player.strategy);
+      this._store.dispatch(ActionCreator.setPlayerStrategy(player.id, strategy));
+    }, players);
     this._roundLimit = roundLimit;
 
     Setup.execute(this._store);

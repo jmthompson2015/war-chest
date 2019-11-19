@@ -146,40 +146,67 @@ Board.neighborInDirection = (an, directionIndex) => {
   return Board.coordinateCalculator.fileRankToAN(hex2.q, hex2.r);
 };
 
+// Neighbors cache.
+const anToNeighbors = {};
+
 Board.neighbors = (an, isTwoPlayer = true) => {
-  const q = Board.coordinateCalculator.anToFile(an);
-  const r = Board.coordinateCalculator.anToRank(an);
-  const hex = { q, r };
-  const hexNeighbors = HexBoardUtilities.hexNeighbors(hex);
-  const reduceFunction = (accum, n) => {
-    const neighborAN = Board.coordinateCalculator.fileRankToAN(n.q, n.r);
-    return R.isNil(neighborAN) ? accum : R.append(neighborAN, accum);
-  };
-  const neighbors = R.reduce(reduceFunction, [], hexNeighbors);
-  const unused = isTwoPlayer ? Board.UNUSED_2P : Board.UNUSED_4P;
+  let answer = anToNeighbors[an];
 
-  return R.without(unused, neighbors).sort();
-};
+  if (R.isNil(answer)) {
+    const q = Board.coordinateCalculator.anToFile(an);
+    const r = Board.coordinateCalculator.anToRank(an);
+    const hex = { q, r };
+    const hexNeighbors = HexBoardUtilities.hexNeighbors(hex);
+    const reduceFunction = (accum, n) => {
+      const neighborAN = Board.coordinateCalculator.fileRankToAN(n.q, n.r);
+      return R.isNil(neighborAN) ? accum : R.append(neighborAN, accum);
+    };
+    const neighbors = R.reduce(reduceFunction, [], hexNeighbors);
+    const unused = isTwoPlayer ? Board.UNUSED_2P : Board.UNUSED_4P;
 
-Board.ringANs = (an, distance = 2, isTwoPlayer = true) => {
-  const q0 = Board.coordinateCalculator.anToFile(an);
-  const r0 = Board.coordinateCalculator.anToRank(an);
-  const hex0 = { q: q0, r: r0 };
-  let neighbors = [];
-
-  for (let r = 1; r <= Board.RANK_COUNT; r += 1) {
-    for (let q = 1; q <= Board.FILE_COUNT; q += 1) {
-      const hex = { q, r };
-      if (HexBoardUtilities.hexDistance(hex, hex0) === distance) {
-        const neighborAN = Board.coordinateCalculator.fileRankToAN(q, r);
-        neighbors = R.append(neighborAN, neighbors);
-      }
-    }
+    answer = R.without(unused, neighbors).sort();
+    anToNeighbors[an] = answer;
   }
 
-  const unused = isTwoPlayer ? Board.UNUSED_2P : Board.UNUSED_4P;
+  return answer;
+};
 
-  return R.without(unused, neighbors).sort();
+// Ring ANs cache.
+const anToDistanceToRingANs = {};
+
+Board.ringANs = (an, distance = 2, isTwoPlayer = true) => {
+  let distanceToRingANs = anToDistanceToRingANs[an];
+
+  if (R.isNil(distanceToRingANs)) {
+    distanceToRingANs = {};
+    anToDistanceToRingANs[an] = distanceToRingANs;
+  }
+
+  let answer = distanceToRingANs[distance];
+
+  if (R.isNil(answer)) {
+    const q0 = Board.coordinateCalculator.anToFile(an);
+    const r0 = Board.coordinateCalculator.anToRank(an);
+    const hex0 = { q: q0, r: r0 };
+    let neighbors = [];
+
+    for (let r = 1; r <= Board.RANK_COUNT; r += 1) {
+      for (let q = 1; q <= Board.FILE_COUNT; q += 1) {
+        const hex = { q, r };
+        if (HexBoardUtilities.hexDistance(hex, hex0) === distance) {
+          const neighborAN = Board.coordinateCalculator.fileRankToAN(q, r);
+          neighbors = R.append(neighborAN, neighbors);
+        }
+      }
+    }
+
+    const unused = isTwoPlayer ? Board.UNUSED_2P : Board.UNUSED_4P;
+
+    answer = R.without(unused, neighbors).sort();
+    anToDistanceToRingANs[an][distance] = answer;
+  }
+
+  return answer;
 };
 
 Object.freeze(Board);

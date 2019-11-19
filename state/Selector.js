@@ -1,4 +1,5 @@
 import Board from "../artifact/Board.js";
+import DamageTarget from "../artifact/DamageTarget.js";
 import Resolver from "../artifact/Resolver.js";
 import UnitCoin from "../artifact/UnitCoin.js";
 
@@ -90,6 +91,12 @@ Selector.currentPhase = state => Resolver.phase(state.currentPhaseKey);
 Selector.currentPlayer = state => Selector.player(state.currentPlayerId, state);
 
 Selector.currentPlayerOrder = state => state.currentPlayerOrder;
+
+Selector.damageTargets = (playerId, state) => {
+  const isTypeInSupply = Selector.isTypeInSupply(playerId, UnitCoin.ROYAL_GUARD, state);
+
+  return isTypeInSupply ? DamageTarget.values() : [Resolver.damageTarget(DamageTarget.BOARD)];
+};
 
 Selector.delay = state => state.delay;
 
@@ -185,6 +192,14 @@ Selector.isOccupied = (an, state) => {
 
 Selector.isTwoPlayer = state => Object.keys(state.playerInstances).length === 2;
 
+Selector.isTypeInSupply = (playerId, coinKey, state) => {
+  const supply = Selector.supply(playerId, state);
+  const coins = Selector.coins(supply, state);
+  const coinKeys = R.map(R.prop("coinKey"), coins);
+
+  return R.contains(coinKey, coinKeys);
+};
+
 Selector.isUnitType = (an, coinKey, state) => {
   const coin0 = Selector.coinForUnit(an, state);
 
@@ -250,6 +265,8 @@ Selector.possibleControlANs = (teamKey, state) => {
 };
 
 Selector.round = state => state.round;
+
+Selector.playerStrategy = (playerId, state) => state.playerToStrategy[playerId];
 
 Selector.supplyCoinsByType = (playerId, coinKey, state) => {
   return coinsByType(coinKey, Selector.supply(playerId, state), state);

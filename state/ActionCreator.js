@@ -90,6 +90,12 @@ ActionCreator.setInitiativePlayer = makeActionCreator(ActionType.SET_INITIATIVE_
 
 ActionCreator.setPlayers = makeActionCreator(ActionType.SET_PLAYERS, "players");
 
+ActionCreator.setPlayerStrategy = makeActionCreator(
+  ActionType.SET_PLAYER_STRATEGY,
+  "playerId",
+  "strategy"
+);
+
 ActionCreator.setPlayerToTableau = makeActionCreator(
   ActionType.SET_PLAYER_TO_TABLEAU,
   "playerToTableau"

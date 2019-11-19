@@ -29,6 +29,7 @@ AppState.create = ({
   playerToDiscardFaceup = {},
   playerToHand = {},
   playerToMorgue = {},
+  playerToStrategy = {},
   playerToSupply = {},
   playerToTableau = {},
 
@@ -64,6 +65,7 @@ AppState.create = ({
     playerToDiscardFaceup,
     playerToHand,
     playerToMorgue,
+    playerToStrategy,
     playerToSupply,
     playerToTableau,
 

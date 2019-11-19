@@ -7,25 +7,40 @@ const DELAY = 1000;
 RandomPlayerStrategy.chooseDamageTarget = (damageTargets, store, delay = DELAY) =>
   new Promise(resolve => {
     const damageTarget = ArrayUtils.randomElement(damageTargets);
-    setTimeout(() => {
+
+    if (delay === 0) {
       resolve(damageTarget);
-    }, delay);
+    } else {
+      setTimeout(() => {
+        resolve(damageTarget);
+      }, delay);
+    }
   });
 
 RandomPlayerStrategy.chooseMove = (moveStates, store, delay = DELAY) =>
   new Promise(resolve => {
     const moveState = ArrayUtils.randomElement(moveStates);
-    setTimeout(() => {
+
+    if (delay === 0) {
       resolve(moveState);
-    }, delay);
+    } else {
+      setTimeout(() => {
+        resolve(moveState);
+      }, delay);
+    }
   });
 
 RandomPlayerStrategy.choosePaymentCoin = (coinIds, store, delay = DELAY) =>
   new Promise(resolve => {
     const coinId = ArrayUtils.randomElement(coinIds);
-    setTimeout(() => {
+
+    if (delay === 0) {
       resolve(coinId);
-    }, delay);
+    } else {
+      setTimeout(() => {
+        resolve(coinId);
+      }, delay);
+    }
   });
 
 Object.freeze(RandomPlayerStrategy);

@@ -13,6 +13,8 @@ import PlayerState from "../state/PlayerState.js";
 import Reducer from "../state/Reducer.js";
 import Selector from "../state/Selector.js";
 
+import StrategyResolver from "./StrategyResolver.js";
+
 const TestData = {};
 
 const createPlayers = isTwoPlayer => {
@@ -92,6 +94,10 @@ TestData.createStore = (isTwoPlayer = true, drawCoins = true) => {
   const store = Redux.createStore(Reducer.root);
   const players = createPlayers(isTwoPlayer);
   store.dispatch(ActionCreator.setPlayers(players));
+  R.forEach(player => {
+    const strategy = StrategyResolver.resolve(player.strategy);
+    store.dispatch(ActionCreator.setPlayerStrategy(player.id, strategy));
+  }, players);
 
   // Place control markers.
   initializeControlMarkers(store, isTwoPlayer);

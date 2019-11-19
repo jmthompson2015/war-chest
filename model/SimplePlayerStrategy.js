@@ -12,22 +12,16 @@ const DELAY = 1000;
 
 SimplePlayerStrategy.chooseDamageTarget = (damageTargets, store, delay = DELAY) =>
   new Promise(resolve => {
-    let answer;
+    const answer =
+      damageTargets.length === 1 ? damageTargets[0] : Resolver.damageTarget(DamageTarget.SUPPLY);
 
-    if (damageTargets.length === 1) {
-      [answer] = damageTargets;
-    } else {
-      const supply = Resolver.damageTarget(DamageTarget.SUPPLY);
-      answer = damageTargets.includes(supply) ? supply : undefined;
-    }
-
-    if (R.isNil(answer)) {
-      answer = ArrayUtils.randomElement(damageTargets);
-    }
-
-    setTimeout(() => {
+    if (delay === 0) {
       resolve(answer);
-    }, delay);
+    } else {
+      setTimeout(() => {
+        resolve(answer);
+      }, delay);
+    }
   });
 
 SimplePlayerStrategy.chooseMove = (moveStates, store, delay = DELAY) =>
@@ -58,9 +52,13 @@ SimplePlayerStrategy.chooseMove = (moveStates, store, delay = DELAY) =>
       answer = ArrayUtils.randomElement(moveStates);
     }
 
-    setTimeout(() => {
+    if (delay === 0) {
       resolve(answer);
-    }, delay);
+    } else {
+      setTimeout(() => {
+        resolve(answer);
+      }, delay);
+    }
   });
 
 SimplePlayerStrategy.choosePaymentCoin = (coinIds, store, delay = DELAY) =>
@@ -96,9 +94,13 @@ SimplePlayerStrategy.choosePaymentCoin = (coinIds, store, delay = DELAY) =>
       answer = ArrayUtils.randomElement(coinIds);
     }
 
-    setTimeout(() => {
+    if (delay === 0) {
       resolve(answer);
-    }, delay);
+    } else {
+      setTimeout(() => {
+        resolve(answer);
+      }, delay);
+    }
   });
 
 Object.freeze(SimplePlayerStrategy);
