@@ -1,5 +1,6 @@
 import Board from "../artifact/Board.js";
 import ControlMarker from "../artifact/ControlMarker.js";
+import DamageTarget from "../artifact/DamageTarget.js";
 import Team from "../artifact/Team.js";
 import UnitCard from "../artifact/UnitCard.js";
 import UnitCoin from "../artifact/UnitCoin.js";
@@ -390,6 +391,47 @@ QUnit.test("controlLocations()", assert => {
   assert.equal(result[1], "h1");
 });
 
+QUnit.test("damageTargets() 1", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers2();
+  const action0 = ActionCreator.setPlayers(players);
+  const state = Reducer.root(state0, action0);
+  const playerId = 1;
+
+  // Run.
+  const result = Selector.damageTargets(playerId, state);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(Array.isArray(result), true);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].key, DamageTarget.BOARD);
+});
+
+QUnit.test("damageTargets() 2", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers2();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const playerId = 1;
+  const state2 = addCoin(Selector.nextCoinId(state1), UnitCoin.ROYAL_GUARD, state1);
+  const coin1 = Selector.coin(1, state2);
+  const action2 = ActionCreator.addToPlayerArray("playerToSupply", playerId, coin1.id);
+  const state = Reducer.root(state2, action2);
+
+  // Run.
+  const result = Selector.damageTargets(playerId, state);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(Array.isArray(result), true);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].key, DamageTarget.SUPPLY);
+  assert.equal(result[1].key, DamageTarget.BOARD);
+});
+
 QUnit.test("delay()", assert => {
   // Setup.
   const state = AppState.create();
@@ -627,6 +669,20 @@ QUnit.test("isTwoPlayer()", assert => {
   // Run / Verify.
   assert.equal(Selector.isTwoPlayer(state), true);
   assert.equal(Selector.isFourPlayer(state), false);
+});
+
+QUnit.test("isTypeInSupply()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const playerId = 1;
+  const state1 = addCoin(Selector.nextCoinId(state0), UnitCoin.KNIGHT, state0);
+  const coin1 = Selector.coin(1, state1);
+  const action1 = ActionCreator.addToPlayerArray("playerToSupply", playerId, coin1.id);
+  const state = Reducer.root(state1, action1);
+
+  // Run / Verify.
+  assert.equal(Selector.isTypeInSupply(playerId, UnitCoin.KNIGHT, state), true);
+  assert.equal(Selector.isTypeInSupply(playerId, UnitCoin.ROYAL_GUARD, state), false);
 });
 
 QUnit.test("isUnitType()", assert => {

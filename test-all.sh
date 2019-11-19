@@ -9,3 +9,5 @@ open ${BASE}/artifact/TestSuite.html
 open ${BASE}/state/TestSuite.html
 
 open ${BASE}/model/TestSuite.html
+
+open ${BASE}/mcts/TestSuite.html

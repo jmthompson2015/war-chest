@@ -258,9 +258,7 @@ PhaseFunction.executeMercenaryAttribute = (resolve, store, callback) => {
 PhaseFunction.executeRoyalGuardAttribute = store =>
   new Promise(resolve => {
     const moveState = Selector.currentMove(store.getState());
-    const victimCoin = moveState.victimCoinId
-      ? Selector.coin(moveState.victimCoinId, store.getState())
-      : undefined;
+    const victimCoin = Selector.coin(moveState.victimCoinId, store.getState());
     const victimPlayer = Selector.playerForCard(victimCoin.coinKey, store.getState());
     const strategy = Selector.playerStrategy(victimPlayer.id, store.getState());
     const delay = Selector.delay(store.getState());
