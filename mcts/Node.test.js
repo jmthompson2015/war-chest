@@ -2,10 +2,10 @@ import Node from "./Node.js";
 
 QUnit.module("Node");
 
-const PROPS = ["children", "lossCount", "parent", "playoutCount", "state", "winCount"];
+const PROPS = ["children", "parent", "playoutCount", "state", "winCount"];
 
 const createTestData = () =>
-  Node.create({ children: 1, lossCount: 2, parent: 3, playoutCount: 4, state: 5, winCount: 6 });
+  Node.create({ children: 1, parent: 2, playoutCount: 3, state: 4, winCount: 5 });
 
 const round4 = n => Math.round(n * 1000.0) / 1000.0;
 
@@ -22,7 +22,6 @@ QUnit.test("best()", assert => {
 
   // Verify.
   assert.ok(result);
-  assert.equal(result.lossCount, 0);
   assert.equal(result.playoutCount, 10);
   assert.equal(result.state, 4);
   assert.equal(result.winCount, 3);

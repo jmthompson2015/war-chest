@@ -9,13 +9,12 @@ Backpropagation.execute = (winningTeam, child) => {
     const { state } = node;
     const player = Selector.currentPlayer(state);
 
-    if (winningTeam && winningTeam.key === player.teamKey) {
-      node.winCount += 1;
-    } else if (winningTeam && winningTeam.key !== player.teamKey) {
-      node.lossCount += 1;
-    } else {
+    if (R.isNil(winningTeam)) {
+      // Draw.
       node.winCount += 0.5;
-      node.lossCount += 0.5;
+    } else if (winningTeam.key === player.teamKey) {
+      // Win.
+      node.winCount += 1;
     }
 
     node.playoutCount += 1;

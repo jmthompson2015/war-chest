@@ -7,13 +7,11 @@ Node.create = ({
   state,
   // Optional.
   children = [],
-  lossCount = 0,
   parent,
   playoutCount = 0,
   winCount = 0
 }) => ({
   children,
-  lossCount,
   parent,
   playoutCount,
   state,

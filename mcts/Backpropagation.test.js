@@ -28,7 +28,6 @@ QUnit.test("execute() draw", assert => {
 
   // Verify.
   assert.equal(root.winCount, 0.5);
-  assert.equal(root.lossCount, 0.5);
   assert.equal(root.playoutCount, 1);
 });
 
@@ -48,7 +47,6 @@ QUnit.test("execute() loss", assert => {
 
   // Verify.
   assert.equal(root.winCount, 0);
-  assert.equal(root.lossCount, 1);
   assert.equal(root.playoutCount, 1);
 });
 
@@ -68,7 +66,6 @@ QUnit.test("execute() win", assert => {
 
   // Verify.
   assert.equal(root.winCount, 1);
-  assert.equal(root.lossCount, 0);
   assert.equal(root.playoutCount, 1);
 });
 
