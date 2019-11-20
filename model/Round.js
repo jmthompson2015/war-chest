@@ -36,6 +36,7 @@ const advanceRound = store => {
   const players = Selector.playersInOrder(store.getState());
   const playerIds = R.map(R.prop("id"), players);
   store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
+  store.dispatch(ActionCreator.setCurrentPlayer(null));
   store.dispatch(ActionCreator.setInitiativeChangedThisRound(false));
 };
 

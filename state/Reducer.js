@@ -209,8 +209,10 @@ Reducer.root = (state, action) => {
       log(`Reducer SET_DELAY delay = ${action.delay}`, state);
       return R.assoc("delay", action.delay, state);
     case ActionType.SET_INITIATIVE_CHANGED_THIS_ROUND:
+      log(`Reducer SET_INITIATIVE_CHANGED_THIS_ROUND isChanged ? ${action.isChanged}`, state);
       return R.assoc("initiativeChangedThisRound", action.isChanged, state);
     case ActionType.SET_INITIATIVE_PLAYER:
+      log(`Reducer SET_INITIATIVE_PLAYER playerId = ${action.playerId}`, state);
       return R.assoc("initiativePlayerId", action.playerId, state);
     case ActionType.SET_PLAYERS:
       log(`Reducer SET_PLAYERS players.length = ${action.players.length}`, state);

@@ -20,7 +20,7 @@ const advanceCurrentPlayer = store => {
   let newPlayerId;
 
   if (R.isNil(oldPlayerId)) {
-    [newPlayerId] = playerIds; // first element
+    newPlayerId = Selector.initiativePlayer(store.getState()).id;
   } else {
     const index = playerIds.indexOf(oldPlayerId);
 
