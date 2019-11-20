@@ -211,6 +211,8 @@ PhaseFunction.chooseMove = (moveStates, paymentCoin, resolve, store, callback) =
     strategy.chooseMove(moveStates, store, delay).then(moveState => {
       PhaseFunction.finishChooseMove(moveState, moveStates, paymentCoin, resolve, store, callback);
     });
+  } else {
+    callback(resolve, store);
   }
 };
 
