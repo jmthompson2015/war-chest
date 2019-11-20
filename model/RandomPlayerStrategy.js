@@ -6,39 +6,40 @@ const DELAY = 1000;
 
 RandomPlayerStrategy.chooseDamageTarget = (damageTargets, store, delay = DELAY) =>
   new Promise(resolve => {
-    const damageTarget = ArrayUtils.randomElement(damageTargets);
+    const answer =
+      damageTargets.length <= 1 ? damageTargets[0] : ArrayUtils.randomElement(damageTargets);
 
     if (delay === 0) {
-      resolve(damageTarget);
+      resolve(answer);
     } else {
       setTimeout(() => {
-        resolve(damageTarget);
+        resolve(answer);
       }, delay);
     }
   });
 
 RandomPlayerStrategy.chooseMove = (moveStates, store, delay = DELAY) =>
   new Promise(resolve => {
-    const moveState = ArrayUtils.randomElement(moveStates);
+    const answer = moveStates.length <= 1 ? moveStates[0] : ArrayUtils.randomElement(moveStates);
 
     if (delay === 0) {
-      resolve(moveState);
+      resolve(answer);
     } else {
       setTimeout(() => {
-        resolve(moveState);
+        resolve(answer);
       }, delay);
     }
   });
 
 RandomPlayerStrategy.choosePaymentCoin = (coinIds, store, delay = DELAY) =>
   new Promise(resolve => {
-    const coinId = ArrayUtils.randomElement(coinIds);
+    const answer = coinIds.length <= 1 ? coinIds[0] : ArrayUtils.randomElement(coinIds);
 
     if (delay === 0) {
-      resolve(coinId);
+      resolve(answer);
     } else {
       setTimeout(() => {
-        resolve(coinId);
+        resolve(answer);
       }, delay);
     }
   });

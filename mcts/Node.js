@@ -1,5 +1,7 @@
 const Node = {};
 
+const C = Math.sqrt(2.0); // exploration parameter
+
 Node.create = ({
   // Required.
   state,
@@ -9,7 +11,7 @@ Node.create = ({
   parent,
   playoutCount = 0,
   winCount = 0
-} = {}) => ({
+}) => ({
   children,
   lossCount,
   parent,
@@ -28,11 +30,11 @@ Node.accept = (node, visitor) => {
 };
 
 Node.best = (evalFunction, nodes) => {
-  let rating;
+  let rating = Number.NEGATIVE_INFINITY;
   const reduceFunction = (accum, node) => {
     const myRating = evalFunction(node);
 
-    if (!rating || evalFunction(node) > rating) {
+    if (myRating > rating) {
       rating = myRating;
       return node;
     }
@@ -51,11 +53,10 @@ Node.exploitation = node => {
 };
 
 Node.exploration = node => {
-  const c = 2; // exploration parameter
-  const Ni = node.parent ? node.parent.playoutCount : 0;
+  const Ni = node.parent ? Math.max(node.parent.playoutCount, 1) : 1;
   const ni = node.playoutCount;
 
-  return Ni !== 0 && ni !== 0 ? c * Math.sqrt(Math.log(Ni) / ni) : Number.POSITIVE_INFINITY;
+  return ni !== 0 ? C * Math.sqrt(Math.log(Ni) / ni) : Number.POSITIVE_INFINITY;
 };
 
 Node.level = node0 => {

@@ -12,16 +12,24 @@ MCTSPlayerStrategy.chooseDamageTarget = (damageTargets, store, delay = DELAY) =>
 
 MCTSPlayerStrategy.chooseMove = (moveStates, store, delay, allowedTime = ALLOWED_TIME) =>
   new Promise(resolve => {
-    MCTS.execute(store.getState(), allowedTime).then(moveState => {
-      resolve(moveState);
-    });
+    if (moveStates.length <= 1) {
+      resolve(moveStates[0]);
+    } else {
+      MCTS.execute(store.getState(), allowedTime).then(moveState => {
+        resolve(moveState);
+      });
+    }
   });
 
 MCTSPlayerStrategy.choosePaymentCoin = (coinIds, store, delay, allowedTime = ALLOWED_TIME) =>
   new Promise(resolve => {
-    MCTS.execute(store.getState(), allowedTime).then(paymentCoinId => {
-      resolve(paymentCoinId);
-    });
+    if (coinIds.length <= 1) {
+      resolve(coinIds[0]);
+    } else {
+      MCTS.execute(store.getState(), allowedTime).then(paymentCoinId => {
+        resolve(paymentCoinId);
+      });
+    }
   });
 
 Object.freeze(MCTSPlayerStrategy);

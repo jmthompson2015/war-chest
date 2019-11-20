@@ -13,7 +13,7 @@ const DELAY = 1000;
 SimplePlayerStrategy.chooseDamageTarget = (damageTargets, store, delay = DELAY) =>
   new Promise(resolve => {
     const answer =
-      damageTargets.length === 1 ? damageTargets[0] : Resolver.damageTarget(DamageTarget.SUPPLY);
+      damageTargets.length <= 1 ? damageTargets[0] : Resolver.damageTarget(DamageTarget.SUPPLY);
 
     if (delay === 0) {
       resolve(answer);
@@ -28,7 +28,7 @@ SimplePlayerStrategy.chooseMove = (moveStates, store, delay = DELAY) =>
   new Promise(resolve => {
     let answer;
 
-    if (moveStates.length === 1) {
+    if (moveStates.length <= 1) {
       [answer] = moveStates;
     } else {
       const priorityMoveKeys = [
@@ -65,7 +65,7 @@ SimplePlayerStrategy.choosePaymentCoin = (coinIds, store, delay = DELAY) =>
   new Promise(resolve => {
     let answer;
 
-    if (coinIds.length === 1) {
+    if (coinIds.length <= 1) {
       [answer] = coinIds;
     } else {
       const state = store.getState();
