@@ -29,16 +29,9 @@ Selector.ansByType = (coinKey, state) => {
 };
 
 Selector.canBeAttacked = (an1, an2, state) => {
-  const attackUnit = Selector.unit(an1, state);
-  const victimUnit = Selector.unit(an2, state);
-  let answer = false;
+  const isKnight = Selector.isUnitType(an2, UnitCoin.KNIGHT, state);
 
-  if (attackUnit && victimUnit) {
-    const isKnight = Selector.isUnitType(an2, UnitCoin.KNIGHT, state);
-    answer = isKnight ? Selector.isBolstered(an1, state) : true;
-  }
-
-  return answer;
+  return isKnight ? Selector.isBolstered(an1, state) : true;
 };
 
 Selector.canDeploy = (coinKey, state) => {
