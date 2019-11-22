@@ -11,6 +11,7 @@ import MCTS from "./MonteCarloTreeSearch.js";
 QUnit.module("MCTS");
 
 const ALLOWED_TIME = 500;
+const ROUND_LIMIT = 100;
 
 QUnit.test("execute() payment coin", assert => {
   // Setup.
@@ -34,7 +35,7 @@ QUnit.test("execute() payment coin", assert => {
     done();
   };
 
-  MCTS.execute(store.getState(), ALLOWED_TIME).then(callback);
+  MCTS.execute(store.getState(), ROUND_LIMIT, ALLOWED_TIME).then(callback);
 });
 
 QUnit.test("execute() move", assert => {
@@ -64,7 +65,7 @@ QUnit.test("execute() move", assert => {
     done();
   };
 
-  MCTS.execute(store.getState(), ALLOWED_TIME).then(callback);
+  MCTS.execute(store.getState(), ROUND_LIMIT, ALLOWED_TIME).then(callback);
 });
 
 const MCTSTest = {};

@@ -79,22 +79,21 @@ const executeRound = (roundLimit, resolve, store) => {
   }
 };
 
-Simulation.execute = child =>
+Simulation.execute = (child, roundLimit = 100) =>
   new Promise(resolve => {
     const { state } = child;
     const playerId = state.currentPlayerId;
-    const store2 = Redux.createStore(Reducer.root, state);
+    const store = Redux.createStore(Reducer.root, state);
     const players = createPlayers(Selector.isTwoPlayer(state));
-    store2.dispatch(ActionCreator.setPlayers(players));
+    store.dispatch(ActionCreator.setPlayers(players));
     R.forEach(player => {
-      store2.dispatch(ActionCreator.setPlayerStrategy(player.id, STRATEGY));
+      store.dispatch(ActionCreator.setPlayerStrategy(player.id, STRATEGY));
     }, players);
-    store2.dispatch(ActionCreator.setCurrentPlayer(playerId));
-    const roundLimit = 30;
+    store.dispatch(ActionCreator.setCurrentPlayer(playerId));
     const myResolve = () => {
-      executeRound(roundLimit, resolve, store2);
+      executeRound(roundLimit, resolve, store);
     };
-    finishChoose(myResolve, store2, PhaseFunction.executePlayCoins);
+    finishChoose(myResolve, store, PhaseFunction.executePlayCoins);
   });
 
 Object.freeze(Simulation);

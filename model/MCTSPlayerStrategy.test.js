@@ -43,6 +43,7 @@ QUnit.test("chooseMove()", assert => {
   store.dispatch(ActionCreator.setCurrentPaymentCoin(6));
   store.dispatch(ActionCreator.setVerbose(false));
   const delay = 0;
+  const roundLimit = 30;
   const allowedTime = 500;
   const playerId = 1;
   const player = Selector.player(playerId, store.getState());
@@ -63,7 +64,7 @@ QUnit.test("chooseMove()", assert => {
     done();
   };
 
-  MCTSPlayerStrategy.chooseMove(moveStates, store, delay, allowedTime).then(callback);
+  MCTSPlayerStrategy.chooseMove(moveStates, store, delay, roundLimit, allowedTime).then(callback);
 });
 
 QUnit.test("choosePaymentCoin()", assert => {
@@ -78,6 +79,7 @@ QUnit.test("choosePaymentCoin()", assert => {
   store.dispatch(ActionCreator.setCurrentPlayer(1));
   store.dispatch(ActionCreator.setVerbose(false));
   const delay = 0;
+  const roundLimit = 30;
   const allowedTime = 500;
   const playerId = 1;
   const hand = Selector.hand(playerId, store.getState());
@@ -92,7 +94,7 @@ QUnit.test("choosePaymentCoin()", assert => {
     done();
   };
 
-  MCTSPlayerStrategy.choosePaymentCoin(hand, store, delay, allowedTime).then(callback);
+  MCTSPlayerStrategy.choosePaymentCoin(hand, store, delay, roundLimit, allowedTime).then(callback);
 });
 
 const MCTSPlayerStrategyTest = {};

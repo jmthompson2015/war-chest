@@ -14,7 +14,7 @@ import Simulation from "./Simulation.js";
 const MCTS = {};
 
 const determineBestMove = root => {
-  const bestChildNode = Node.best(Node.exploitation, root.children);
+  const bestChildNode = Node.best(R.prop("playoutCount"), root.children);
   let answer;
 
   if (bestChildNode) {
@@ -32,7 +32,8 @@ const determineBestMove = root => {
   return answer;
 };
 
-const executeStep = (allowedTime, resolve, startTime, root) => {
+const executeStep = (allowedTime, resolve, startTime, root, roundLimit, stats0) => {
+  const stats = stats0;
   const time = Date.now();
   // console.log(`time diff = ${time - startTime} allowedTime = ${allowedTime}`);
 
@@ -42,23 +43,31 @@ const executeStep = (allowedTime, resolve, startTime, root) => {
       `executeStep() root = ${JSON.stringify(R.omit(["children", "parent", "state"], root))}`
     );
     console.log(`executeStep() bestMove = ${JSON.stringify(bestMove)}`);
+    console.log(`stats = ${JSON.stringify(stats, null, 2)}`);
     resolve(bestMove);
   } else {
     const leaf = Selection.execute(root);
     const child = Expansion.execute(leaf);
-    Simulation.execute(child).then(winningTeam => {
+    Simulation.execute(child, roundLimit).then(winningTeam => {
       Backpropagation.execute(winningTeam, child);
-      executeStep(allowedTime, resolve, startTime, root);
+      const key = winningTeam ? winningTeam.name : undefined;
+      stats[key] += 1;
+      executeStep(allowedTime, resolve, startTime, root, roundLimit, stats);
     });
   }
 };
 
-MCTS.execute = (state, allowedTime = 1000) =>
+MCTS.execute = (state, roundLimit = 100, allowedTime = 5000) =>
   new Promise(resolve => {
     const startTime = Date.now();
     const myState = R.merge(state, { delay: 0, isVerbose: false });
     const root = Node.create({ state: myState });
-    executeStep(allowedTime, resolve, startTime, root);
+    const stats = {
+      Raven: 0,
+      Wolf: 0,
+      undefined: 0
+    };
+    executeStep(allowedTime, resolve, startTime, root, roundLimit, stats);
   });
 
 Object.freeze(MCTS);
