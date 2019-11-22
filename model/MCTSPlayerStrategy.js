@@ -22,7 +22,7 @@ MCTSPlayerStrategy.chooseMove = (
     if (moveStates.length <= 1) {
       RandomPlayerStrategy.delayedResolve(moveStates[0], resolve, delay);
     } else {
-      MCTS.execute(store.getState(), roundLimit, allowedTime).then(moveState => {
+      MCTS.execute(moveStates, store.getState(), roundLimit, allowedTime).then(moveState => {
         resolve(moveState);
       });
     }
@@ -39,7 +39,7 @@ MCTSPlayerStrategy.choosePaymentCoin = (
     if (coinIds.length <= 1) {
       RandomPlayerStrategy.delayedResolve(coinIds[0], resolve, delay);
     } else {
-      MCTS.execute(store.getState(), roundLimit, allowedTime).then(paymentCoinId => {
+      MCTS.execute(coinIds, store.getState(), roundLimit, allowedTime).then(paymentCoinId => {
         resolve(paymentCoinId);
       });
     }

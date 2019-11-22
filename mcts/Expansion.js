@@ -10,38 +10,42 @@ import Node from "./Node.js";
 
 const Expansion = {};
 
+Expansion.createMoveChildren = (moveStates, playerId, state, parent) => {
+  const mapFunction = moveState => {
+    const store = Redux.createStore(Reducer.root, state);
+    store.dispatch(ActionCreator.setCurrentMoves(moveStates));
+    store.dispatch(ActionCreator.setCurrentMove(moveState));
+
+    return Node.create({ parent, state: store.getState() });
+  };
+
+  return R.map(mapFunction, moveStates);
+};
+
+Expansion.createPaymentCoinChildren = (hand, playerId, state, parent) => {
+  const mapFunction = coinId => {
+    const store = Redux.createStore(Reducer.root, state);
+    store.dispatch(ActionCreator.setCurrentPaymentCoin(coinId));
+
+    return Node.create({ parent, state: store.getState() });
+  };
+
+  return R.map(mapFunction, hand);
+};
+
 Expansion.execute = leaf0 => {
   const leaf = leaf0;
   const { state } = leaf;
   const playerId = state.currentPlayerId;
   const paymentCoin = Selector.currentPaymentCoin(state);
 
-  if (paymentCoin === undefined) {
-    // Choose payment coin.
-    const hand = Selector.hand(playerId, state);
-    const mapFunction = c => {
-      const store2 = Redux.createStore(Reducer.root, state);
-      store2.dispatch(ActionCreator.setCurrentPaymentCoin(c));
-      return Node.create({
-        parent: leaf,
-        state: store2.getState()
-      });
-    };
-    leaf.children = R.map(mapFunction, hand);
-  } else {
-    // Choose move.
+  if (paymentCoin) {
     const player = Selector.player(playerId, state);
     const moveStates = MoveGenerator.generateForCoin(player, paymentCoin, state);
-    const mapFunction = m => {
-      const store2 = Redux.createStore(Reducer.root, state);
-      store2.dispatch(ActionCreator.setCurrentMoves(moveStates));
-      store2.dispatch(ActionCreator.setCurrentMove(m));
-      return Node.create({
-        parent: leaf,
-        state: store2.getState()
-      });
-    };
-    leaf.children = R.map(mapFunction, moveStates);
+    leaf.children = Expansion.createMoveChildren(moveStates, playerId, state, leaf);
+  } else {
+    const hand = Selector.hand(playerId, state);
+    leaf.children = Expansion.createPaymentCoinChildren(hand, playerId, state, leaf);
   }
 
   return ArrayUtils.randomElement(leaf.children);

@@ -57,11 +57,19 @@ const executeStep = (allowedTime, resolve, startTime, root, roundLimit, stats0) 
   }
 };
 
-MCTS.execute = (state, roundLimit = 100, allowedTime = 5000) =>
+MCTS.execute = (choices, state, roundLimit = 100, allowedTime = 5000) =>
   new Promise(resolve => {
     const startTime = Date.now();
     const myState = R.merge(state, { delay: 0, isVerbose: false });
     const root = Node.create({ state: myState });
+
+    // Initialize children.
+    const paymentCoin = Selector.currentPaymentCoin(myState);
+    const playerId = myState.currentPlayerId;
+    root.children = paymentCoin
+      ? Expansion.createMoveChildren(choices, playerId, myState, root)
+      : Expansion.createPaymentCoinChildren(choices, playerId, myState, root);
+
     const stats = {
       Raven: 0,
       Wolf: 0,

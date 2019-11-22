@@ -4,6 +4,7 @@ import Phase from "../artifact/Phase.js";
 import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
 
+import MoveGenerator from "../model/MoveGenerator.js";
 import TestData from "../model/TestData.js";
 
 import MCTS from "./MonteCarloTreeSearch.js";
@@ -24,6 +25,7 @@ QUnit.test("execute() payment coin", assert => {
   store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
   store.dispatch(ActionCreator.setCurrentPlayer(1));
   store.dispatch(ActionCreator.setVerbose(false));
+  const hand = Selector.hand(1, store.getState());
 
   // Run.
   const done = assert.async();
@@ -35,7 +37,7 @@ QUnit.test("execute() payment coin", assert => {
     done();
   };
 
-  MCTS.execute(store.getState(), ROUND_LIMIT, ALLOWED_TIME).then(callback);
+  MCTS.execute(hand, store.getState(), ROUND_LIMIT, ALLOWED_TIME).then(callback);
 });
 
 QUnit.test("execute() move", assert => {
@@ -50,6 +52,9 @@ QUnit.test("execute() move", assert => {
   store.dispatch(ActionCreator.setCurrentPlayer(1));
   store.dispatch(ActionCreator.setCurrentPaymentCoin(6));
   store.dispatch(ActionCreator.setVerbose(false));
+  const player = Selector.player(1, store.getState());
+  const paymentCoin = Selector.coin(6, store.getState());
+  const moveStates = MoveGenerator.generateForCoin(player, paymentCoin, store.getState());
 
   // Run.
   const done = assert.async();
@@ -65,7 +70,7 @@ QUnit.test("execute() move", assert => {
     done();
   };
 
-  MCTS.execute(store.getState(), ROUND_LIMIT, ALLOWED_TIME).then(callback);
+  MCTS.execute(moveStates, store.getState(), ROUND_LIMIT, ALLOWED_TIME).then(callback);
 });
 
 const MCTSTest = {};
