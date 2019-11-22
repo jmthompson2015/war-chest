@@ -1,11 +1,10 @@
 import MCTS from "../mcts/MonteCarloTreeSearch.js";
 
+import RandomPlayerStrategy from "./RandomPlayerStrategy.js";
 import SimplePlayerStrategy from "./SimplePlayerStrategy.js";
 
 const MCTSPlayerStrategy = {};
 
-const ALLOWED_TIME1 = 5000;
-const ALLOWED_TIME2 = 10000;
 const DELAY = 1000;
 const ROUND_LIMIT = 100;
 
@@ -15,13 +14,13 @@ MCTSPlayerStrategy.chooseDamageTarget = (damageTargets, store, delay = DELAY) =>
 MCTSPlayerStrategy.chooseMove = (
   moveStates,
   store,
-  delay,
+  delay = DELAY,
   roundLimit = ROUND_LIMIT,
-  allowedTime = ALLOWED_TIME2
+  allowedTime = 10000
 ) =>
   new Promise(resolve => {
     if (moveStates.length <= 1) {
-      resolve(moveStates[0]);
+      RandomPlayerStrategy.delayedResolve(moveStates[0], resolve, delay);
     } else {
       MCTS.execute(store.getState(), roundLimit, allowedTime).then(moveState => {
         resolve(moveState);
@@ -32,13 +31,13 @@ MCTSPlayerStrategy.chooseMove = (
 MCTSPlayerStrategy.choosePaymentCoin = (
   coinIds,
   store,
-  delay,
+  delay = DELAY,
   roundLimit = ROUND_LIMIT,
-  allowedTime = ALLOWED_TIME1
+  allowedTime = 5000
 ) =>
   new Promise(resolve => {
     if (coinIds.length <= 1) {
-      resolve(coinIds[0]);
+      RandomPlayerStrategy.delayedResolve(coinIds[0], resolve, delay);
     } else {
       MCTS.execute(store.getState(), roundLimit, allowedTime).then(paymentCoinId => {
         resolve(paymentCoinId);
