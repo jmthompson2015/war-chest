@@ -141,7 +141,7 @@ Selector.isEnemyUnitAt = (playerId, an, state) => {
   return coin0 ? Selector.isEnemyUnit(playerId, coin0.coinKey, state) : false;
 };
 
-Selector.isFourPlayer = state => Object.keys(state.playerInstances).length === 4;
+Selector.isFourPlayer = state => !state.isTwoPlayer;
 
 Selector.isFriendlyUnit = (playerId, coinKey, state) => {
   const tableau = Selector.tableau(playerId, state);
@@ -183,7 +183,7 @@ Selector.isOccupied = (an, state) => {
   return !R.isNil(unit) && unit.length > 0;
 };
 
-Selector.isTwoPlayer = state => Object.keys(state.playerInstances).length === 2;
+Selector.isTwoPlayer = state => state.isTwoPlayer;
 
 Selector.isTypeInSupply = (playerId, coinKey, state) => {
   const supply = Selector.supply(playerId, state);

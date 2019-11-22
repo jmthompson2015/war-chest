@@ -43,10 +43,10 @@ const transferBetweenArrays = (state, fromKey, toKey, playerId, coinId) => {
   const newPlayerToFrom = R.assoc(playerId, newFrom, state[fromKey]);
   const newPlayerToTo = R.assoc(playerId, newTo, state[toKey]);
 
-  return R.pipe(
-    R.assoc(fromKey, newPlayerToFrom),
-    R.assoc(toKey, newPlayerToTo)
-  )(state);
+  return R.merge(state, {
+    [fromKey]: newPlayerToFrom,
+    [toKey]: newPlayerToTo
+  });
 };
 
 Reducer.root = (state, action) => {
@@ -109,10 +109,10 @@ Reducer.root = (state, action) => {
         newDiscardFaceup,
         state.playerToDiscardFaceup
       );
-      return R.pipe(
-        R.assoc("anToTokens", newANToTokens || {}),
-        R.assoc("playerToDiscardFaceup", newPlayerToDiscardFaceup)
-      )(state);
+      return R.merge(state, {
+        anToTokens: newANToTokens || {},
+        playerToDiscardFaceup: newPlayerToDiscardFaceup
+      });
     case ActionType.BOARD_TO_MORGUE:
       log(`Reducer BOARD_TO_MORGUE playerId = ${action.playerId} an = ${action.an1}`, state);
       oldUnit = state.anToTokens[action.an1];
@@ -125,10 +125,10 @@ Reducer.root = (state, action) => {
       newMorgue = state.playerToMorgue[action.playerId] || [];
       newMorgue = R.append(oldUnit[0], newMorgue);
       newPlayerToMorgue = R.assoc(action.playerId, newMorgue, state.playerToMorgue);
-      return R.pipe(
-        R.assoc("anToTokens", newANToTokens || {}),
-        R.assoc("playerToMorgue", newPlayerToMorgue)
-      )(state);
+      return R.merge(state, {
+        anToTokens: newANToTokens || {},
+        playerToMorgue: newPlayerToMorgue
+      });
     case ActionType.HAND_TO_BOARD:
       oldHand = state.playerToHand[action.playerId] || [];
       newHand = ArrayUtils.remove(action.coinId, oldHand);
@@ -136,10 +136,10 @@ Reducer.root = (state, action) => {
       newUnit = R.append(action.coinId, oldUnit);
       newPlayerToHand = R.assoc(action.playerId, newHand, state.playerToHand);
       newANToTokens = R.assoc(action.an2, newUnit, state.anToTokens);
-      return R.pipe(
-        R.assoc("playerToHand", newPlayerToHand),
-        R.assoc("anToTokens", newANToTokens)
-      )(state);
+      return R.merge(state, {
+        playerToHand: newPlayerToHand,
+        anToTokens: newANToTokens
+      });
     case ActionType.MOVE_A_UNIT:
       log(`Reducer MOVE_A_UNIT an = ${action.an1} an2 = ${action.an2}`, state);
       unit = state.anToTokens[action.an1];
@@ -162,11 +162,11 @@ Reducer.root = (state, action) => {
       newPlayerToDiscardFacedown = R.assoc(action.playerId, [], state.playerToDiscardFacedown);
       newPlayerToDiscardFaceup = R.assoc(action.playerId, [], state.playerToDiscardFaceup);
       newPlayerToBag = R.assoc(action.playerId, newBag, state.playerToBag);
-      return R.pipe(
-        R.assoc("playerToDiscardFacedown", newPlayerToDiscardFacedown),
-        R.assoc("playerToDiscardFaceup", newPlayerToDiscardFaceup),
-        R.assoc("playerToBag", newPlayerToBag)
-      )(state);
+      return R.merge(state, {
+        playerToDiscardFacedown: newPlayerToDiscardFacedown,
+        playerToDiscardFaceup: newPlayerToDiscardFaceup,
+        playerToBag: newPlayerToBag
+      });
     case ActionType.REMOVE_FROM_PLAYER_ARRAY:
       return removeFromArray(state, action.arrayName, action.playerId, action.coinId);
     case ActionType.SET_CONTROL:
@@ -217,7 +217,10 @@ Reducer.root = (state, action) => {
     case ActionType.SET_PLAYERS:
       log(`Reducer SET_PLAYERS players.length = ${action.players.length}`, state);
       newPlayers = R.reduce((accum, p) => R.assoc(p.id, p, accum), {}, action.players);
-      return R.assoc("playerInstances", newPlayers, state);
+      return R.merge(state, {
+        playerInstances: newPlayers,
+        isTwoPlayer: action.players.length === 2
+      });
     case ActionType.SET_PLAYER_STRATEGY:
       log(
         `Reducer SET_PLAYER_STRATEGY playerId = ${action.playerId} strategy = ${action.strategy}`,
