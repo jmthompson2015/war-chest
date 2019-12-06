@@ -17,21 +17,6 @@ ActionCreator.addToPlayerArray = (arrayName, playerId, coinId) => {
   return { type: ActionType.ADD_TO_PLAYER_ARRAY, arrayName, playerId, coinId };
 };
 
-ActionCreator.boardToDiscardFaceup = makeActionCreator(
-  ActionType.BOARD_TO_DISCARD_FACEUP,
-  "playerId",
-  "an1"
-);
-
-ActionCreator.boardToMorgue = makeActionCreator(ActionType.BOARD_TO_MORGUE, "playerId", "an1");
-
-ActionCreator.handToBoard = makeActionCreator(
-  ActionType.HAND_TO_BOARD,
-  "playerId",
-  "coinId",
-  "an2"
-);
-
 ActionCreator.moveAUnit = makeActionCreator(ActionType.MOVE_A_UNIT, "playerId", "an1", "an2");
 
 ActionCreator.popInputCallback = makeActionCreator(ActionType.POP_INPUT_CALLBACK);
@@ -111,6 +96,12 @@ ActionCreator.setVerbose = makeActionCreator(ActionType.SET_VERBOSE, "isVerbose"
 
 ActionCreator.setWinner = makeActionCreator(ActionType.SET_WINNER, "winnerTeamKey");
 
+ActionCreator.transferBagToHand = makeActionCreator(
+  ActionType.TRANSFER_BAG_TO_HAND,
+  "playerId",
+  "coinId"
+);
+
 ActionCreator.transferBetweenPlayerArrays = (fromArrayName, toArrayName, playerId, coinId) => {
   return {
     type: ActionType.TRANSFER_BETWEEN_PLAYER_ARRAYS,
@@ -120,6 +111,49 @@ ActionCreator.transferBetweenPlayerArrays = (fromArrayName, toArrayName, playerI
     coinId
   };
 };
+
+ActionCreator.transferBoardToDiscardFaceup = makeActionCreator(
+  ActionType.TRANSFER_BOARD_TO_DISCARD_FACEUP,
+  "playerId",
+  "an1"
+);
+
+ActionCreator.transferBoardToMorgue = makeActionCreator(
+  ActionType.TRANSFER_BOARD_TO_MORGUE,
+  "playerId",
+  "an1"
+);
+
+ActionCreator.transferHandToBoard = makeActionCreator(
+  ActionType.TRANSFER_HAND_TO_BOARD,
+  "playerId",
+  "coinId",
+  "an2"
+);
+
+ActionCreator.transferHandToDiscardFacedown = makeActionCreator(
+  ActionType.TRANSFER_HAND_TO_DISCARD_FACEDOWN,
+  "playerId",
+  "coinId"
+);
+
+ActionCreator.transferHandToDiscardFaceup = makeActionCreator(
+  ActionType.TRANSFER_HAND_TO_DISCARD_FACEUP,
+  "playerId",
+  "coinId"
+);
+
+ActionCreator.transferSupplyToDiscardFaceup = makeActionCreator(
+  ActionType.TRANSFER_SUPPLY_TO_DISCARD_FACEUP,
+  "playerId",
+  "coinId"
+);
+
+ActionCreator.transferSupplyToMorgue = makeActionCreator(
+  ActionType.TRANSFER_SUPPLY_TO_MORGUE,
+  "playerId",
+  "coinId"
+);
 
 Object.freeze(ActionCreator);
 

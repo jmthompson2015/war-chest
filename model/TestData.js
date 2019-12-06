@@ -52,10 +52,8 @@ const createPlayers = isTwoPlayer => {
 const drawThreeCoins = (playerId, store) => {
   for (let i = 0; i < 3; i += 1) {
     const bag = Selector.bag(playerId, store.getState());
-    const coinKey = bag[i];
-    store.dispatch(
-      ActionCreator.transferBetweenPlayerArrays("playerToBag", "playerToHand", playerId, coinKey)
-    );
+    const coinId = bag[i];
+    store.dispatch(ActionCreator.transferBagToHand(playerId, coinId));
   }
 };
 

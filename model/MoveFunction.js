@@ -13,14 +13,7 @@ const executeClaimInitiative = (moveState, store) => {
   const { paymentCoinId, playerId } = moveState;
   const player = Selector.player(playerId, store.getState());
   store.dispatch(ActionCreator.setUserMessage(`Player ${player.name} claims initiative.`));
-  store.dispatch(
-    ActionCreator.transferBetweenPlayerArrays(
-      "playerToHand",
-      "playerToDiscardFacedown",
-      playerId,
-      paymentCoinId
-    )
-  );
+  store.dispatch(ActionCreator.transferHandToDiscardFacedown(playerId, paymentCoinId));
   store.dispatch(ActionCreator.setInitiativePlayer(playerId));
   store.dispatch(ActionCreator.setInitiativeChangedThisRound(true));
 };
@@ -33,36 +26,15 @@ const executeRecruit = (moveState, store) => {
   store.dispatch(
     ActionCreator.setUserMessage(`Player ${player.name} recruits a ${recruitCoin.name}.`)
   );
-  store.dispatch(
-    ActionCreator.transferBetweenPlayerArrays(
-      "playerToHand",
-      "playerToDiscardFacedown",
-      playerId,
-      paymentCoinId
-    )
-  );
-  store.dispatch(
-    ActionCreator.transferBetweenPlayerArrays(
-      "playerToSupply",
-      "playerToDiscardFaceup",
-      playerId,
-      recruitCoinId
-    )
-  );
+  store.dispatch(ActionCreator.transferHandToDiscardFacedown(playerId, paymentCoinId));
+  store.dispatch(ActionCreator.transferSupplyToDiscardFaceup(playerId, recruitCoinId));
 };
 
 const executePass = (moveState, store) => {
   const { paymentCoinId, playerId } = moveState;
   const player = Selector.player(playerId, store.getState());
   store.dispatch(ActionCreator.setUserMessage(`Player ${player.name} passes.`));
-  store.dispatch(
-    ActionCreator.transferBetweenPlayerArrays(
-      "playerToHand",
-      "playerToDiscardFacedown",
-      playerId,
-      paymentCoinId
-    )
-  );
+  store.dispatch(ActionCreator.transferHandToDiscardFacedown(playerId, paymentCoinId));
 };
 
 const executeDeploy = (moveState, store) => {
@@ -73,7 +45,7 @@ const executeDeploy = (moveState, store) => {
   store.dispatch(
     ActionCreator.setUserMessage(`Player ${player.name} deploys a ${paymentCoin.name}.`)
   );
-  store.dispatch(ActionCreator.handToBoard(playerId, paymentCoinId, an1));
+  store.dispatch(ActionCreator.transferHandToBoard(playerId, paymentCoinId, an1));
 };
 
 const executeBolster = (moveState, store) => {
@@ -84,7 +56,7 @@ const executeBolster = (moveState, store) => {
   store.dispatch(
     ActionCreator.setUserMessage(`Player ${player.name} bolsters a ${paymentCoin.name}.`)
   );
-  store.dispatch(ActionCreator.handToBoard(playerId, paymentCoinId, an1));
+  store.dispatch(ActionCreator.transferHandToBoard(playerId, paymentCoinId, an1));
 };
 
 const executeMoveAUnit = (moveState, store) => {
@@ -97,19 +69,12 @@ const executeMoveAUnit = (moveState, store) => {
   );
 
   if (moveState.isBerserker) {
-    store.dispatch(ActionCreator.boardToDiscardFaceup(playerId, an1));
+    store.dispatch(ActionCreator.transferBoardToDiscardFaceup(playerId, an1));
   } else {
     const discardFaceup = Selector.discardFaceup(playerId, store.getState());
 
     if (!discardFaceup.includes(paymentCoinId)) {
-      store.dispatch(
-        ActionCreator.transferBetweenPlayerArrays(
-          "playerToHand",
-          "playerToDiscardFaceup",
-          playerId,
-          paymentCoinId
-        )
-      );
+      store.dispatch(ActionCreator.transferHandToDiscardFaceup(playerId, paymentCoinId));
     }
   }
   store.dispatch(ActionCreator.moveAUnit(playerId, an1, an2));
@@ -121,16 +86,9 @@ const executeControl = (moveState, store) => {
   store.dispatch(ActionCreator.setUserMessage(`Player ${player.name} controls ${an1}.`));
 
   if (moveState.isBerserker) {
-    store.dispatch(ActionCreator.boardToDiscardFaceup(playerId, an1));
+    store.dispatch(ActionCreator.transferBoardToDiscardFaceup(playerId, an1));
   } else {
-    store.dispatch(
-      ActionCreator.transferBetweenPlayerArrays(
-        "playerToHand",
-        "playerToDiscardFaceup",
-        playerId,
-        paymentCoinId
-      )
-    );
+    store.dispatch(ActionCreator.transferHandToDiscardFaceup(playerId, paymentCoinId));
   }
   store.dispatch(ActionCreator.setControl(an1, player.teamKey));
 };
@@ -153,19 +111,12 @@ const executeAttack = (moveState, store) => {
   );
 
   if (moveState.isBerserker) {
-    store.dispatch(ActionCreator.boardToDiscardFaceup(playerId, an1));
+    store.dispatch(ActionCreator.transferBoardToDiscardFaceup(playerId, an1));
   } else {
     const discardFaceup = Selector.discardFaceup(playerId, store.getState());
 
     if (!discardFaceup.includes(paymentCoinId)) {
-      store.dispatch(
-        ActionCreator.transferBetweenPlayerArrays(
-          "playerToHand",
-          "playerToDiscardFaceup",
-          playerId,
-          paymentCoinId
-        )
-      );
+      store.dispatch(ActionCreator.transferHandToDiscardFaceup(playerId, paymentCoinId));
     }
   }
 
@@ -178,21 +129,14 @@ const executeAttack = (moveState, store) => {
       store.getState()
     );
     const supplyCoinId = R.last(supplyCoinIds).id;
-    store.dispatch(
-      ActionCreator.transferBetweenPlayerArrays(
-        "playerToSupply",
-        "playerToMorgue",
-        victimPlayer.id,
-        supplyCoinId
-      )
-    );
+    store.dispatch(ActionCreator.transferSupplyToMorgue(victimPlayer.id, supplyCoinId));
   } else {
-    store.dispatch(ActionCreator.boardToMorgue(victimPlayer.id, an2));
+    store.dispatch(ActionCreator.transferBoardToMorgue(victimPlayer.id, an2));
   }
 
   // Pikeman attribute.
   if (victimCoin.key === UnitCoin.PIKEMAN) {
-    store.dispatch(ActionCreator.boardToMorgue(playerId, an1));
+    store.dispatch(ActionCreator.transferBoardToMorgue(playerId, an1));
   }
 };
 

@@ -564,20 +564,14 @@ QUnit.test("setVerbose()", assert => {
   assert.equal(result.isVerbose, isVerbose);
 });
 
-// /////////////////////////////////////////////////////////////////////////////////////////////////
-QUnit.test("bagToHand()", assert => {
+QUnit.test("transferBagToHand()", assert => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
   const coinId = 12;
   const action0 = ActionCreator.addToPlayerArray("playerToBag", playerId, coinId);
   const state = Reducer.root(state0, action0);
-  const action = ActionCreator.transferBetweenPlayerArrays(
-    "playerToBag",
-    "playerToHand",
-    playerId,
-    coinId
-  );
+  const action = ActionCreator.transferBagToHand(playerId, coinId);
 
   // Run.
   const result = Reducer.root(state, action);
@@ -592,61 +586,7 @@ QUnit.test("bagToHand()", assert => {
   assert.equal(hand[0], coinId);
 });
 
-QUnit.test("discardFacedownToBag()", assert => {
-  // Setup.
-  const state0 = AppState.create();
-  const playerId = 3;
-  const coinId = 12;
-  const action0 = ActionCreator.addToPlayerArray("playerToDiscardFacedown", playerId, coinId);
-  const state = Reducer.root(state0, action0);
-  const action = ActionCreator.transferBetweenPlayerArrays(
-    "playerToDiscardFacedown",
-    "playerToBag",
-    playerId,
-    coinId
-  );
-
-  // Run.
-  const result = Reducer.root(state, action);
-
-  // Verify.
-  assert.ok(result);
-  const discard = result.playerToDiscardFacedown[playerId];
-  assert.ok(discard);
-  assert.equal(discard.length, 0);
-  const bag = result.playerToBag[playerId];
-  assert.equal(bag.length, 1);
-  assert.equal(bag[0], coinId);
-});
-
-QUnit.test("discardFaceupToBag()", assert => {
-  // Setup.
-  const state0 = AppState.create();
-  const playerId = 3;
-  const coinId = 12;
-  const action0 = ActionCreator.addToPlayerArray("playerToDiscardFaceup", playerId, coinId);
-  const state = Reducer.root(state0, action0);
-  const action = ActionCreator.transferBetweenPlayerArrays(
-    "playerToDiscardFaceup",
-    "playerToBag",
-    playerId,
-    coinId
-  );
-
-  // Run.
-  const result = Reducer.root(state, action);
-
-  // Verify.
-  assert.ok(result);
-  const discard = result.playerToDiscardFaceup[playerId];
-  assert.ok(discard);
-  assert.equal(discard.length, 0);
-  const bag = result.playerToBag[playerId];
-  assert.equal(bag.length, 1);
-  assert.equal(bag[0], coinId);
-});
-
-QUnit.test("boardToDiscardFaceup()", assert => {
+QUnit.test("transferBoardToDiscardFaceup()", assert => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
@@ -654,7 +594,7 @@ QUnit.test("boardToDiscardFaceup()", assert => {
   const an1 = "e2";
   const action0 = ActionCreator.setUnit(an1, coinId);
   const state = Reducer.root(state0, action0);
-  const action = ActionCreator.boardToDiscardFaceup(playerId, an1);
+  const action = ActionCreator.transferBoardToDiscardFaceup(playerId, an1);
 
   // Run.
   const result = Reducer.root(state, action);
@@ -670,7 +610,7 @@ QUnit.test("boardToDiscardFaceup()", assert => {
   assert.equal(resultDiscardFaceup[0], coinId);
 });
 
-QUnit.test("boardToMorgue() 1", assert => {
+QUnit.test("transferBoardToMorgue() 1", assert => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
@@ -678,7 +618,7 @@ QUnit.test("boardToMorgue() 1", assert => {
   const an1 = "e2";
   const action0 = ActionCreator.setUnit(an1, coinId);
   const state = Reducer.root(state0, action0);
-  const action = ActionCreator.boardToMorgue(playerId, an1);
+  const action = ActionCreator.transferBoardToMorgue(playerId, an1);
 
   // Run.
   const result = Reducer.root(state, action);
@@ -694,7 +634,7 @@ QUnit.test("boardToMorgue() 1", assert => {
   assert.equal(resultMorgue[0], coinId);
 });
 
-QUnit.test("boardToMorgue() 2", assert => {
+QUnit.test("transferBoardToMorgue() 2", assert => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
@@ -703,7 +643,7 @@ QUnit.test("boardToMorgue() 2", assert => {
   const action0 = ActionCreator.setUnit(an1, coinId);
   const state1 = Reducer.root(state0, action0);
   const state = Reducer.root(state1, action0);
-  const action = ActionCreator.boardToMorgue(playerId, an1);
+  const action = ActionCreator.transferBoardToMorgue(playerId, an1);
 
   // Run.
   const result = Reducer.root(state, action);
@@ -719,7 +659,7 @@ QUnit.test("boardToMorgue() 2", assert => {
   assert.equal(resultMorgue[0], coinId);
 });
 
-QUnit.test("handToBoard()", assert => {
+QUnit.test("transferHandToBoard()", assert => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
@@ -727,7 +667,7 @@ QUnit.test("handToBoard()", assert => {
   const an = "e2";
   const action0 = ActionCreator.addToPlayerArray("playerToHand", playerId, coinId);
   const state = Reducer.root(state0, action0);
-  const action = ActionCreator.handToBoard(playerId, coinId, an);
+  const action = ActionCreator.transferHandToBoard(playerId, coinId, an);
 
   // Run.
   const result = Reducer.root(state, action);
@@ -744,16 +684,88 @@ QUnit.test("handToBoard()", assert => {
   assert.equal(unit[0], coinId);
 });
 
-QUnit.test("supplyToBag()", assert => {
+QUnit.test("transferHandToDiscardFacedown()", assert => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
-  const coinId = 12;
+  const coinId = 1;
+  const action0 = ActionCreator.addToPlayerArray("playerToHand", playerId, coinId);
+  const state = Reducer.root(state0, action0);
+  const action = ActionCreator.transferHandToDiscardFacedown(playerId, coinId);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  const hand = result.playerToHand[playerId];
+  assert.ok(hand);
+  assert.equal(hand.length, 0);
+  const discardFacedown = result.playerToDiscardFacedown[playerId];
+  assert.ok(discardFacedown);
+  assert.equal(Array.isArray(discardFacedown), true);
+  assert.equal(discardFacedown.length, 1);
+  assert.equal(discardFacedown[0], coinId);
+});
+
+QUnit.test("transferHandToDiscardFaceup()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const playerId = 3;
+  const coinId = 1;
+  const action0 = ActionCreator.addToPlayerArray("playerToHand", playerId, coinId);
+  const state = Reducer.root(state0, action0);
+  const action = ActionCreator.transferHandToDiscardFaceup(playerId, coinId);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  const hand = result.playerToHand[playerId];
+  assert.ok(hand);
+  assert.equal(hand.length, 0);
+  const discardFaceup = result.playerToDiscardFaceup[playerId];
+  assert.ok(discardFaceup);
+  assert.equal(Array.isArray(discardFaceup), true);
+  assert.equal(discardFaceup.length, 1);
+  assert.equal(discardFaceup[0], coinId);
+});
+
+QUnit.test("transferSupplyToDiscardFaceup()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const playerId = 3;
+  const coinId = 1;
+  const action0 = ActionCreator.addToPlayerArray("playerToSupply", playerId, coinId);
+  const state = Reducer.root(state0, action0);
+  const action = ActionCreator.transferSupplyToDiscardFaceup(playerId, coinId);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  const supply = result.playerToSupply[playerId];
+  assert.ok(supply);
+  assert.equal(supply.length, 0);
+  const discardFaceup = result.playerToDiscardFaceup[playerId];
+  assert.ok(discardFaceup);
+  assert.equal(Array.isArray(discardFaceup), true);
+  assert.equal(discardFaceup.length, 1);
+  assert.equal(discardFaceup[0], coinId);
+});
+
+QUnit.test("transferSupplyToHand()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const playerId = 3;
+  const coinId = 1;
   const action0 = ActionCreator.addToPlayerArray("playerToSupply", playerId, coinId);
   const state = Reducer.root(state0, action0);
   const action = ActionCreator.transferBetweenPlayerArrays(
     "playerToSupply",
-    "playerToBag",
+    "playerToHand",
     playerId,
     coinId
   );
@@ -766,9 +778,35 @@ QUnit.test("supplyToBag()", assert => {
   const supply = result.playerToSupply[playerId];
   assert.ok(supply);
   assert.equal(supply.length, 0);
-  const bag = result.playerToBag[playerId];
-  assert.equal(bag.length, 1);
-  assert.equal(bag[0], coinId);
+  const hand = result.playerToHand[playerId];
+  assert.ok(hand);
+  assert.equal(Array.isArray(hand), true);
+  assert.equal(hand.length, 1);
+  assert.equal(hand[0], coinId);
+});
+
+QUnit.test("transferSupplyToMorgue()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const playerId = 3;
+  const coinId = 1;
+  const action0 = ActionCreator.addToPlayerArray("playerToSupply", playerId, coinId);
+  const state = Reducer.root(state0, action0);
+  const action = ActionCreator.transferSupplyToMorgue(playerId, coinId);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  const supply = result.playerToSupply[playerId];
+  assert.ok(supply);
+  assert.equal(supply.length, 0);
+  const morgue = result.playerToMorgue[playerId];
+  assert.ok(morgue);
+  assert.equal(Array.isArray(morgue), true);
+  assert.equal(morgue.length, 1);
+  assert.equal(morgue[0], coinId);
 });
 
 const ReducerTest = {};

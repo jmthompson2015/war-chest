@@ -2,9 +2,6 @@ const ActionType = {};
 
 ActionType.ADD_COIN = "addCoin";
 ActionType.ADD_TO_PLAYER_ARRAY = "addToPlayerArray";
-ActionType.BOARD_TO_DISCARD_FACEUP = "boardToDiscardFaceup"; // Berserker.
-ActionType.BOARD_TO_MORGUE = "boardToMorgue"; // Attacked.
-ActionType.HAND_TO_BOARD = "handToBoard"; // Deploy or bolster.
 ActionType.MOVE_A_UNIT = "moveAUnit";
 ActionType.POP_INPUT_CALLBACK = "popInputCallback";
 ActionType.PUSH_INPUT_CALLBACK = "pushInputCallback";
@@ -31,7 +28,15 @@ ActionType.SET_UNIT = "setUnit";
 ActionType.SET_USER_MESSAGE = "setUserMessage";
 ActionType.SET_VERBOSE = "setVerbose";
 ActionType.SET_WINNER = "setWinner";
+ActionType.TRANSFER_BAG_TO_HAND = "transferBagToHand";
 ActionType.TRANSFER_BETWEEN_PLAYER_ARRAYS = "transferBetweenPlayerArrays";
+ActionType.TRANSFER_BOARD_TO_DISCARD_FACEUP = "transferBoardToDiscardFaceup"; // Berserker.
+ActionType.TRANSFER_BOARD_TO_MORGUE = "transferBoardToMorgue"; // Attacked.
+ActionType.TRANSFER_HAND_TO_BOARD = "transferHandToBoard"; // Deploy or bolster.
+ActionType.TRANSFER_HAND_TO_DISCARD_FACEDOWN = "transferHandToDiscardFacedown"; // Payment.
+ActionType.TRANSFER_HAND_TO_DISCARD_FACEUP = "transferHandToDiscardFaceup";
+ActionType.TRANSFER_SUPPLY_TO_DISCARD_FACEUP = "transferSupplyToDiscardFaceup"; // Recruit.
+ActionType.TRANSFER_SUPPLY_TO_MORGUE = "transferSupplyToMorgue";
 
 Object.freeze(ActionType);
 

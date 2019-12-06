@@ -90,56 +90,6 @@ Reducer.root = (state, action) => {
       return R.assoc("coinInstances", newCoins, state);
     case ActionType.ADD_TO_PLAYER_ARRAY:
       return addToArray(state, action.arrayName, action.playerId, action.coinId);
-    case ActionType.BOARD_TO_DISCARD_FACEUP:
-      log(
-        `Reducer BOARD_TO_DISCARD_FACEUP playerId = ${action.playerId} an = ${action.an1}`,
-        state
-      );
-      oldUnit = state.anToTokens[action.an1];
-      if (oldUnit.length === 1) {
-        newANToTokens = R.dissoc(action.an1, state.anToTokens);
-      } else {
-        newUnit = ArrayUtils.remove(oldUnit[0], oldUnit);
-        newANToTokens = R.assoc(action.an1, newUnit, state.anToTokens);
-      }
-      newDiscardFaceup = state.playerToDiscardFaceup[action.playerId] || [];
-      newDiscardFaceup = R.append(oldUnit[0], newDiscardFaceup);
-      newPlayerToDiscardFaceup = R.assoc(
-        action.playerId,
-        newDiscardFaceup,
-        state.playerToDiscardFaceup
-      );
-      return R.merge(state, {
-        anToTokens: newANToTokens || {},
-        playerToDiscardFaceup: newPlayerToDiscardFaceup
-      });
-    case ActionType.BOARD_TO_MORGUE:
-      log(`Reducer BOARD_TO_MORGUE playerId = ${action.playerId} an = ${action.an1}`, state);
-      oldUnit = state.anToTokens[action.an1];
-      if (oldUnit.length === 1) {
-        newANToTokens = R.dissoc(action.an1, state.anToTokens);
-      } else {
-        newUnit = ArrayUtils.remove(oldUnit[0], oldUnit);
-        newANToTokens = R.assoc(action.an1, newUnit, state.anToTokens);
-      }
-      newMorgue = state.playerToMorgue[action.playerId] || [];
-      newMorgue = R.append(oldUnit[0], newMorgue);
-      newPlayerToMorgue = R.assoc(action.playerId, newMorgue, state.playerToMorgue);
-      return R.merge(state, {
-        anToTokens: newANToTokens || {},
-        playerToMorgue: newPlayerToMorgue
-      });
-    case ActionType.HAND_TO_BOARD:
-      oldHand = state.playerToHand[action.playerId] || [];
-      newHand = ArrayUtils.remove(action.coinId, oldHand);
-      oldUnit = state.anToTokens[action.an2] || [];
-      newUnit = R.append(action.coinId, oldUnit);
-      newPlayerToHand = R.assoc(action.playerId, newHand, state.playerToHand);
-      newANToTokens = R.assoc(action.an2, newUnit, state.anToTokens);
-      return R.merge(state, {
-        playerToHand: newPlayerToHand,
-        anToTokens: newANToTokens
-      });
     case ActionType.MOVE_A_UNIT:
       log(`Reducer MOVE_A_UNIT an = ${action.an1} an2 = ${action.an2}`, state);
       unit = state.anToTokens[action.an1];
@@ -249,11 +199,101 @@ Reducer.root = (state, action) => {
     case ActionType.SET_WINNER:
       log(`Reducer SET_WINNER winnerTeamKey = ${action.winnerTeamKey}`, state);
       return R.assoc("winnerTeamKey", action.winnerTeamKey, state);
+    case ActionType.TRANSFER_BAG_TO_HAND:
+      return transferBetweenArrays(
+        state,
+        "playerToBag",
+        "playerToHand",
+        action.playerId,
+        action.coinId
+      );
     case ActionType.TRANSFER_BETWEEN_PLAYER_ARRAYS:
       return transferBetweenArrays(
         state,
         action.fromArrayName,
         action.toArrayName,
+        action.playerId,
+        action.coinId
+      );
+    case ActionType.TRANSFER_BOARD_TO_DISCARD_FACEUP:
+      log(
+        `Reducer BOARD_TO_DISCARD_FACEUP playerId = ${action.playerId} an = ${action.an1}`,
+        state
+      );
+      oldUnit = state.anToTokens[action.an1];
+      if (oldUnit.length === 1) {
+        newANToTokens = R.dissoc(action.an1, state.anToTokens);
+      } else {
+        newUnit = ArrayUtils.remove(oldUnit[0], oldUnit);
+        newANToTokens = R.assoc(action.an1, newUnit, state.anToTokens);
+      }
+      newDiscardFaceup = state.playerToDiscardFaceup[action.playerId] || [];
+      newDiscardFaceup = R.append(oldUnit[0], newDiscardFaceup);
+      newPlayerToDiscardFaceup = R.assoc(
+        action.playerId,
+        newDiscardFaceup,
+        state.playerToDiscardFaceup
+      );
+      return R.merge(state, {
+        anToTokens: newANToTokens || {},
+        playerToDiscardFaceup: newPlayerToDiscardFaceup
+      });
+    case ActionType.TRANSFER_BOARD_TO_MORGUE:
+      log(`Reducer BOARD_TO_MORGUE playerId = ${action.playerId} an = ${action.an1}`, state);
+      oldUnit = state.anToTokens[action.an1];
+      if (oldUnit.length === 1) {
+        newANToTokens = R.dissoc(action.an1, state.anToTokens);
+      } else {
+        newUnit = ArrayUtils.remove(oldUnit[0], oldUnit);
+        newANToTokens = R.assoc(action.an1, newUnit, state.anToTokens);
+      }
+      newMorgue = state.playerToMorgue[action.playerId] || [];
+      newMorgue = R.append(oldUnit[0], newMorgue);
+      newPlayerToMorgue = R.assoc(action.playerId, newMorgue, state.playerToMorgue);
+      return R.merge(state, {
+        anToTokens: newANToTokens || {},
+        playerToMorgue: newPlayerToMorgue
+      });
+    case ActionType.TRANSFER_HAND_TO_BOARD:
+      oldHand = state.playerToHand[action.playerId] || [];
+      newHand = ArrayUtils.remove(action.coinId, oldHand);
+      oldUnit = state.anToTokens[action.an2] || [];
+      newUnit = R.append(action.coinId, oldUnit);
+      newPlayerToHand = R.assoc(action.playerId, newHand, state.playerToHand);
+      newANToTokens = R.assoc(action.an2, newUnit, state.anToTokens);
+      return R.merge(state, {
+        playerToHand: newPlayerToHand,
+        anToTokens: newANToTokens
+      });
+    case ActionType.TRANSFER_HAND_TO_DISCARD_FACEDOWN:
+      return transferBetweenArrays(
+        state,
+        "playerToHand",
+        "playerToDiscardFacedown",
+        action.playerId,
+        action.coinId
+      );
+    case ActionType.TRANSFER_HAND_TO_DISCARD_FACEUP:
+      return transferBetweenArrays(
+        state,
+        "playerToHand",
+        "playerToDiscardFaceup",
+        action.playerId,
+        action.coinId
+      );
+    case ActionType.TRANSFER_SUPPLY_TO_DISCARD_FACEUP:
+      return transferBetweenArrays(
+        state,
+        "playerToSupply",
+        "playerToDiscardFaceup",
+        action.playerId,
+        action.coinId
+      );
+    case ActionType.TRANSFER_SUPPLY_TO_MORGUE:
+      return transferBetweenArrays(
+        state,
+        "playerToSupply",
+        "playerToMorgue",
         action.playerId,
         action.coinId
       );

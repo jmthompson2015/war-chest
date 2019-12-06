@@ -4,6 +4,17 @@ import PlayerState from "./PlayerState.js";
 
 QUnit.module("ActionCreator");
 
+QUnit.test("all action types", assert => {
+  // Setup.
+  const actionTypeKeys = Object.getOwnPropertyNames(ActionType);
+  assert.equal(actionTypeKeys.length, 37);
+
+  // Run / Verify.
+  actionTypeKeys.forEach(key => {
+    assert.ok(ActionCreator[ActionType[key]], `actionType = ${key} ${ActionType[key]}`);
+  });
+});
+
 QUnit.test("addToPlayerBag()", assert => {
   // Setup.
   const playerId = 3;
@@ -100,93 +111,6 @@ QUnit.test("addToPlayerSupply()", assert => {
   assert.equal(result.coinId, coinId);
 });
 
-QUnit.test("all action types", assert => {
-  // Setup.
-  const actionTypeKeys = Object.getOwnPropertyNames(ActionType);
-  assert.equal(actionTypeKeys.length, 32);
-
-  // Run / Verify.
-  actionTypeKeys.forEach(key => {
-    assert.ok(ActionCreator[ActionType[key]], `actionType = ${key} ${ActionType[key]}`);
-  });
-});
-
-QUnit.test("bagToHand()", assert => {
-  // Setup.
-  const playerId = 3;
-  const coinId = 12;
-
-  // Run.
-  const result = ActionCreator.transferBetweenPlayerArrays(
-    "playerToBag",
-    "playerToHand",
-    playerId,
-    coinId
-  );
-
-  // Verify.
-  assert.ok(result);
-  assert.equal(result.type, ActionType.TRANSFER_BETWEEN_PLAYER_ARRAYS);
-  assert.equal(result.fromArrayName, "playerToBag");
-  assert.equal(result.toArrayName, "playerToHand");
-  assert.equal(result.playerId, playerId);
-  assert.equal(result.coinId, coinId);
-});
-
-QUnit.test("boardToMorgue()", assert => {
-  // Setup.
-  const an1 = "a1";
-  const playerId = 3;
-
-  // Run.
-  const result = ActionCreator.boardToMorgue(playerId, an1);
-
-  // Verify.
-  assert.ok(result);
-  assert.equal(result.type, ActionType.BOARD_TO_MORGUE);
-  assert.equal(result.playerId, playerId);
-  assert.equal(result.an1, an1);
-});
-
-QUnit.test("discardToBag()", assert => {
-  // Setup.
-  const playerId = 3;
-  const coinId = 12;
-
-  // Run.
-  const result = ActionCreator.transferBetweenPlayerArrays(
-    "playerToDiscard",
-    "playerToBag",
-    playerId,
-    coinId
-  );
-
-  // Verify.
-  assert.ok(result);
-  assert.equal(result.type, ActionType.TRANSFER_BETWEEN_PLAYER_ARRAYS);
-  assert.equal(result.fromArrayName, "playerToDiscard");
-  assert.equal(result.toArrayName, "playerToBag");
-  assert.equal(result.playerId, playerId);
-  assert.equal(result.coinId, coinId);
-});
-
-QUnit.test("handToBoard()", assert => {
-  // Setup.
-  const playerId = 3;
-  const coinId = 12;
-  const an2 = "a1";
-
-  // Run.
-  const result = ActionCreator.handToBoard(playerId, coinId, an2);
-
-  // Verify.
-  assert.ok(result);
-  assert.equal(result.type, ActionType.HAND_TO_BOARD);
-  assert.equal(result.playerId, playerId);
-  assert.equal(result.coinId, coinId);
-  assert.equal(result.an2, an2);
-});
-
 QUnit.test("moveAUnit()", assert => {
   // Setup.
   const playerId = 3;
@@ -251,29 +175,114 @@ QUnit.test("setPlayers()", assert => {
   assert.equal(resultPlayers[1], wolfPlayer);
 });
 
-QUnit.test("supplyToBag()", assert => {
+QUnit.test("transferBagToHand()", assert => {
   // Setup.
   const playerId = 3;
   const coinId = 12;
 
   // Run.
-  const result = ActionCreator.transferBetweenPlayerArrays(
-    "playerToSupply",
-    "playerToBag",
-    playerId,
-    coinId
-  );
+  const result = ActionCreator.transferBagToHand(playerId, coinId);
 
   // Verify.
   assert.ok(result);
-  assert.equal(result.type, ActionType.TRANSFER_BETWEEN_PLAYER_ARRAYS);
-  assert.equal(result.fromArrayName, "playerToSupply");
-  assert.equal(result.toArrayName, "playerToBag");
+  assert.equal(result.type, ActionType.TRANSFER_BAG_TO_HAND);
   assert.equal(result.playerId, playerId);
   assert.equal(result.coinId, coinId);
 });
 
-QUnit.test("supplyToDiscard()", assert => {
+QUnit.test("transferBoardToDiscardFaceup()", assert => {
+  // Setup.
+  const an1 = "a1";
+  const playerId = 3;
+
+  // Run.
+  const result = ActionCreator.transferBoardToDiscardFaceup(playerId, an1);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.type, ActionType.TRANSFER_BOARD_TO_DISCARD_FACEUP);
+  assert.equal(result.playerId, playerId);
+  assert.equal(result.an1, an1);
+});
+
+QUnit.test("transferBoardToMorgue()", assert => {
+  // Setup.
+  const an1 = "a1";
+  const playerId = 3;
+
+  // Run.
+  const result = ActionCreator.transferBoardToMorgue(playerId, an1);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.type, ActionType.TRANSFER_BOARD_TO_MORGUE);
+  assert.equal(result.playerId, playerId);
+  assert.equal(result.an1, an1);
+});
+
+QUnit.test("transferHandToBoard()", assert => {
+  // Setup.
+  const playerId = 3;
+  const coinId = 12;
+  const an2 = "a1";
+
+  // Run.
+  const result = ActionCreator.transferHandToBoard(playerId, coinId, an2);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.type, ActionType.TRANSFER_HAND_TO_BOARD);
+  assert.equal(result.playerId, playerId);
+  assert.equal(result.coinId, coinId);
+  assert.equal(result.an2, an2);
+});
+
+QUnit.test("transferHandToDiscardFacedown()", assert => {
+  // Setup.
+  const playerId = 3;
+  const coinId = 12;
+
+  // Run.
+  const result = ActionCreator.transferHandToDiscardFacedown(playerId, coinId);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.type, ActionType.TRANSFER_HAND_TO_DISCARD_FACEDOWN);
+  assert.equal(result.playerId, playerId);
+  assert.equal(result.coinId, coinId);
+});
+
+QUnit.test("transferHandToDiscardFaceup()", assert => {
+  // Setup.
+  const playerId = 3;
+  const coinId = 12;
+
+  // Run.
+  const result = ActionCreator.transferHandToDiscardFaceup(playerId, coinId);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.type, ActionType.TRANSFER_HAND_TO_DISCARD_FACEUP);
+  assert.equal(result.playerId, playerId);
+  assert.equal(result.coinId, coinId);
+});
+
+QUnit.test("transferSupplyToDiscardFaceup()", assert => {
+  // Setup.
+  const playerId = 3;
+  const coinId = 12;
+
+  // Run.
+  const result = ActionCreator.transferSupplyToDiscardFaceup(playerId, coinId);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.type, ActionType.TRANSFER_SUPPLY_TO_DISCARD_FACEUP);
+  assert.equal(result.playerId, playerId);
+  assert.equal(result.coinId, coinId);
+});
+
+QUnit.test("transferSupplyToHand()", assert => {
   // Setup.
   const playerId = 3;
   const coinId = 12;
@@ -281,7 +290,7 @@ QUnit.test("supplyToDiscard()", assert => {
   // Run.
   const result = ActionCreator.transferBetweenPlayerArrays(
     "playerToSupply",
-    "playerToDiscard",
+    "playerToHand",
     playerId,
     coinId
   );
@@ -290,7 +299,22 @@ QUnit.test("supplyToDiscard()", assert => {
   assert.ok(result);
   assert.equal(result.type, ActionType.TRANSFER_BETWEEN_PLAYER_ARRAYS);
   assert.equal(result.fromArrayName, "playerToSupply");
-  assert.equal(result.toArrayName, "playerToDiscard");
+  assert.equal(result.toArrayName, "playerToHand");
+  assert.equal(result.playerId, playerId);
+  assert.equal(result.coinId, coinId);
+});
+
+QUnit.test("transferSupplyToMorgue()", assert => {
+  // Setup.
+  const playerId = 3;
+  const coinId = 12;
+
+  // Run.
+  const result = ActionCreator.transferSupplyToMorgue(playerId, coinId);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.type, ActionType.TRANSFER_SUPPLY_TO_MORGUE);
   assert.equal(result.playerId, playerId);
   assert.equal(result.coinId, coinId);
 });

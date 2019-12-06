@@ -52,10 +52,7 @@ const drawCoin = (playerId, store) => {
   // Bag may still be empty.
   if (!R.isEmpty(bag)) {
     const coinId = ArrayUtils.randomElement(bag);
-
-    store.dispatch(
-      ActionCreator.transferBetweenPlayerArrays("playerToBag", "playerToHand", playerId, coinId)
-    );
+    store.dispatch(ActionCreator.transferBagToHand(playerId, coinId));
   }
 };
 
