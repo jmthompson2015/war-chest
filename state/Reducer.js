@@ -49,6 +49,42 @@ const transferBetweenArrays = (state, fromKey, toKey, playerId, coinId) => {
   });
 };
 
+const transferBoardToPlayerArray = (state, toKey, playerId, an1) => {
+  const oldUnit = state.anToTokens[an1];
+  let newANToTokens;
+  let newUnit;
+  if (oldUnit.length === 1) {
+    newANToTokens = R.dissoc(an1, state.anToTokens);
+  } else {
+    newUnit = ArrayUtils.remove(oldUnit[0], oldUnit);
+    newANToTokens = R.assoc(an1, newUnit, state.anToTokens);
+  }
+
+  const oldTo = state[toKey][playerId] || [];
+  const newTo = R.append(oldUnit[0], oldTo);
+  const newPlayerToTo = R.assoc(playerId, newTo, state[toKey]);
+
+  return R.merge(state, {
+    anToTokens: newANToTokens || {},
+    // playerToDiscardFaceup: newPlayerToDiscardFaceup
+    [toKey]: newPlayerToTo
+  });
+};
+
+const transferPlayerArrayToBoard = (state, fromKey, playerId, coinId, an2) => {
+  const oldFrom = state[fromKey][playerId] || [];
+  const newFrom = ArrayUtils.remove(coinId, oldFrom);
+  const oldUnit = state.anToTokens[an2] || [];
+  const newUnit = R.append(coinId, oldUnit);
+  const newPlayerToFrom = R.assoc(playerId, newFrom, state[fromKey]);
+  const newANToTokens = R.assoc(an2, newUnit, state.anToTokens);
+
+  return R.merge(state, {
+    [fromKey]: newPlayerToFrom,
+    anToTokens: newANToTokens
+  });
+};
+
 Reducer.root = (state, action) => {
   // LOGGER.debug(`root() type = ${action.type}`);
 
@@ -65,22 +101,16 @@ Reducer.root = (state, action) => {
   let newANToTokens;
   let newBag;
   let newCoins;
-  let newDiscardFaceup;
   let newInputCallbackStack;
-  let newMorgue;
-  let newHand;
   let newPlayers;
   let newPlayerToBag;
   let newPlayerToDiscardFacedown;
   let newPlayerToDiscardFaceup;
-  let newPlayerToMorgue;
-  let newPlayerToHand;
   let newPlayerToStrategy;
   let newUnit;
   let oldBag;
   let oldDiscardFacedown;
   let oldDiscardFaceup;
-  let oldHand;
   let oldUnit;
   let unit;
 
@@ -217,54 +247,29 @@ Reducer.root = (state, action) => {
       );
     case ActionType.TRANSFER_BOARD_TO_DISCARD_FACEUP:
       log(
-        `Reducer BOARD_TO_DISCARD_FACEUP playerId = ${action.playerId} an = ${action.an1}`,
+        `Reducer TRANSFER_BOARD_TO_DISCARD_FACEUP playerId = ${action.playerId} an = ${action.an1}`,
         state
       );
-      oldUnit = state.anToTokens[action.an1];
-      if (oldUnit.length === 1) {
-        newANToTokens = R.dissoc(action.an1, state.anToTokens);
-      } else {
-        newUnit = ArrayUtils.remove(oldUnit[0], oldUnit);
-        newANToTokens = R.assoc(action.an1, newUnit, state.anToTokens);
-      }
-      newDiscardFaceup = state.playerToDiscardFaceup[action.playerId] || [];
-      newDiscardFaceup = R.append(oldUnit[0], newDiscardFaceup);
-      newPlayerToDiscardFaceup = R.assoc(
+      return transferBoardToPlayerArray(
+        state,
+        "playerToDiscardFaceup",
         action.playerId,
-        newDiscardFaceup,
-        state.playerToDiscardFaceup
+        action.an1
       );
-      return R.merge(state, {
-        anToTokens: newANToTokens || {},
-        playerToDiscardFaceup: newPlayerToDiscardFaceup
-      });
     case ActionType.TRANSFER_BOARD_TO_MORGUE:
-      log(`Reducer BOARD_TO_MORGUE playerId = ${action.playerId} an = ${action.an1}`, state);
-      oldUnit = state.anToTokens[action.an1];
-      if (oldUnit.length === 1) {
-        newANToTokens = R.dissoc(action.an1, state.anToTokens);
-      } else {
-        newUnit = ArrayUtils.remove(oldUnit[0], oldUnit);
-        newANToTokens = R.assoc(action.an1, newUnit, state.anToTokens);
-      }
-      newMorgue = state.playerToMorgue[action.playerId] || [];
-      newMorgue = R.append(oldUnit[0], newMorgue);
-      newPlayerToMorgue = R.assoc(action.playerId, newMorgue, state.playerToMorgue);
-      return R.merge(state, {
-        anToTokens: newANToTokens || {},
-        playerToMorgue: newPlayerToMorgue
-      });
+      log(
+        `Reducer TRANSFER_BOARD_TO_MORGUE playerId = ${action.playerId} an = ${action.an1}`,
+        state
+      );
+      return transferBoardToPlayerArray(state, "playerToMorgue", action.playerId, action.an1);
     case ActionType.TRANSFER_HAND_TO_BOARD:
-      oldHand = state.playerToHand[action.playerId] || [];
-      newHand = ArrayUtils.remove(action.coinId, oldHand);
-      oldUnit = state.anToTokens[action.an2] || [];
-      newUnit = R.append(action.coinId, oldUnit);
-      newPlayerToHand = R.assoc(action.playerId, newHand, state.playerToHand);
-      newANToTokens = R.assoc(action.an2, newUnit, state.anToTokens);
-      return R.merge(state, {
-        playerToHand: newPlayerToHand,
-        anToTokens: newANToTokens
-      });
+      return transferPlayerArrayToBoard(
+        state,
+        "playerToHand",
+        action.playerId,
+        action.coinId,
+        action.an2
+      );
     case ActionType.TRANSFER_HAND_TO_DISCARD_FACEDOWN:
       return transferBetweenArrays(
         state,
