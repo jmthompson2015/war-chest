@@ -14,11 +14,6 @@ ArrayUtilities.remove = (element, array) => {
   return answer;
 };
 
-// DEPRECATED: Use Ramda.without directly.
-ArrayUtilities.removeAll = (element, array) => {
-  return R.without([element], array);
-};
-
 Object.freeze(ArrayUtilities);
 
 export default ArrayUtilities;

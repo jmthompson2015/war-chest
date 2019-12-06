@@ -38,17 +38,5 @@ QUnit.test("ArrayUtilities.remove() duplicates", assert => {
   assert.equal(result.join(","), "1,2,3,4,5");
 });
 
-QUnit.test("ArrayUtilities.removeAll()", assert => {
-  // Setup.
-  const array = [1, 1, 2, 3, 4, 5];
-
-  // Run.
-  const result = ArrayUtilities.removeAll(1, array);
-
-  // Verify.
-  assert.ok(result);
-  assert.equal(result.join(","), "2,3,4,5");
-});
-
 const ArrayUtilitiesTest = {};
 export default ArrayUtilitiesTest;
