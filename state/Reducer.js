@@ -66,7 +66,6 @@ const transferBoardToPlayerArray = (state, toKey, playerId, an1) => {
 
   return R.merge(state, {
     anToTokens: newANToTokens || {},
-    // playerToDiscardFaceup: newPlayerToDiscardFaceup
     [toKey]: newPlayerToTo
   });
 };
