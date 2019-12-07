@@ -146,7 +146,7 @@ const generateTacticsEnsign = (player, paymentCoin, an1, state) => {
       playerId,
       paymentCoinId,
       an1,
-      moveStates: [R.merge(moveState, { paymentCoinId })]
+      moveStates: [{ ...moveState, paymentCoinId }]
     });
   const teamANs = Selector.teamANs(player.teamKey, state);
   const reduceFunction1 = (accum, an) =>
@@ -312,7 +312,7 @@ const generateTacticsMarshall = (player, paymentCoin, an1, state) => {
       playerId,
       paymentCoinId,
       an1,
-      moveStates: [R.merge(attackState, { paymentCoinId })]
+      moveStates: [{ ...attackState, paymentCoinId }]
     });
   const teamANs = Selector.teamANs(player.teamKey, state);
   const reduceFunction1 = (accum, an) =>
@@ -340,7 +340,7 @@ const generateTacticsRoyalGuard = (player, paymentCoin, an1, state) => {
       playerId,
       paymentCoinId,
       an1,
-      moveStates: [R.merge(moveState, { paymentCoinId: paymentCoin.id })]
+      moveStates: [{ ...moveState, paymentCoinId: paymentCoin.id }]
     });
 
   const coin = Selector.coinForUnit(an1, state);

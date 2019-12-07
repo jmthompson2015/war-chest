@@ -60,7 +60,7 @@ const executeStep = (allowedTime, resolve, startTime, root, roundLimit, stats0) 
 MCTS.execute = (choices, state, roundLimit = 100, allowedTime = 5000) =>
   new Promise(resolve => {
     const startTime = Date.now();
-    const myState = R.merge(state, { delay: 0, isVerbose: false });
+    const myState = { ...state, delay: 0, isVerbose: false };
     const root = Node.create({ state: myState });
 
     // Initialize children.

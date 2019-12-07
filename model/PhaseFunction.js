@@ -239,7 +239,7 @@ PhaseFunction.executeBerserkerAttribute = (resolve, store, callback) => {
   const currentPlayer = Selector.currentPlayer(store.getState());
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates0 = MoveGenerator.generateManeuvers(currentPlayer, paymentCoin, store.getState());
-  const moveStates = R.map(m => R.merge(m, { isBerserker: true }), moveStates0);
+  const moveStates = R.map(m => ({ ...m, isBerserker: true }), moveStates0);
   store.dispatch(ActionCreator.setCurrentMoves(moveStates));
 
   PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);

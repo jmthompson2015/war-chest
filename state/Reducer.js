@@ -43,10 +43,11 @@ const transferBetweenArrays = (state, fromKey, toKey, playerId, coinId) => {
   const newPlayerToFrom = R.assoc(playerId, newFrom, state[fromKey]);
   const newPlayerToTo = R.assoc(playerId, newTo, state[toKey]);
 
-  return R.merge(state, {
+  return {
+    ...state,
     [fromKey]: newPlayerToFrom,
     [toKey]: newPlayerToTo
-  });
+  };
 };
 
 const transferBoardToPlayerArray = (state, toKey, playerId, an1) => {
@@ -64,10 +65,11 @@ const transferBoardToPlayerArray = (state, toKey, playerId, an1) => {
   const newTo = R.append(oldUnit[0], oldTo);
   const newPlayerToTo = R.assoc(playerId, newTo, state[toKey]);
 
-  return R.merge(state, {
+  return {
+    ...state,
     anToTokens: newANToTokens || {},
     [toKey]: newPlayerToTo
-  });
+  };
 };
 
 const transferPlayerArrayToBoard = (state, fromKey, playerId, coinId, an2) => {
@@ -78,10 +80,11 @@ const transferPlayerArrayToBoard = (state, fromKey, playerId, coinId, an2) => {
   const newPlayerToFrom = R.assoc(playerId, newFrom, state[fromKey]);
   const newANToTokens = R.assoc(an2, newUnit, state.anToTokens);
 
-  return R.merge(state, {
+  return {
+    ...state,
     [fromKey]: newPlayerToFrom,
     anToTokens: newANToTokens
-  });
+  };
 };
 
 Reducer.root = (state, action) => {
@@ -141,11 +144,12 @@ Reducer.root = (state, action) => {
       newPlayerToDiscardFacedown = R.assoc(action.playerId, [], state.playerToDiscardFacedown);
       newPlayerToDiscardFaceup = R.assoc(action.playerId, [], state.playerToDiscardFaceup);
       newPlayerToBag = R.assoc(action.playerId, newBag, state.playerToBag);
-      return R.merge(state, {
+      return {
+        ...state,
         playerToDiscardFacedown: newPlayerToDiscardFacedown,
         playerToDiscardFaceup: newPlayerToDiscardFaceup,
         playerToBag: newPlayerToBag
-      });
+      };
     case ActionType.REMOVE_FROM_PLAYER_ARRAY:
       return removeFromArray(state, action.arrayName, action.playerId, action.coinId);
     case ActionType.SET_CONTROL:
@@ -196,10 +200,7 @@ Reducer.root = (state, action) => {
     case ActionType.SET_PLAYERS:
       log(`Reducer SET_PLAYERS players.length = ${action.players.length}`, state);
       newPlayers = R.reduce((accum, p) => R.assoc(p.id, p, accum), {}, action.players);
-      return R.merge(state, {
-        playerInstances: newPlayers,
-        isTwoPlayer: action.players.length === 2
-      });
+      return { ...state, playerInstances: newPlayers, isTwoPlayer: action.players.length === 2 };
     case ActionType.SET_PLAYER_STRATEGY:
       log(
         `Reducer SET_PLAYER_STRATEGY playerId = ${action.playerId} strategy = ${action.strategy}`,
