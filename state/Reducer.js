@@ -11,9 +11,9 @@ const addToArray = (state, arrayName, playerId, coinId) => {
   const map = state[arrayName] || {};
   const oldArray = map[playerId] || [];
   const newArray = R.append(coinId, oldArray);
-  const newPlayer2To = R.assoc(playerId, newArray, map);
+  const newPlayer2To = { ...map, [playerId]: newArray };
 
-  return R.assoc(arrayName, newPlayer2To, state);
+  return { ...state, [arrayName]: newPlayer2To };
 };
 
 const log = (message, state) => {
@@ -26,22 +26,18 @@ const removeFromArray = (state, arrayName, playerId, coinId) => {
   const map = state[arrayName] || {};
   const oldArray = map[playerId] || [];
   const newArray = ArrayUtils.remove(coinId, oldArray);
-  const newPlayer2From = R.assoc(playerId, newArray, map);
+  const newPlayer2From = { ...map, [playerId]: newArray };
 
-  return R.assoc(arrayName, newPlayer2From, state);
+  return { ...state, [arrayName]: newPlayer2From };
 };
 
 const transferBetweenArrays = (state, fromKey, toKey, playerId, coinId) => {
-  if (R.isNil(coinId)) {
-    console.error(`ERROR: invalid coinId: ${coinId}`);
-  }
-
   const oldFrom = state[fromKey][playerId] || [];
   const newFrom = ArrayUtils.remove(coinId, oldFrom);
   const oldTo = state[toKey][playerId] || [];
   const newTo = R.append(coinId, oldTo);
-  const newPlayerToFrom = R.assoc(playerId, newFrom, state[fromKey]);
-  const newPlayerToTo = R.assoc(playerId, newTo, state[toKey]);
+  const newPlayerToFrom = { ...state[fromKey], [playerId]: newFrom };
+  const newPlayerToTo = { ...state[toKey], [playerId]: newTo };
 
   return {
     ...state,
@@ -54,16 +50,17 @@ const transferBoardToPlayerArray = (state, toKey, playerId, an1) => {
   const oldUnit = state.anToTokens[an1];
   let newANToTokens;
   let newUnit;
+
   if (oldUnit.length === 1) {
     newANToTokens = R.dissoc(an1, state.anToTokens);
   } else {
     newUnit = ArrayUtils.remove(oldUnit[0], oldUnit);
-    newANToTokens = R.assoc(an1, newUnit, state.anToTokens);
+    newANToTokens = { ...state.anToTokens, [an1]: newUnit };
   }
 
   const oldTo = state[toKey][playerId] || [];
   const newTo = R.append(oldUnit[0], oldTo);
-  const newPlayerToTo = R.assoc(playerId, newTo, state[toKey]);
+  const newPlayerToTo = { ...state[toKey], [playerId]: newTo };
 
   return {
     ...state,
@@ -77,8 +74,8 @@ const transferPlayerArrayToBoard = (state, fromKey, playerId, coinId, an2) => {
   const newFrom = ArrayUtils.remove(coinId, oldFrom);
   const oldUnit = state.anToTokens[an2] || [];
   const newUnit = R.append(coinId, oldUnit);
-  const newPlayerToFrom = R.assoc(playerId, newFrom, state[fromKey]);
-  const newANToTokens = R.assoc(an2, newUnit, state.anToTokens);
+  const newPlayerToFrom = { ...state[fromKey], [playerId]: newFrom };
+  const newANToTokens = { ...state.anToTokens, [an2]: newUnit };
 
   return {
     ...state,
@@ -118,32 +115,32 @@ Reducer.root = (state, action) => {
 
   switch (action.type) {
     case ActionType.ADD_COIN:
-      newCoins = R.assoc(action.coinState.id, action.coinState, state.coinInstances);
-      return R.assoc("coinInstances", newCoins, state);
+      newCoins = { ...state.coinInstances, [action.coinState.id]: action.coinState };
+      return { ...state, coinInstances: newCoins };
     case ActionType.ADD_TO_PLAYER_ARRAY:
       return addToArray(state, action.arrayName, action.playerId, action.coinId);
     case ActionType.MOVE_A_UNIT:
       log(`Reducer MOVE_A_UNIT an = ${action.an1} an2 = ${action.an2}`, state);
       unit = state.anToTokens[action.an1];
       newANToTokens = R.dissoc(action.an1, state.anToTokens);
-      newANToTokens = R.assoc(action.an2, unit, newANToTokens);
-      return R.assoc("anToTokens", newANToTokens, state);
+      newANToTokens = { ...newANToTokens, [action.an2]: unit };
+      return { ...state, anToTokens: newANToTokens };
     case ActionType.POP_INPUT_CALLBACK:
       log(`Reducer POP_INPUT_CALLBACK`, state);
       newInputCallbackStack = R.init(state.inputCallbackStack);
-      return R.assoc("inputCallbackStack", newInputCallbackStack, state);
+      return { ...state, inputCallbackStack: newInputCallbackStack };
     case ActionType.PUSH_INPUT_CALLBACK:
       log(`Reducer PUSH_INPUT_CALLBACK callback isNil ? ${R.isNil(action.callback)}`, state);
       newInputCallbackStack = R.append(action.callback, state.inputCallbackStack);
-      return R.assoc("inputCallbackStack", newInputCallbackStack, state);
+      return { ...state, inputCallbackStack: newInputCallbackStack };
     case ActionType.REFILL_BAG:
       oldDiscardFacedown = state.playerToDiscardFacedown[action.playerId] || [];
       oldDiscardFaceup = state.playerToDiscardFaceup[action.playerId] || [];
       oldBag = state.playerToBag[action.playerId] || [];
       newBag = R.concat(R.concat(oldDiscardFacedown, oldDiscardFaceup), oldBag);
-      newPlayerToDiscardFacedown = R.assoc(action.playerId, [], state.playerToDiscardFacedown);
-      newPlayerToDiscardFaceup = R.assoc(action.playerId, [], state.playerToDiscardFaceup);
-      newPlayerToBag = R.assoc(action.playerId, newBag, state.playerToBag);
+      newPlayerToDiscardFacedown = { ...state.playerToDiscardFacedown, [action.playerId]: [] };
+      newPlayerToDiscardFaceup = { ...state.playerToDiscardFaceup, [action.playerId]: [] };
+      newPlayerToBag = { ...state.playerToBag, [action.playerId]: newBag };
       return {
         ...state,
         playerToDiscardFacedown: newPlayerToDiscardFacedown,
@@ -153,82 +150,82 @@ Reducer.root = (state, action) => {
     case ActionType.REMOVE_FROM_PLAYER_ARRAY:
       return removeFromArray(state, action.arrayName, action.playerId, action.coinId);
     case ActionType.SET_CONTROL:
-      newAnToControl = R.assoc(action.an, action.controlKey, state.anToControl);
-      return R.assoc("anToControl", newAnToControl, state);
+      newAnToControl = { ...state.anToControl, [action.an]: action.controlKey };
+      return { ...state, anToControl: newAnToControl };
     case ActionType.SET_CURRENT_DAMAGE_CALLBACK:
       log(
         `Reducer SET_CURRENT_DAMAGE_CALLBACK callback isNil ? ${R.isNil(action.callback)}`,
         state
       );
-      return R.assoc("currentDamageCallback", action.callback, state);
+      return { ...state, currentDamageCallback: action.callback };
     case ActionType.SET_CURRENT_DAMAGE_TARGET:
       log(`Reducer SET_CURRENT_DAMAGE_TARGET damageTargetKey = ${action.damageTargetKey}`, state);
-      return R.assoc("currentDamageTargetKey", action.damageTargetKey, state);
+      return { ...state, currentDamageTargetKey: action.damageTargetKey };
     case ActionType.SET_CURRENT_HAND_CALLBACK:
       log(`Reducer SET_CURRENT_HAND_CALLBACK callback isNil ? ${R.isNil(action.callback)}`, state);
-      return R.assoc("currentHandCallback", action.callback, state);
+      return { ...state, currentHandCallback: action.callback };
     case ActionType.SET_CURRENT_MOVE:
       log(`Reducer SET_CURRENT_MOVE moveState = ${JSON.stringify(action.moveState)}`, state);
-      return R.assoc("currentMove", action.moveState, state);
+      return { ...state, currentMove: action.moveState };
     case ActionType.SET_CURRENT_MOVES:
       log(`Reducer SET_CURRENT_MOVES moveStates.length = ${action.moveStates.length}`, state);
-      return R.assoc("currentMoves", action.moveStates, state);
+      return { ...state, currentMoves: action.moveStates };
     case ActionType.SET_CURRENT_PAYMENT_COIN:
       log(`Reducer SET_CURRENT_PAYMENT_COIN coinId = ${action.coinId}`, state);
-      return R.assoc("currentPaymentCoinId", action.coinId, state);
+      return { ...state, currentPaymentCoinId: action.coinId };
     case ActionType.SET_CURRENT_PHASE:
       log(`Reducer SET_CURRENT_PHASE phaseKey = ${action.phaseKey}`, state);
-      return R.assoc("currentPhaseKey", action.phaseKey, state);
+      return { ...state, currentPhaseKey: action.phaseKey };
     case ActionType.SET_CURRENT_PLAYER:
       log(`Reducer SET_CURRENT_PLAYER playerId = ${action.playerId}`, state);
-      return R.assoc("currentPlayerId", action.playerId, state);
+      return { ...state, currentPlayerId: action.playerId };
     case ActionType.SET_CURRENT_PLAYER_ORDER:
       log(
         `Reducer SET_CURRENT_PLAYER_ORDER playerIds = ${JSON.stringify(action.playerIds)}`,
         state
       );
-      return R.assoc("currentPlayerOrder", action.playerIds, state);
+      return { ...state, currentPlayerOrder: action.playerIds };
     case ActionType.SET_DELAY:
       log(`Reducer SET_DELAY delay = ${action.delay}`, state);
-      return R.assoc("delay", action.delay, state);
+      return { ...state, delay: action.delay };
     case ActionType.SET_INITIATIVE_CHANGED_THIS_ROUND:
       log(`Reducer SET_INITIATIVE_CHANGED_THIS_ROUND isChanged ? ${action.isChanged}`, state);
-      return R.assoc("initiativeChangedThisRound", action.isChanged, state);
+      return { ...state, initiativeChangedThisRound: action.isChanged };
     case ActionType.SET_INITIATIVE_PLAYER:
       log(`Reducer SET_INITIATIVE_PLAYER playerId = ${action.playerId}`, state);
-      return R.assoc("initiativePlayerId", action.playerId, state);
+      return { ...state, initiativePlayerId: action.playerId };
     case ActionType.SET_PLAYERS:
       log(`Reducer SET_PLAYERS players.length = ${action.players.length}`, state);
-      newPlayers = R.reduce((accum, p) => R.assoc(p.id, p, accum), {}, action.players);
+      newPlayers = R.reduce((accum, p) => ({ ...accum, [p.id]: p }), {}, action.players);
       return { ...state, playerInstances: newPlayers, isTwoPlayer: action.players.length === 2 };
     case ActionType.SET_PLAYER_STRATEGY:
       log(
         `Reducer SET_PLAYER_STRATEGY playerId = ${action.playerId} strategy = ${action.strategy}`,
         state
       );
-      newPlayerToStrategy = R.assoc(action.playerId, action.strategy, state.playerToStrategy);
-      return R.assoc("playerToStrategy", newPlayerToStrategy, state);
+      newPlayerToStrategy = { ...state.playerToStrategy, [action.playerId]: action.strategy };
+      return { ...state, playerToStrategy: newPlayerToStrategy };
     case ActionType.SET_PLAYER_TO_TABLEAU:
       log(`Reducer SET_PLAYER_TO_TABLEAU playerToTableau = ${action.playerToTableau}`, state);
-      return R.assoc("playerToTableau", action.playerToTableau, state);
+      return { ...state, playerToTableau: action.playerToTableau };
     case ActionType.SET_ROUND:
       log(`Reducer SET_ROUND round = ${action.round}`, state);
-      return R.assoc("round", action.round, state);
+      return { ...state, round: action.round };
     case ActionType.SET_UNIT:
       log(`Reducer SET_UNIT an = ${action.an} coinId = ${action.coinId}`, state);
       oldUnit = state.anToTokens[action.an] || [];
       newUnit = R.append(action.coinId, oldUnit);
-      newANToTokens = R.assoc(action.an, newUnit, state.anToTokens);
-      return R.assoc("anToTokens", newANToTokens, state);
+      newANToTokens = { ...state.anToTokens, [action.an]: newUnit };
+      return { ...state, anToTokens: newANToTokens };
     case ActionType.SET_USER_MESSAGE:
       log(`Reducer SET_USER_MESSAGE userMessage = ${action.userMessage}`, state);
-      return R.assoc("userMessage", action.userMessage, state);
+      return { ...state, userMessage: action.userMessage };
     case ActionType.SET_VERBOSE:
       log(`Reducer SET_VERBOSE isVerbose = ${action.isVerbose}`, state);
-      return R.assoc("isVerbose", action.isVerbose, state);
+      return { ...state, isVerbose: action.isVerbose };
     case ActionType.SET_WINNER:
       log(`Reducer SET_WINNER winnerTeamKey = ${action.winnerTeamKey}`, state);
-      return R.assoc("winnerTeamKey", action.winnerTeamKey, state);
+      return { ...state, winnerTeamKey: action.winnerTeamKey };
     case ActionType.TRANSFER_BAG_TO_HAND:
       return transferBetweenArrays(
         state,
