@@ -334,6 +334,46 @@ QUnit.test("coinForUnit()", assert => {
   assert.equal(result.coinKey, UnitCoin.SWORDSMAN);
 });
 
+QUnit.test("coinIdForUnit()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers2();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const an1 = "e2";
+  const state2 = addCoin(Selector.nextCoinId(state1), UnitCoin.SWORDSMAN, state1);
+  const coin1 = Selector.coin(1, state2);
+  const action2 = ActionCreator.setUnit(an1, coin1.id);
+  const state = Reducer.root(state2, action2);
+
+  // Run.
+  const result = Selector.coinIdForUnit(an1, state);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result, 1);
+});
+
+QUnit.test("coinKeyForUnit()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const players = createPlayers2();
+  const action0 = ActionCreator.setPlayers(players);
+  const state1 = Reducer.root(state0, action0);
+  const an1 = "e2";
+  const state2 = addCoin(Selector.nextCoinId(state1), UnitCoin.SWORDSMAN, state1);
+  const coin1 = Selector.coin(1, state2);
+  const action2 = ActionCreator.setUnit(an1, coin1.id);
+  const state = Reducer.root(state2, action2);
+
+  // Run.
+  const result = Selector.coinKeyForUnit(an1, state);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result, UnitCoin.SWORDSMAN);
+});
+
 QUnit.test("coins()", assert => {
   // Setup.
   let state = AppState.create();

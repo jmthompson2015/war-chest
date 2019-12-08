@@ -21,8 +21,7 @@ const generateAttacksForAN = (player, paymentCoin, an1, state, isLegalFunction0,
   const isLegalFunction = isLegalFunction0 || MoveFunction[moveKey].isLegal;
   const reduceFunction = (accum, an2) => {
     if (isLegalFunction(player, paymentCoin, an1, an2, state)) {
-      const victimCoin = Selector.coinForUnit(an2, state);
-      const victimCoinId = victimCoin.id;
+      const victimCoinId = Selector.coinIdForUnit(an2, state);
       const moveState = MoveState.create({
         moveKey,
         playerId,
@@ -243,8 +242,7 @@ const generateTacticsLancer = (player, paymentCoin, an1, state) => {
     const neighbor = Board.neighborInDirection(moveState.an2, directionIndex);
 
     if (tt.isLegalLancerAttack(player, paymentCoin, an1, moveState.an2, state)) {
-      const victimCoin = Selector.coinForUnit(neighbor, state);
-      const victimCoinId = victimCoin.id;
+      const victimCoinId = Selector.coinIdForUnit(neighbor, state);
       const attackStates = [
         MoveState.create({
           moveKey: Move.ATTACK,
@@ -488,7 +486,7 @@ MoveGenerator.generateTactics = (player, paymentCoin, state) => {
   const playerUnitANs = Selector.playerUnitANs(player.id, state);
   let isFootmanDone = false;
   const reduceFunction = (accum, an1) => {
-    const { coinKey } = Selector.coinForUnit(an1, state);
+    const coinKey = Selector.coinKeyForUnit(an1, state);
     const tt = Tactic[coinKey];
 
     if (tt) {

@@ -101,8 +101,7 @@ const Tactic = {
       const move = Resolver.move(moveKey);
       const paymentCoinState = state.coinInstances[paymentCoinId];
       const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
-      const moveCoinState = Selector.coinForUnit(an2, state);
-      const moveCoin = moveCoinState ? Resolver.coin(moveCoinState.coinKey) : undefined;
+      const moveCoin = Selector.unitType(an2, state);
       const moveCoinName = moveCoin ? moveCoin.name : undefined;
       return (
         `${move.name}: ${paymentCoin.name} at ${an1} orders ${moveCoinName} at ${an2}` +
@@ -160,14 +159,12 @@ const Tactic = {
     // isLegal: MoveFunction.isLegal() used instead.
     label: (moveState, state) => {
       const { an1, moveKey, moveStates, paymentCoinId } = moveState;
-      const { an1: an2, an2: an3, victimCoinId } = moveStates[0];
+      const { an1: an2, an2: an3 } = moveStates[0];
       const move = Resolver.move(moveKey);
       const paymentCoinState = state.coinInstances[paymentCoinId];
       const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
-      const attackerCoinState = Selector.coinForUnit(an2, state);
-      const attackerCoin = Resolver.coin(attackerCoinState.coinKey);
-      const victimCoinState = state.coinInstances[victimCoinId];
-      const victimCoin = Resolver.coin(victimCoinState.coinKey);
+      const attackerCoin = Selector.unitType(an2, state);
+      const victimCoin = Selector.unitType(an3, state);
       return (
         `${move.name}: ${paymentCoin.name} at ${an1} orders ${attackerCoin.name} at ${an2}` +
         ` to attack ${victimCoin.name} at ${an3}`
@@ -184,28 +181,22 @@ const Tactic = {
       const { moveKey, moveStates } = moveState;
       const { an1, an2 } = moveStates[0];
       const move = Resolver.move(moveKey);
-      const movementCoinState = Selector.coinForUnit(an1, state);
-      const movementCoin = Resolver.coin(movementCoinState.coinKey);
+      const movementCoin = Selector.unitType(an1, state);
       return `${move.name}: ${movementCoin.name} at ${an1} moves to ${an2}`;
     }
   }
 };
 
 Tactic.isLegal = (moveState, state) => {
-  const coin = Selector.coinForUnit(moveState.an1, state);
-  const { coinKey } = coin;
+  const coinKey = Selector.coinKeyForUnit(moveState.an1, state);
 
   return Tactic[coinKey].isLegal(moveState, state);
 };
 
 Tactic.label = (moveState, state) => {
-  const coin = Selector.coinForUnit(moveState.an1, state);
+  const coinKey = Selector.coinKeyForUnit(moveState.an1, state);
 
-  if (coin) {
-    return Tactic[coin.coinKey].label(moveState, state);
-  }
-
-  return `Error: No coin for unit at AN: ${moveState.an1}`;
+  return Tactic[coinKey].label(moveState, state);
 };
 
 Object.freeze(Tactic);
