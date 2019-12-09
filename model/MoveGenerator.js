@@ -551,7 +551,7 @@ MoveGenerator.generateManeuvers = (player, paymentCoin, state) => {
   return R.concat(moveAUnits, R.concat(controls, R.concat(attacks, tactics)));
 };
 
-MoveGenerator.generateForCoin = (player, paymentCoin, state) => {
+MoveGenerator.generateForCoin = (player, paymentCoin, state, isPassAllowed = true) => {
   const moves = Move.values();
 
   const reduceFunction = (accum, m) => {
@@ -566,7 +566,9 @@ MoveGenerator.generateForCoin = (player, paymentCoin, state) => {
         );
         break;
       case Move.PASS:
-        newAccum = R.concat(newAccum, MoveGenerator.generatePasses(player, paymentCoin, state));
+        if (isPassAllowed) {
+          newAccum = R.concat(newAccum, MoveGenerator.generatePasses(player, paymentCoin, state));
+        }
         break;
       case Move.RECRUIT:
         newAccum = R.concat(newAccum, MoveGenerator.generateRecruits(player, paymentCoin, state));
