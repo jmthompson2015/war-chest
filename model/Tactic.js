@@ -190,13 +190,21 @@ const Tactic = {
 Tactic.isLegal = (moveState, state) => {
   const coinKey = Selector.coinKeyForUnit(moveState.an1, state);
 
-  return Tactic[coinKey].isLegal(moveState, state);
+  if (coinKey) {
+    return Tactic[coinKey].isLegal(moveState, state);
+  }
+
+  return false;
 };
 
 Tactic.label = (moveState, state) => {
   const coinKey = Selector.coinKeyForUnit(moveState.an1, state);
 
-  return Tactic[coinKey].label(moveState, state);
+  if (coinKey) {
+    return Tactic[coinKey].label(moveState, state);
+  }
+
+  return `Error: No coin for unit at AN: ${moveState.an1}`;
 };
 
 Object.freeze(Tactic);
