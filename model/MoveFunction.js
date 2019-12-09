@@ -123,13 +123,16 @@ const executeAttack = (moveState, store) => {
   const damageTarget = Selector.currentDamageTarget(store.getState());
 
   if (damageTarget && damageTarget.key === DamageTarget.SUPPLY) {
-    const supplyCoinIds = Selector.supplyCoinsByType(
+    const supplyCoins = Selector.supplyCoinsByType(
       victimPlayer.id,
       victimCoinState.coinKey,
       store.getState()
     );
-    const supplyCoinId = R.last(supplyCoinIds).id;
-    store.dispatch(ActionCreator.transferSupplyToMorgue(victimPlayer.id, supplyCoinId));
+
+    if (supplyCoins.length > 0) {
+      const supplyCoinId = supplyCoins[0].id;
+      store.dispatch(ActionCreator.transferSupplyToMorgue(victimPlayer.id, supplyCoinId));
+    }
   } else {
     store.dispatch(ActionCreator.transferBoardToMorgue(victimPlayer.id, an2));
   }

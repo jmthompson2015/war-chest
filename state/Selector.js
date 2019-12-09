@@ -5,15 +5,6 @@ import UnitCoin from "../artifact/UnitCoin.js";
 
 const Selector = {};
 
-const coinsByType = (coinKey, coinIds, state) => {
-  const reduceFunction = (accum, coinId) => {
-    const coin = Selector.coin(coinId, state);
-    return coin && coin.coinKey === coinKey ? R.append(coin, accum) : accum;
-  };
-
-  return R.reduce(reduceFunction, [], coinIds);
-};
-
 Selector.anToControl = state => state.anToControl;
 
 Selector.anToTokens = state => state.anToTokens;
@@ -194,11 +185,9 @@ Selector.isOccupied = (an, state) => {
 Selector.isTwoPlayer = state => state.isTwoPlayer;
 
 Selector.isTypeInSupply = (playerId, coinKey, state) => {
-  const supply = Selector.supply(playerId, state);
-  const coins = Selector.coins(supply, state);
-  const coinKeys = R.map(R.prop("coinKey"), coins);
+  const coins = Selector.supplyCoinsByType(playerId, coinKey, state);
 
-  return R.contains(coinKey, coinKeys);
+  return coins.length > 0;
 };
 
 Selector.isUnitType = (an, coinKey, state) => {
@@ -270,7 +259,11 @@ Selector.round = state => state.round;
 Selector.playerStrategy = (playerId, state) => state.playerToStrategy[playerId];
 
 Selector.supplyCoinsByType = (playerId, coinKey, state) => {
-  return coinsByType(coinKey, Selector.supply(playerId, state), state);
+  const coinIds = Selector.supply(playerId, state);
+  const coins = Selector.coins(coinIds, state);
+  const filterFunction = coin => coin.coinKey === coinKey;
+
+  return R.filter(filterFunction, coins);
 };
 
 Selector.teamAdjacentANs = (teamKey, state) => {
