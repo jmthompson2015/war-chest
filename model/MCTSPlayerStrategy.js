@@ -1,3 +1,5 @@
+import Move from "../artifact/Move.js";
+
 import MCTS from "../mcts/MonteCarloTreeSearch.js";
 
 import RandomPlayerStrategy from "./RandomPlayerStrategy.js";
@@ -7,6 +9,8 @@ const MCTSPlayerStrategy = {};
 
 const DELAY = 1000;
 const ROUND_LIMIT = 100;
+
+const filterPass = moveState => moveState.moveKey !== Move.PASS;
 
 MCTSPlayerStrategy.chooseDamageTarget = (damageTargets, store, delay = DELAY) =>
   SimplePlayerStrategy.chooseDamageTarget(damageTargets, store, delay);
@@ -22,7 +26,8 @@ MCTSPlayerStrategy.chooseMove = (
     if (moveStates.length <= 1) {
       RandomPlayerStrategy.delayedResolve(moveStates[0], resolve, delay);
     } else {
-      MCTS.execute(moveStates, store.getState(), roundLimit, allowedTime).then(moveState => {
+      const moveStates2 = R.filter(filterPass, moveStates);
+      MCTS.execute(moveStates2, store.getState(), roundLimit, allowedTime).then(moveState => {
         resolve(moveState);
       });
     }

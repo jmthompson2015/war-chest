@@ -10,6 +10,8 @@ import Node from "./Node.js";
 
 const Expansion = {};
 
+const IS_PASS_ALLOWED = false;
+
 Expansion.createMoveChildren = (moveStates, playerId, state, parent) => {
   const mapFunction = moveState => {
     const store = Redux.createStore(Reducer.root, state);
@@ -41,7 +43,11 @@ Expansion.execute = leaf0 => {
 
   if (paymentCoin) {
     const player = Selector.player(playerId, state);
-    const moveStates = MoveGenerator.generateForCoin(player, paymentCoin, state);
+    const moveStates0 = MoveGenerator.generateForCoin(player, paymentCoin, state, IS_PASS_ALLOWED);
+    const moveStates =
+      moveStates0.length === 0
+        ? MoveGenerator.generateForCoin(player, paymentCoin, state)
+        : moveStates0;
     leaf.children = Expansion.createMoveChildren(moveStates, playerId, state, leaf);
   } else {
     const hand = Selector.hand(playerId, state);

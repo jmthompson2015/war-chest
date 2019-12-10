@@ -85,7 +85,7 @@ QUnit.test("execute() choose move", assert => {
     true,
     `Array.isArray(rootChildren) ? ${Array.isArray(rootChildren)}`
   );
-  assert.equal(rootChildren.length, 7, `rootChildren.length = ${rootChildren.length}`);
+  assert.equal(rootChildren.length, 6, `rootChildren.length = ${rootChildren.length}`);
   assert.equal(rootChildren.includes(result), true, `rootChildren.includes(result)`);
 
   assert.equal(result.parent, root, "result.parent === root");
@@ -102,7 +102,7 @@ QUnit.test("execute() choose move", assert => {
   const { currentMoves } = state;
   assert.ok(currentMoves, "currentMoves !== undefined");
   assert.equal(Array.isArray(currentMoves), true);
-  assert.equal(currentMoves.length, 7, `currentMoves.length = ${currentMoves.length}`);
+  assert.equal(currentMoves.length, 6, `currentMoves.length = ${currentMoves.length}`);
 
   const { currentMove } = state;
   assert.ok(currentMove, "currentMove !== undefined");
