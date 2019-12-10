@@ -204,6 +204,8 @@ Selector.isUnoccupied = (an, state) => {
 
 Selector.isVerbose = state => state.isVerbose;
 
+Selector.mctsRoot = state => state.mctsRoot;
+
 Selector.peekInputCallback = state => state.inputCallbackStack[state.inputCallbackStack.length - 1];
 
 Selector.player = (playerId, state) => state.playerInstances[playerId];

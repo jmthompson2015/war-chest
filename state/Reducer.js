@@ -194,6 +194,9 @@ Reducer.root = (state, action) => {
     case ActionType.SET_INITIATIVE_PLAYER:
       log(`Reducer SET_INITIATIVE_PLAYER playerId = ${action.playerId}`, state);
       return { ...state, initiativePlayerId: action.playerId };
+    case ActionType.SET_MCTS_ROOT:
+      log(`Reducer SET_MCTS_ROOT mctsRoot = ${action.mctsRoot}`, state);
+      return { ...state, mctsRoot: action.mctsRoot };
     case ActionType.SET_PLAYERS:
       log(`Reducer SET_PLAYERS players.length = ${action.players.length}`, state);
       newPlayers = R.reduce((accum, p) => ({ ...accum, [p.id]: p }), {}, action.players);

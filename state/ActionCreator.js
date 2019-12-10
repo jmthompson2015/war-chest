@@ -73,6 +73,8 @@ ActionCreator.setInitiativeChangedThisRound = makeActionCreator(
 
 ActionCreator.setInitiativePlayer = makeActionCreator(ActionType.SET_INITIATIVE_PLAYER, "playerId");
 
+ActionCreator.setMctsRoot = makeActionCreator(ActionType.SET_MCTS_ROOT, "mctsRoot");
+
 ActionCreator.setPlayers = makeActionCreator(ActionType.SET_PLAYERS, "players");
 
 ActionCreator.setPlayerStrategy = makeActionCreator(

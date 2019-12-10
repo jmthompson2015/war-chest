@@ -10,6 +10,7 @@ AppState.create = ({
   isGameOver = false,
   isTwoPlayer = true,
   isVerbose = true,
+  mctsRoot = null,
   userMessage = null,
   winnerTeamKey = null,
 
@@ -47,6 +48,7 @@ AppState.create = ({
     isGameOver,
     isTwoPlayer,
     isVerbose,
+    mctsRoot,
     userMessage,
     winnerTeamKey,
 

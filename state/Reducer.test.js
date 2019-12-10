@@ -418,6 +418,20 @@ QUnit.test("setInitiativePlayer()", assert => {
   assert.equal(result.initiativePlayerId, playerId);
 });
 
+QUnit.test("setMctsRoot()", assert => {
+  // Setup.
+  const state = AppState.create();
+  const mctsRoot = 12;
+  const action = ActionCreator.setMctsRoot(mctsRoot);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.mctsRoot, mctsRoot);
+});
+
 QUnit.test("setPlayers()", assert => {
   // Setup.
   const state = AppState.create();

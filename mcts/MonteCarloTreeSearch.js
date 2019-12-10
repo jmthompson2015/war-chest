@@ -42,9 +42,13 @@ const executeStep = (allowedTime, resolve, startTime, root, roundLimit, stats0) 
     console.log(
       `executeStep() root = ${JSON.stringify(R.omit(["children", "parent", "state"], root))}`
     );
-    console.log(`executeStep() bestMove = ${JSON.stringify(bestMove)}`);
+    console.log(
+      `executeStep() bestMove = ${JSON.stringify(bestMove)} coin = ${JSON.stringify(
+        R.omit(["isFaceup", "isHighlighted"], Selector.coin(bestMove, root.state))
+      )}`
+    );
     console.log(`stats = ${JSON.stringify(stats, null, 2)}`);
-    resolve(bestMove);
+    resolve({ paymentCoinId: bestMove, mctsRoot: root });
   } else {
     const leaf = Selection.execute(root);
     const child = Expansion.execute(leaf);

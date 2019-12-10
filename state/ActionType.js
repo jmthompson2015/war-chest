@@ -20,6 +20,7 @@ ActionType.SET_CURRENT_PLAYER_ORDER = "setCurrentPlayerOrder";
 ActionType.SET_DELAY = "setDelay";
 ActionType.SET_INITIATIVE_CHANGED_THIS_ROUND = "setInitiativeChangedThisRound";
 ActionType.SET_INITIATIVE_PLAYER = "setInitiativePlayer";
+ActionType.SET_MCTS_ROOT = "setMctsRoot";
 ActionType.SET_PLAYERS = "setPlayers";
 ActionType.SET_PLAYER_STRATEGY = "setPlayerStrategy";
 ActionType.SET_PLAYER_TO_TABLEAU = "setPlayerToTableau";

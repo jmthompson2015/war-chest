@@ -64,7 +64,9 @@ QUnit.test("chooseMove()", assert => {
     done();
   };
 
-  MCTSPlayerStrategy.chooseMove(moveStates, store, delay, roundLimit, allowedTime).then(callback);
+  MCTSPlayerStrategy.choosePaymentCoin(hand, store, delay, roundLimit, allowedTime).then(() => {
+    MCTSPlayerStrategy.chooseMove(moveStates, store, delay, roundLimit, allowedTime).then(callback);
+  });
 });
 
 QUnit.test("choosePaymentCoin()", assert => {
