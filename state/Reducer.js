@@ -52,7 +52,8 @@ const transferBoardToPlayerArray = (state, toKey, playerId, an1) => {
   let newUnit;
 
   if (oldUnit.length === 1) {
-    newANToTokens = R.dissoc(an1, state.anToTokens);
+    newANToTokens = { ...state.anToTokens };
+    delete newANToTokens[an1];
   } else {
     newUnit = ArrayUtils.remove(oldUnit[0], oldUnit);
     newANToTokens = { ...state.anToTokens, [an1]: newUnit };
@@ -122,7 +123,8 @@ Reducer.root = (state, action) => {
     case ActionType.MOVE_A_UNIT:
       log(`Reducer MOVE_A_UNIT an = ${action.an1} an2 = ${action.an2}`, state);
       unit = state.anToTokens[action.an1];
-      newANToTokens = R.dissoc(action.an1, state.anToTokens);
+      newANToTokens = { ...state.anToTokens };
+      delete newANToTokens[action.an1];
       newANToTokens = { ...newANToTokens, [action.an2]: unit };
       return { ...state, anToTokens: newANToTokens };
     case ActionType.POP_INPUT_CALLBACK:
