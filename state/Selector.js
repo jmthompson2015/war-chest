@@ -231,7 +231,7 @@ Selector.playersInOrder = state => {
   const first = R.slice(index0, count, players0);
   const second = R.slice(0, index0, players0);
 
-  return R.concat(first, second);
+  return [...first, ...second];
 };
 
 Selector.playerUnitANs = (playerId, state) => {
@@ -273,7 +273,7 @@ Selector.teamAdjacentANs = (teamKey, state) => {
   const isTwoPlayer = Selector.isTwoPlayer(state);
   const reduceFunction = (accum, teamAN) => {
     const neighbors = Board.neighbors(teamAN, isTwoPlayer);
-    return R.uniq(R.concat(accum, neighbors));
+    return R.uniq([...accum, ...neighbors]);
   };
 
   return R.reduce(reduceFunction, [], teamANs);
@@ -305,7 +305,7 @@ Selector.teamTableau = (teamKey, state) => {
   const teamPlayerIds = Selector.teamPlayerIds(teamKey, state);
   const reduceFunction = (accum, playerId) => {
     const tableau = Selector.tableau(playerId, state);
-    return R.concat(accum, tableau);
+    return [...accum, ...tableau];
   };
 
   return R.reduce(reduceFunction, [], teamPlayerIds);

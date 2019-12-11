@@ -139,7 +139,7 @@ Reducer.root = (state, action) => {
       oldDiscardFacedown = state.playerToDiscardFacedown[action.playerId] || [];
       oldDiscardFaceup = state.playerToDiscardFaceup[action.playerId] || [];
       oldBag = state.playerToBag[action.playerId] || [];
-      newBag = R.concat(R.concat(oldDiscardFacedown, oldDiscardFaceup), oldBag);
+      newBag = [...oldDiscardFacedown, ...oldDiscardFaceup, ...oldBag];
       newPlayerToDiscardFacedown = { ...state.playerToDiscardFacedown, [action.playerId]: [] };
       newPlayerToDiscardFaceup = { ...state.playerToDiscardFaceup, [action.playerId]: [] };
       newPlayerToBag = { ...state.playerToBag, [action.playerId]: newBag };
