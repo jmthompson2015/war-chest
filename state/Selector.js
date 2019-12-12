@@ -48,6 +48,18 @@ Selector.coinKeyForUnit = (an, state) => {
   return coin ? coin.coinKey : undefined;
 };
 
+Selector.coinType = (coinId, state) => {
+  const coin = Selector.coin(coinId, state);
+
+  return coin ? coin.coinType : undefined;
+};
+
+Selector.coinTypeForUnit = (an, state) => {
+  const coin = Selector.coinForUnit(an, state);
+
+  return coin ? coin.coinType : undefined;
+};
+
 Selector.coins = (coinIds, state) => {
   const mapFunction = id => state.coinInstances[id];
 
@@ -312,12 +324,6 @@ Selector.teamTableau = (teamKey, state) => {
 };
 
 Selector.unit = (an, state) => state.anToTokens[an];
-
-Selector.unitType = (an, state) => {
-  const coinKey = Selector.coinKeyForUnit(an, state);
-
-  return coinKey ? Resolver.unitCoin(coinKey) : undefined;
-};
 
 Selector.userMessage = state => state.userMessage;
 

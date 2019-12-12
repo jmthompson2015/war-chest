@@ -1,7 +1,6 @@
 import ArrayUtils from "../util/ArrayUtilities.js";
 
 import Move from "../artifact/Move.js";
-import Resolver from "../artifact/Resolver.js";
 import UnitCoin from "../artifact/UnitCoin.js";
 
 import ActionCreator from "../state/ActionCreator.js";
@@ -165,7 +164,7 @@ const beforeMoveExecute = store =>
 
 const afterMoveExecute = (paymentCoin, resolve, store, callback) => {
   const moveState = Selector.currentMove(store.getState());
-  const move = Resolver.move(moveState.moveKey);
+  const move = moveState.moveType;
   const an = moveState.moveKey === Move.MOVE_A_UNIT ? moveState.an2 : moveState.an1;
   const unit = Selector.unit(an, store.getState());
   const recruitCoin = moveState.recruitCoinId

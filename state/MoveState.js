@@ -1,3 +1,5 @@
+import Resolver from "../artifact/Resolver.js";
+
 const MoveState = {};
 
 MoveState.create = ({
@@ -19,7 +21,9 @@ MoveState.create = ({
   an2,
   moveStates,
   recruitCoinId,
-  victimCoinId
+  victimCoinId,
+  // Managed.
+  moveType: Resolver.move(moveKey)
 });
 
 Object.freeze(MoveState);

@@ -8,14 +8,11 @@ import UnitCoin from "../artifact/UnitCoin.js";
 import Selector from "../state/Selector.js";
 
 const labelFootman = (moveState, state) => {
-  const { moveKey, moveStates, paymentCoinId } = moveState;
-  const paymentCoinState = state.coinInstances[paymentCoinId];
-  const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
-  const move = Resolver.move(moveKey);
+  const { moveStates, moveType: move, paymentCoinId } = moveState;
+  const paymentCoin = Selector.coinType(paymentCoinId, state);
   const mapFunction = m => {
     let answer = "";
-    const victimCoinState = Selector.coin(m.victimCoinId, state);
-    const victimCoin = victimCoinState ? Resolver.coin(victimCoinState.coinKey) : undefined;
+    const victimCoin = Selector.coinType(m.victimCoinId, state);
     const victimCoinName = victimCoin ? victimCoin.name : undefined;
     switch (m.moveKey) {
       case Move.MOVE_A_UNIT:
@@ -46,27 +43,21 @@ const Tactic = {
       Board.distance(an1, an2) === 2 &&
       Selector.isEnemyUnitAt(player.id, an2, state),
     label: (moveState, state) => {
-      const { moveKey, moveStates, paymentCoinId } = moveState;
-      const { an1, an2, victimCoinId } = moveStates[0];
-      const move = Resolver.move(moveKey);
-      const paymentCoinState = state.coinInstances[paymentCoinId];
-      const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
-      const victimCoinState = state.coinInstances[victimCoinId];
-      const victimCoin = Resolver.coin(victimCoinState.coinKey);
+      const { moveStates, moveType: move, paymentCoinId } = moveState;
+      const { an1, an2 } = moveStates[0];
+      const paymentCoin = Selector.coinType(paymentCoinId, state);
+      const victimCoin = Selector.coinTypeForUnit(an2, state);
       return `${move.name}: ${paymentCoin.name} at ${an1} attacks ${victimCoin.name} at ${an2}`;
     }
   },
   cavalry: {
     // isLegal: MoveFunction.isLegal() used instead.
     label: (moveState, state) => {
-      const { moveKey, moveStates, paymentCoinId } = moveState;
+      const { moveStates, moveType: move, paymentCoinId } = moveState;
       const { an1, an2 } = moveStates[0];
-      const { an2: an3, victimCoinId } = moveStates[1];
-      const move = Resolver.move(moveKey);
-      const paymentCoinState = state.coinInstances[paymentCoinId];
-      const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
-      const victimCoinState = state.coinInstances[victimCoinId];
-      const victimCoin = Resolver.coin(victimCoinState.coinKey);
+      const { an2: an3 } = moveStates[1];
+      const paymentCoin = Selector.coinType(paymentCoinId, state);
+      const victimCoin = Selector.coinTypeForUnit(an3, state);
       return (
         `${move.name}: ${paymentCoin.name} at ${an1}` +
         ` moves to ${an2} and` +
@@ -84,27 +75,21 @@ const Tactic = {
       Selector.isUnoccupied(Board.middleAN(an1, an2), state) &&
       Selector.isEnemyUnitAt(player.id, an2, state),
     label: (moveState, state) => {
-      const { moveKey, moveStates, paymentCoinId } = moveState;
-      const { an1, an2, victimCoinId } = moveStates[0];
-      const move = Resolver.move(moveKey);
-      const paymentCoinState = state.coinInstances[paymentCoinId];
-      const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
-      const victimCoinState = state.coinInstances[victimCoinId];
-      const victimCoin = Resolver.coin(victimCoinState.coinKey);
+      const { moveStates, moveType: move, paymentCoinId } = moveState;
+      const { an1, an2 } = moveStates[0];
+      const paymentCoin = Selector.coinType(paymentCoinId, state);
+      const victimCoin = Selector.coinTypeForUnit(an2, state);
       return `${move.name}: ${paymentCoin.name} at ${an1} attacks ${victimCoin.name} at ${an2}`;
     }
   },
   ensign: {
     label: (moveState, state) => {
-      const { an1, moveKey, moveStates, paymentCoinId } = moveState;
+      const { an1, moveStates, moveType: move, paymentCoinId } = moveState;
       const { an1: an2, an2: an3 } = moveStates[0];
-      const move = Resolver.move(moveKey);
-      const paymentCoinState = state.coinInstances[paymentCoinId];
-      const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
-      const moveCoin = Selector.unitType(an2, state);
-      const moveCoinName = moveCoin ? moveCoin.name : undefined;
+      const paymentCoin = Selector.coinType(paymentCoinId, state);
+      const moveCoin = Selector.coinTypeForUnit(an2, state);
       return (
-        `${move.name}: ${paymentCoin.name} at ${an1} orders ${moveCoinName} at ${an2}` +
+        `${move.name}: ${paymentCoin.name} at ${an1} orders ${moveCoin.name} at ${an2}` +
         ` to move to ${an3}`
       );
     }
@@ -125,14 +110,11 @@ const Tactic = {
       Selector.isUnoccupied(Board.middleAN(an1, an2), state) &&
       Selector.isUnoccupied(an2, state),
     label: (moveState, state) => {
-      const { moveKey, moveStates, paymentCoinId } = moveState;
+      const { moveStates, moveType: move, paymentCoinId } = moveState;
       const { an1, an2 } = moveStates[0];
-      const { an2: an3, victimCoinId } = moveStates[1];
-      const move = Resolver.move(moveKey);
-      const paymentCoinState = state.coinInstances[paymentCoinId];
-      const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
-      const victimCoinState = state.coinInstances[victimCoinId];
-      const victimCoin = Resolver.coin(victimCoinState.coinKey);
+      const { an2: an3 } = moveStates[1];
+      const paymentCoin = Selector.coinType(paymentCoinId, state);
+      const victimCoin = Selector.coinTypeForUnit(an3, state);
       return (
         `${move.name}: ${paymentCoin.name} at ${an1}` +
         ` moves to ${an2} and` +
@@ -147,26 +129,22 @@ const Tactic = {
       Board.distance(an1, an2) === 2 &&
       Selector.isUnoccupied(an2, state),
     label: (moveState, state) => {
-      const { moveKey, moveStates, paymentCoinId } = moveState;
+      const { moveStates, moveType: move, paymentCoinId } = moveState;
       const { an1, an2 } = moveStates[0];
-      const move = Resolver.move(moveKey);
-      const paymentCoinState = state.coinInstances[paymentCoinId];
-      const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
+      const paymentCoin = Selector.coinType(paymentCoinId, state);
       return `${move.name}: ${paymentCoin.name} at ${an1} moves to ${an2}`;
     }
   },
   marshall: {
     // isLegal: MoveFunction.isLegal() used instead.
     label: (moveState, state) => {
-      const { an1, moveKey, moveStates, paymentCoinId } = moveState;
+      const { an1, moveStates, moveType: move, paymentCoinId } = moveState;
       const { an1: an2, an2: an3 } = moveStates[0];
-      const move = Resolver.move(moveKey);
-      const paymentCoinState = state.coinInstances[paymentCoinId];
-      const paymentCoin = Resolver.coin(paymentCoinState.coinKey);
-      const attackerCoin = Selector.unitType(an2, state);
-      const victimCoin = Selector.unitType(an3, state);
+      const paymentCoin = Selector.coinType(paymentCoinId, state);
+      const attackCoin = Selector.coinTypeForUnit(an2, state);
+      const victimCoin = Selector.coinTypeForUnit(an3, state);
       return (
-        `${move.name}: ${paymentCoin.name} at ${an1} orders ${attackerCoin.name} at ${an2}` +
+        `${move.name}: ${paymentCoin.name} at ${an1} orders ${attackCoin.name} at ${an2}` +
         ` to attack ${victimCoin.name} at ${an3}`
       );
     }
@@ -178,11 +156,10 @@ const Tactic = {
       Board.isNeighbor(an1, an2, Selector.isTwoPlayer(state)) &&
       Selector.isUnoccupied(an2, state),
     label: (moveState, state) => {
-      const { moveKey, moveStates } = moveState;
+      const { moveStates, moveType: move } = moveState;
       const { an1, an2 } = moveStates[0];
-      const move = Resolver.move(moveKey);
-      const movementCoin = Selector.unitType(an1, state);
-      return `${move.name}: ${movementCoin.name} at ${an1} moves to ${an2}`;
+      const moveCoin = Selector.coinTypeForUnit(an1, state);
+      return `${move.name}: ${moveCoin.name} at ${an1} moves to ${an2}`;
     }
   }
 };

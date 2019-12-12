@@ -1,3 +1,5 @@
+import Resolver from "../artifact/Resolver.js";
+
 import ActionCreator from "./ActionCreator.js";
 import Selector from "./Selector.js";
 
@@ -13,7 +15,9 @@ CoinState.create = ({ id, coinKey, count = 1, isFaceup = true, isHighlighted = f
     // Situational.
     count,
     isFaceup,
-    isHighlighted
+    isHighlighted,
+    // Managed.
+    coinType: Resolver.coin(coinKey)
   });
 
   if (store) {

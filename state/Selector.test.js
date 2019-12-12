@@ -1,6 +1,7 @@
 import Board from "../artifact/Board.js";
 import ControlMarker from "../artifact/ControlMarker.js";
 import DamageTarget from "../artifact/DamageTarget.js";
+import Resolver from "../artifact/Resolver.js";
 import Team from "../artifact/Team.js";
 import UnitCard from "../artifact/UnitCard.js";
 import UnitCoin from "../artifact/UnitCoin.js";
@@ -372,6 +373,22 @@ QUnit.test("coinKeyForUnit()", assert => {
   // Verify.
   assert.ok(result);
   assert.equal(result, UnitCoin.SWORDSMAN);
+});
+
+QUnit.test("coinType()", assert => {
+  // Setup.
+  const state0 = AppState.create();
+  const coinId = 1;
+  const coinKey = UnitCoin.KNIGHT;
+  const state = addCoin(coinId, coinKey, state0);
+
+  // Run / Verify.
+  const result = Selector.coinType(coinId, state);
+
+  // Run / Verify.
+  assert.ok(result);
+  // assert.equal(result, Resolver.coin(coinKey));
+  assert.equal(JSON.stringify(result), JSON.stringify(Resolver.coin(coinKey)));
 });
 
 QUnit.test("coins()", assert => {
