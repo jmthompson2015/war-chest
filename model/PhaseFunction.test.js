@@ -28,12 +28,12 @@ QUnit.test("chooseMove()", assert => {
   const playerId = 1;
   const hand = Selector.hand(playerId, store.getState());
   const paymentCoinId = hand[1]; // Swordsman
-  store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
   const players = Selector.playersInOrder(store.getState());
   const playerIds = R.map(R.prop("id"), players);
   store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
   store.dispatch(ActionCreator.setDelay(0));
   store.dispatch(ActionCreator.setCurrentPlayer(playerId));
+  store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
   const currentPlayer = Selector.player(playerId, store.getState());
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates = MoveGenerator.generateForCoin(currentPlayer, paymentCoin, store.getState());
@@ -71,7 +71,6 @@ QUnit.test("chooseMove() Berserker", assert => {
   const paymentCoinId = coinState4.id; // Berserker
   store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", playerId, UnitCard.BERSERKER));
   store.dispatch(ActionCreator.addToPlayerArray("playerToHand", playerId, coinState4.id));
-  store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
   const an1 = "e2";
   store.dispatch(ActionCreator.setUnit(an1, coinState1.id)); // Berserker
   store.dispatch(ActionCreator.setUnit(an1, coinState2.id)); // Berserker
@@ -85,6 +84,7 @@ QUnit.test("chooseMove() Berserker", assert => {
   store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
   store.dispatch(ActionCreator.setDelay(0));
   store.dispatch(ActionCreator.setCurrentPlayer(playerId));
+  store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
 
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates = [
@@ -124,7 +124,6 @@ QUnit.test("chooseMove() Mercenary", assert => {
   const coinState3 = CoinState.create({ coinKey: UnitCoin.MERCENARY, store });
   store.dispatch(ActionCreator.addCoin(coinState3));
   const paymentCoinId = coinState2.id; // Mercenary
-  store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
   const an1 = "d4";
   store.dispatch(ActionCreator.setUnit(an1, coinState1.id)); // Mercenary
   const recruitCoinId = coinState3.id;
@@ -135,6 +134,7 @@ QUnit.test("chooseMove() Mercenary", assert => {
   store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
   store.dispatch(ActionCreator.setDelay(0));
   store.dispatch(ActionCreator.setCurrentPlayer(playerId));
+  store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
 
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates = [
@@ -165,7 +165,6 @@ QUnit.test("chooseMove() Royal Guard", assert => {
   const hand = Selector.hand(playerId, store.getState());
   const paymentCoinId = hand[2]; // Pikeman
   store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", 2, UnitCard.ROYAL_GUARD));
-  store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
   const an1 = "e2";
   const an2 = "e3";
   const coinState1 = CoinState.create({ coinKey: UnitCoin.ROYAL_GUARD, store });
@@ -179,6 +178,7 @@ QUnit.test("chooseMove() Royal Guard", assert => {
   store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
   store.dispatch(ActionCreator.setDelay(0));
   store.dispatch(ActionCreator.setCurrentPlayer(playerId));
+  store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
 
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates = [
@@ -218,7 +218,6 @@ QUnit.test("chooseMove() Swordsman", assert => {
   const playerId = 1;
   const hand = Selector.hand(playerId, store.getState());
   const paymentCoinId = hand[1]; // Swordsman
-  store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
   const an1 = "e2";
   const an2 = "e3";
   const victimCoinId = 22; // Archer
@@ -229,6 +228,7 @@ QUnit.test("chooseMove() Swordsman", assert => {
   store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
   store.dispatch(ActionCreator.setDelay(0));
   store.dispatch(ActionCreator.setCurrentPlayer(playerId));
+  store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
 
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates = [
@@ -274,7 +274,6 @@ QUnit.test("chooseMove() Warrior Priest", assert => {
   const coinState2 = CoinState.create({ coinKey: UnitCoin.WARRIOR_PRIEST, store });
   store.dispatch(ActionCreator.addCoin(coinState2));
   const paymentCoinId = coinState2.id; // Warrior Priest
-  store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
   const an1 = "d4";
   store.dispatch(ActionCreator.setUnit(an1, coinState1.id)); // Warrior Priest
 
@@ -283,6 +282,7 @@ QUnit.test("chooseMove() Warrior Priest", assert => {
   store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
   store.dispatch(ActionCreator.setDelay(0));
   store.dispatch(ActionCreator.setCurrentPlayer(playerId));
+  store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
 
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates = [MoveState.create({ moveKey: Move.CONTROL, playerId, paymentCoinId, an1 })];
