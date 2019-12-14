@@ -31,13 +31,6 @@ const advanceCurrentPlayer = store => {
   }
 
   store.dispatch(ActionCreator.setCurrentPlayer(newPlayerId));
-  store.dispatch(ActionCreator.setCurrentPaymentCoin(null));
-  store.dispatch(ActionCreator.setCurrentHandCallback(null));
-  store.dispatch(ActionCreator.setCurrentMoves([]));
-  store.dispatch(ActionCreator.setCurrentMove(null));
-  store.dispatch(ActionCreator.setCurrentDamageTarget(null));
-  store.dispatch(ActionCreator.setCurrentDamageCallback(null));
-  store.dispatch(ActionCreator.setUserMessage(null));
 };
 
 const drawCoin = (playerId, store) => {

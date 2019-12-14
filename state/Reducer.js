@@ -194,7 +194,17 @@ Reducer.root = (state, action) => {
       return { ...state, currentPhaseKey: action.phaseKey };
     case ActionType.SET_CURRENT_PLAYER:
       log(`Reducer SET_CURRENT_PLAYER playerId = ${action.playerId}`, state);
-      return { ...state, currentPlayerId: action.playerId };
+      return {
+        ...state,
+        currentPlayerId: action.playerId,
+        currentPaymentCoinId: null,
+        currentHandCallback: null,
+        currentMoves: [],
+        currentMove: null,
+        currentDamageTargetKey: null,
+        currentDamageCallback: null,
+        userMessage: null
+      };
     case ActionType.SET_CURRENT_PLAYER_ORDER:
       log(
         `Reducer SET_CURRENT_PLAYER_ORDER playerIds = ${JSON.stringify(action.playerIds)}`,
