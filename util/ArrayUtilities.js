@@ -7,7 +7,7 @@ ArrayUtilities.remove = (element, array) => {
   const index = array.indexOf(element);
 
   if (index > -1) {
-    answer = [].concat(array); // new array copy
+    answer = [...array]; // new array copy
     answer.splice(index, 1);
   }
 

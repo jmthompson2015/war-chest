@@ -142,7 +142,7 @@ Selector.isEnemyUnit = (playerId, coinKey, state) => {
 };
 
 Selector.isEnemyUnitAt = (playerId, an, state) => {
-  const coinKey = Selector.coinKeyForUnit(an, state);
+  const coinKey = state.anToCoinKey[an];
 
   return coinKey ? Selector.isEnemyUnit(playerId, coinKey, state) : false;
 };
@@ -156,7 +156,7 @@ Selector.isFriendlyUnit = (playerId, coinKey, state) => {
 };
 
 Selector.isFriendlyUnitAt = (playerId, an, state) => {
-  const coinKey = Selector.coinKeyForUnit(an, state);
+  const coinKey = state.anToCoinKey[an];
 
   return coinKey ? Selector.isFriendlyUnit(playerId, coinKey, state) : false;
 };
@@ -198,9 +198,9 @@ Selector.isTypeInSupply = (playerId, coinKey, state) => {
 };
 
 Selector.isUnitType = (an, coinKey, state) => {
-  const coinKey0 = Selector.coinKeyForUnit(an, state);
+  const coinKey0 = state.anToCoinKey[an];
 
-  return coinKey0 ? coinKey0 === coinKey : false;
+  return coinKey0 && coinKey0 === coinKey;
 };
 
 Selector.isUnoccupied = (an, state) => {
@@ -245,7 +245,7 @@ Selector.playerUnitANs = (playerId, state) => {
   const tableau = Selector.tableau(playerId, state);
   const ans = Object.keys(state.anToTokens);
   const filterFunction = an => {
-    const coinKey = Selector.coinKeyForUnit(an, state);
+    const coinKey = state.anToCoinKey[an];
 
     return tableau.includes(coinKey);
   };
@@ -290,7 +290,7 @@ Selector.teamANs = (teamKey, state) => {
   const teamTableau = Selector.teamTableau(teamKey, state);
   const ans = Object.keys(state.anToTokens);
   const filterFunction = an => {
-    const coinKey = Selector.coinKeyForUnit(an, state);
+    const coinKey = state.anToCoinKey[an];
 
     return teamTableau.includes(coinKey);
   };
