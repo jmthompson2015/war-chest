@@ -1,6 +1,7 @@
 const AppState = {};
 
 AppState.create = ({
+  anToCoinKey = {},
   anToControl = {},
   anToTokens = {},
   appName = "Vizzini App",
@@ -39,6 +40,7 @@ AppState.create = ({
   playerInstances = {}
 } = {}) =>
   Immutable({
+    anToCoinKey,
     anToControl,
     anToTokens,
     appName,

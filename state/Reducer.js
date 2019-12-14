@@ -48,15 +48,19 @@ const transferBetweenArrays = (state, fromKey, toKey, playerId, coinId) => {
 
 const transferBoardToPlayerArray = (state, toKey, playerId, an1) => {
   const oldUnit = state.anToTokens[an1];
+  let newANToCoinKey;
   let newANToTokens;
   let newUnit;
 
   if (oldUnit.length === 1) {
     newANToTokens = { ...state.anToTokens };
     delete newANToTokens[an1];
+    newANToCoinKey = { ...state.anToCoinKey };
+    delete newANToCoinKey[an1];
   } else {
     newUnit = ArrayUtils.remove(oldUnit[0], oldUnit);
     newANToTokens = { ...state.anToTokens, [an1]: newUnit };
+    newANToCoinKey = state.anToCoinKey;
   }
 
   const oldTo = state[toKey][playerId] || [];
@@ -65,6 +69,7 @@ const transferBoardToPlayerArray = (state, toKey, playerId, an1) => {
 
   return {
     ...state,
+    anToCoinKey: newANToCoinKey || {},
     anToTokens: newANToTokens || {},
     [toKey]: newPlayerToTo
   };
@@ -77,10 +82,13 @@ const transferPlayerArrayToBoard = (state, fromKey, playerId, coinId, an2) => {
   const newUnit = R.append(coinId, oldUnit);
   const newPlayerToFrom = { ...state[fromKey], [playerId]: newFrom };
   const newANToTokens = { ...state.anToTokens, [an2]: newUnit };
+  const newCoinKey = state.coinInstances[coinId].coinKey;
+  const newANToCoinKey = { ...state.anToCoinKey, [an2]: newCoinKey };
 
   return {
     ...state,
     [fromKey]: newPlayerToFrom,
+    anToCoinKey: newANToCoinKey,
     anToTokens: newANToTokens
   };
 };
@@ -97,9 +105,11 @@ Reducer.root = (state, action) => {
     return state;
   }
 
-  let newAnToControl;
+  let newANToCoinKey;
+  let newANToControl;
   let newANToTokens;
   let newBag;
+  let newCoinKey;
   let newCoins;
   let newInputCallbackStack;
   let newPlayers;
@@ -126,7 +136,11 @@ Reducer.root = (state, action) => {
       newANToTokens = { ...state.anToTokens };
       delete newANToTokens[action.an1];
       newANToTokens = { ...newANToTokens, [action.an2]: unit };
-      return { ...state, anToTokens: newANToTokens };
+      newCoinKey = state.anToCoinKey[action.an1];
+      newANToCoinKey = { ...state.anToCoinKey };
+      delete newANToCoinKey[action.an1];
+      newANToCoinKey = { ...newANToCoinKey, [action.an2]: newCoinKey };
+      return { ...state, anToTokens: newANToTokens, anToCoinKey: newANToCoinKey };
     case ActionType.POP_INPUT_CALLBACK:
       log(`Reducer POP_INPUT_CALLBACK`, state);
       newInputCallbackStack = R.init(state.inputCallbackStack);
@@ -152,8 +166,8 @@ Reducer.root = (state, action) => {
     case ActionType.REMOVE_FROM_PLAYER_ARRAY:
       return removeFromArray(state, action.arrayName, action.playerId, action.coinId);
     case ActionType.SET_CONTROL:
-      newAnToControl = { ...state.anToControl, [action.an]: action.controlKey };
-      return { ...state, anToControl: newAnToControl };
+      newANToControl = { ...state.anToControl, [action.an]: action.controlKey };
+      return { ...state, anToControl: newANToControl };
     case ActionType.SET_CURRENT_DAMAGE_CALLBACK:
       log(
         `Reducer SET_CURRENT_DAMAGE_CALLBACK callback isNil ? ${R.isNil(action.callback)}`,
@@ -221,7 +235,9 @@ Reducer.root = (state, action) => {
       oldUnit = state.anToTokens[action.an] || [];
       newUnit = R.append(action.coinId, oldUnit);
       newANToTokens = { ...state.anToTokens, [action.an]: newUnit };
-      return { ...state, anToTokens: newANToTokens };
+      newCoinKey = state.coinInstances[action.coinId].coinKey;
+      newANToCoinKey = { ...state.anToCoinKey, [action.an]: newCoinKey };
+      return { ...state, anToTokens: newANToTokens, anToCoinKey: newANToCoinKey };
     case ActionType.SET_USER_MESSAGE:
       log(`Reducer SET_USER_MESSAGE userMessage = ${action.userMessage}`, state);
       return { ...state, userMessage: action.userMessage };

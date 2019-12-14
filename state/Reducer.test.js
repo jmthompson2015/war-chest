@@ -1,4 +1,5 @@
 import UnitCard from "../artifact/UnitCard.js";
+import UnitCoin from "../artifact/UnitCoin.js";
 
 import AppState from "./AppState.js";
 import ActionCreator from "./ActionCreator.js";
@@ -150,10 +151,14 @@ QUnit.test("moveAUnit()", assert => {
   const state0 = AppState.create();
   const playerId = 3;
   const coinId = 12;
+  const coinKey = UnitCoin.KNIGHT;
+  const coin = CoinState.create({ id: coinId, coinKey });
+  const action0 = ActionCreator.addCoin(coin);
+  const state1 = Reducer.root(state0, action0);
   const an1 = "e2";
   const an2 = "d2";
-  const action0 = ActionCreator.setUnit(an1, coinId);
-  const state = Reducer.root(state0, action0);
+  const action1 = ActionCreator.setUnit(an1, coinId);
+  const state = Reducer.root(state1, action1);
   const action = ActionCreator.moveAUnit(playerId, an1, an2);
 
   // Run.
@@ -161,10 +166,13 @@ QUnit.test("moveAUnit()", assert => {
 
   // Verify.
   assert.ok(result);
-  const { anToTokens } = result;
+  const { anToCoinKey, anToTokens } = result;
   assert.ok(anToTokens);
   assert.equal(anToTokens[an1], undefined);
   assert.equal(anToTokens[an2].join(), coinId);
+  assert.ok(anToCoinKey);
+  assert.equal(anToCoinKey[an1], undefined);
+  assert.equal(anToCoinKey[an2], coinKey);
 });
 
 QUnit.test("popInputCallback()", assert => {
@@ -605,9 +613,13 @@ QUnit.test("transferBoardToDiscardFaceup()", assert => {
   const state0 = AppState.create();
   const playerId = 3;
   const coinId = 12;
+  const coinKey = UnitCoin.KNIGHT;
+  const coin = CoinState.create({ id: coinId, coinKey });
+  const action0 = ActionCreator.addCoin(coin);
+  const state1 = Reducer.root(state0, action0);
   const an1 = "e2";
-  const action0 = ActionCreator.setUnit(an1, coinId);
-  const state = Reducer.root(state0, action0);
+  const action1 = ActionCreator.setUnit(an1, coinId);
+  const state = Reducer.root(state1, action1);
   const action = ActionCreator.transferBoardToDiscardFaceup(playerId, an1);
 
   // Run.
@@ -617,6 +629,8 @@ QUnit.test("transferBoardToDiscardFaceup()", assert => {
   assert.ok(result);
   const resultUnit = result.anToTokens[an1];
   assert.equal(resultUnit, undefined);
+  const resultType = result.anToCoinKey[an1];
+  assert.equal(resultType, undefined);
   const resultDiscardFaceup = result.playerToDiscardFaceup[playerId];
   assert.ok(resultDiscardFaceup);
   assert.equal(Array.isArray(resultDiscardFaceup), true);
@@ -629,9 +643,13 @@ QUnit.test("transferBoardToMorgue() 1", assert => {
   const state0 = AppState.create();
   const playerId = 3;
   const coinId = 12;
+  const coinKey = UnitCoin.KNIGHT;
+  const coin = CoinState.create({ id: coinId, coinKey });
+  const action0 = ActionCreator.addCoin(coin);
+  const state1 = Reducer.root(state0, action0);
   const an1 = "e2";
-  const action0 = ActionCreator.setUnit(an1, coinId);
-  const state = Reducer.root(state0, action0);
+  const action1 = ActionCreator.setUnit(an1, coinId);
+  const state = Reducer.root(state1, action1);
   const action = ActionCreator.transferBoardToMorgue(playerId, an1);
 
   // Run.
@@ -641,6 +659,8 @@ QUnit.test("transferBoardToMorgue() 1", assert => {
   assert.ok(result);
   const resultUnit = result.anToTokens[an1];
   assert.equal(resultUnit, undefined);
+  const resultType = result.anToCoinKey[an1];
+  assert.equal(resultType, undefined);
   const resultMorgue = result.playerToMorgue[playerId];
   assert.ok(resultMorgue);
   assert.equal(Array.isArray(resultMorgue), true);
@@ -653,10 +673,17 @@ QUnit.test("transferBoardToMorgue() 2", assert => {
   const state0 = AppState.create();
   const playerId = 3;
   const coinId = 12;
-  const an1 = "e2";
-  const action0 = ActionCreator.setUnit(an1, coinId);
+  const coinKey = UnitCoin.KNIGHT;
+  const coin0 = CoinState.create({ id: coinId, coinKey });
+  const action0 = ActionCreator.addCoin(coin0);
   const state1 = Reducer.root(state0, action0);
-  const state = Reducer.root(state1, action0);
+  const coin1 = CoinState.create({ id: coinId, coinKey });
+  const action1 = ActionCreator.addCoin(coin1);
+  const state2 = Reducer.root(state1, action1);
+  const an1 = "e2";
+  const action2 = ActionCreator.setUnit(an1, coinId);
+  const state3 = Reducer.root(state2, action2);
+  const state = Reducer.root(state3, action2);
   const action = ActionCreator.transferBoardToMorgue(playerId, an1);
 
   // Run.
@@ -666,6 +693,8 @@ QUnit.test("transferBoardToMorgue() 2", assert => {
   assert.ok(result);
   const resultUnit = result.anToTokens[an1];
   assert.equal(resultUnit.join(), coinId);
+  const resultType = result.anToCoinKey[an1];
+  assert.equal(resultType, coinKey);
   const resultMorgue = result.playerToMorgue[playerId];
   assert.ok(resultMorgue);
   assert.equal(Array.isArray(resultMorgue), true);
@@ -678,9 +707,13 @@ QUnit.test("transferHandToBoard()", assert => {
   const state0 = AppState.create();
   const playerId = 3;
   const coinId = 1;
+  const coinKey = UnitCoin.KNIGHT;
+  const coin = CoinState.create({ id: coinId, coinKey });
+  const action0 = ActionCreator.addCoin(coin);
+  const state1 = Reducer.root(state0, action0);
   const an = "e2";
-  const action0 = ActionCreator.addToPlayerArray("playerToHand", playerId, coinId);
-  const state = Reducer.root(state0, action0);
+  const action1 = ActionCreator.addToPlayerArray("playerToHand", playerId, coinId);
+  const state = Reducer.root(state1, action1);
   const action = ActionCreator.transferHandToBoard(playerId, coinId, an);
 
   // Run.
@@ -696,6 +729,8 @@ QUnit.test("transferHandToBoard()", assert => {
   assert.equal(Array.isArray(unit), true);
   assert.equal(unit.length, 1);
   assert.equal(unit[0], coinId);
+  const type = result.anToCoinKey[an];
+  assert.equal(type, coinKey);
 });
 
 QUnit.test("transferHandToDiscardFacedown()", assert => {

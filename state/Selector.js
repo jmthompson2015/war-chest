@@ -42,11 +42,7 @@ Selector.coinIdForUnit = (an, state) => {
   return unit && unit.length > 0 ? unit[0] : undefined;
 };
 
-Selector.coinKeyForUnit = (an, state) => {
-  const coin = Selector.coinForUnit(an, state);
-
-  return coin ? coin.coinKey : undefined;
-};
+Selector.coinKeyForUnit = (an, state) => state.anToCoinKey[an];
 
 Selector.coinType = (coinId, state) => {
   const coin = Selector.coin(coinId, state);
@@ -146,10 +142,9 @@ Selector.isEnemyUnit = (playerId, coinKey, state) => {
 };
 
 Selector.isEnemyUnitAt = (playerId, an, state) => {
-  const unit = Selector.unit(an, state);
-  const coin0 = unit && unit.length > 0 ? Selector.coin(unit[0], state) : undefined;
+  const coinKey = Selector.coinKeyForUnit(an, state);
 
-  return coin0 ? Selector.isEnemyUnit(playerId, coin0.coinKey, state) : false;
+  return coinKey ? Selector.isEnemyUnit(playerId, coinKey, state) : false;
 };
 
 Selector.isFourPlayer = state => !state.isTwoPlayer;
