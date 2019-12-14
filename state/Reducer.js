@@ -10,7 +10,7 @@ const Reducer = {};
 const addToArray = (state, arrayName, playerId, coinId) => {
   const map = state[arrayName] || {};
   const oldArray = map[playerId] || [];
-  const newArray = R.append(coinId, oldArray);
+  const newArray = [...oldArray, coinId];
   const newPlayer2To = { ...map, [playerId]: newArray };
 
   return { ...state, [arrayName]: newPlayer2To };
@@ -35,7 +35,7 @@ const transferBetweenArrays = (state, fromKey, toKey, playerId, coinId) => {
   const oldFrom = state[fromKey][playerId] || [];
   const newFrom = ArrayUtils.remove(coinId, oldFrom);
   const oldTo = state[toKey][playerId] || [];
-  const newTo = R.append(coinId, oldTo);
+  const newTo = [...oldTo, coinId];
   const newPlayerToFrom = { ...state[fromKey], [playerId]: newFrom };
   const newPlayerToTo = { ...state[toKey], [playerId]: newTo };
 
@@ -64,7 +64,7 @@ const transferBoardToPlayerArray = (state, toKey, playerId, an1) => {
   }
 
   const oldTo = state[toKey][playerId] || [];
-  const newTo = R.append(oldUnit[0], oldTo);
+  const newTo = [...oldTo, oldUnit[0]];
   const newPlayerToTo = { ...state[toKey], [playerId]: newTo };
 
   return {
@@ -79,7 +79,7 @@ const transferPlayerArrayToBoard = (state, fromKey, playerId, coinId, an2) => {
   const oldFrom = state[fromKey][playerId] || [];
   const newFrom = ArrayUtils.remove(coinId, oldFrom);
   const oldUnit = state.anToTokens[an2] || [];
-  const newUnit = R.append(coinId, oldUnit);
+  const newUnit = [...oldUnit, coinId];
   const newPlayerToFrom = { ...state[fromKey], [playerId]: newFrom };
   const newANToTokens = { ...state.anToTokens, [an2]: newUnit };
   const newCoinKey = state.coinInstances[coinId].coinKey;
@@ -147,7 +147,7 @@ Reducer.root = (state, action) => {
       return { ...state, inputCallbackStack: newInputCallbackStack };
     case ActionType.PUSH_INPUT_CALLBACK:
       log(`Reducer PUSH_INPUT_CALLBACK callback isNil ? ${R.isNil(action.callback)}`, state);
-      newInputCallbackStack = R.append(action.callback, state.inputCallbackStack);
+      newInputCallbackStack = [...state.inputCallbackStack, action.callback];
       return { ...state, inputCallbackStack: newInputCallbackStack };
     case ActionType.REFILL_BAG:
       oldDiscardFacedown = state.playerToDiscardFacedown[action.playerId] || [];
@@ -243,7 +243,7 @@ Reducer.root = (state, action) => {
     case ActionType.SET_UNIT:
       log(`Reducer SET_UNIT an = ${action.an} coinId = ${action.coinId}`, state);
       oldUnit = state.anToTokens[action.an] || [];
-      newUnit = R.append(action.coinId, oldUnit);
+      newUnit = [...oldUnit, action.coinId];
       newANToTokens = { ...state.anToTokens, [action.an]: newUnit };
       newCoinKey = state.coinInstances[action.coinId].coinKey;
       newANToCoinKey = { ...state.anToCoinKey, [action.an]: newCoinKey };
