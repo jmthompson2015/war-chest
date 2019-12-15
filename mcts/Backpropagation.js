@@ -3,16 +3,15 @@ import Selector from "../state/Selector.js";
 const Backpropagation = {};
 
 Backpropagation.execute = (winningTeam, child) => {
+  const isWinningTeamNil = R.isNil(winningTeam);
+  const winningTeamKey = winningTeam ? winningTeam.key : undefined;
   let node = child;
 
   while (node) {
-    const { state } = node;
-    const player = Selector.currentPlayer(state);
-
-    if (R.isNil(winningTeam)) {
+    if (isWinningTeamNil) {
       // Draw.
       node.winCount += 0.5;
-    } else if (winningTeam.key === player.teamKey) {
+    } else if (winningTeamKey === Selector.currentPlayer(node.state).teamKey) {
       // Win.
       node.winCount += 1;
     }

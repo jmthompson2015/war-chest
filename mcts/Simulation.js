@@ -53,17 +53,18 @@ const createPlayers = isTwoPlayer => {
 };
 
 const finishChoose = (resolve, store, callback) => {
-  const currentPlayer = Selector.currentPlayer(store.getState());
-  const paymentCoin = Selector.currentPaymentCoin(store.getState());
-  const moves = Selector.currentMoves(store.getState());
+  const state = store.getState();
+  const paymentCoin = Selector.currentPaymentCoin(state);
+  const moves = Selector.currentMoves(state);
 
-  if (paymentCoin && R.isNil(moves)) {
-    const moveStates = MoveGenerator.generateForCoin(currentPlayer, paymentCoin, store.getState());
+  if (paymentCoin && R.isEmpty(moves)) {
+    const currentPlayer = Selector.currentPlayer(state);
+    const moveStates = MoveGenerator.generateForCoin(currentPlayer, paymentCoin, state);
     store.dispatch(ActionCreator.setCurrentMoves(moveStates));
     PhaseFunction.finishChoosePaymentCoin(paymentCoin.id, resolve, store, callback);
   } else {
-    const moveStates = Selector.currentMoves(store.getState());
-    const moveState = Selector.currentMove(store.getState());
+    const moveStates = Selector.currentMoves(state);
+    const moveState = Selector.currentMove(state);
     PhaseFunction.finishChooseMove(moveState, moveStates, paymentCoin, resolve, store, callback);
   }
 };

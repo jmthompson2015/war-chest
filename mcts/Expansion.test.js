@@ -1,6 +1,7 @@
 import Move from "../artifact/Move.js";
 
 import ActionCreator from "../state/ActionCreator.js";
+import Selector from "../state/Selector.js";
 
 import TestData from "../model/TestData.js";
 
@@ -8,6 +9,27 @@ import Expansion from "./Expansion.js";
 import Node from "./Node.js";
 
 QUnit.module("Expansion");
+
+QUnit.test("createPaymentCoinChildren()", assert => {
+  // Setup.
+  const playerId = 1;
+  const store = TestData.createStore();
+  store.dispatch(ActionCreator.setCurrentPlayer(playerId));
+  store.dispatch(ActionCreator.setDelay(0));
+  store.dispatch(ActionCreator.setVerbose(false));
+  const root = Node.create({ state: store.getState() });
+  const hand = R.concat(Selector.hand(playerId, store.getState()), [2, 3]);
+
+  // Run.
+  const result = Expansion.createPaymentCoinChildren(hand, playerId, store.getState(), root);
+
+  // Verify.
+  assert.ok(result, "result !== undefined");
+  assert.equal(result.length, 3, `result.length = ${result.length}`);
+  assert.equal(result[0].state.currentPaymentCoinId, 1);
+  assert.equal(result[1].state.currentPaymentCoinId, 6);
+  assert.equal(result[2].state.currentPaymentCoinId, 10);
+});
 
 QUnit.test("execute() choose payment coin", assert => {
   // Setup.

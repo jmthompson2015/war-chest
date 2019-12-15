@@ -12,6 +12,8 @@ const Expansion = {};
 
 const IS_PASS_ALLOWED = false;
 
+const coinKey = state => coinId => Selector.coin(coinId, state).coinKey;
+
 Expansion.createMoveChildren = (moveStates, playerId, state, parent) => {
   const mapFunction = moveState => {
     const store = Redux.createStore(Reducer.root, state);
@@ -25,6 +27,7 @@ Expansion.createMoveChildren = (moveStates, playerId, state, parent) => {
 };
 
 Expansion.createPaymentCoinChildren = (hand, playerId, state, parent) => {
+  const hand2 = R.uniqBy(coinKey(state), hand);
   const mapFunction = coinId => {
     const store = Redux.createStore(Reducer.root, state);
     store.dispatch(ActionCreator.setCurrentPaymentCoin(coinId));
@@ -32,7 +35,7 @@ Expansion.createPaymentCoinChildren = (hand, playerId, state, parent) => {
     return Node.create({ parent, state: store.getState() });
   };
 
-  return R.map(mapFunction, hand);
+  return R.map(mapFunction, hand2);
 };
 
 Expansion.execute = leaf0 => {
