@@ -362,7 +362,7 @@ MoveGenerator.generateBolsters = (player, paymentCoin, state) => {
   const playerId = player.id;
   const paymentCoinId = paymentCoin.id;
   const mm = MoveFunction[moveKey];
-  const controlANs = Selector.controlANs(player.teamKey, state);
+  const playerUnitANs = Selector.playerUnitANs(player.id, state);
   const reduceFunction = (accum, an1) => {
     if (mm.isLegal(player, paymentCoin, an1, state)) {
       const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1 });
@@ -371,7 +371,7 @@ MoveGenerator.generateBolsters = (player, paymentCoin, state) => {
     return accum;
   };
 
-  return R.reduce(reduceFunction, [], controlANs);
+  return R.reduce(reduceFunction, [], playerUnitANs);
 };
 
 MoveGenerator.generateClaimInitiatives = (player, paymentCoin, state) => {

@@ -229,17 +229,7 @@ Selector.playerForCard = (cardKey, state) => {
   return players.length > 0 ? players[0] : undefined;
 };
 
-Selector.players = state => Object.values(state.playerInstances);
-
-Selector.playersInOrder = state => {
-  const count = Selector.playerCount(state);
-  const players0 = Object.values(state.playerInstances);
-  const index0 = R.findIndex(R.propEq("id", state.initiativePlayerId))(players0);
-  const first = R.slice(index0, count, players0);
-  const second = R.slice(0, index0, players0);
-
-  return [...first, ...second];
-};
+Selector.playerStrategy = (playerId, state) => state.playerToStrategy[playerId];
 
 Selector.playerUnitANs = (playerId, state) => {
   const tableau = Selector.tableau(playerId, state);
@@ -253,6 +243,18 @@ Selector.playerUnitANs = (playerId, state) => {
   return R.filter(filterFunction, ans);
 };
 
+Selector.players = state => Object.values(state.playerInstances);
+
+Selector.playersInOrder = state => {
+  const count = Selector.playerCount(state);
+  const players0 = Object.values(state.playerInstances);
+  const index0 = R.findIndex(R.propEq("id", state.initiativePlayerId))(players0);
+  const first = R.slice(index0, count, players0);
+  const second = R.slice(0, index0, players0);
+
+  return [...first, ...second];
+};
+
 Selector.possibleControlANs = (teamKey, state) => {
   const allControlANs = Object.keys(state.anToControl);
   const filterFunction = an => {
@@ -264,8 +266,6 @@ Selector.possibleControlANs = (teamKey, state) => {
 };
 
 Selector.round = state => state.round;
-
-Selector.playerStrategy = (playerId, state) => state.playerToStrategy[playerId];
 
 Selector.supplyCoinsByType = (playerId, coinKey, state) => {
   const coinIds = Selector.supply(playerId, state);
