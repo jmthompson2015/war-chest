@@ -1,6 +1,9 @@
 /* eslint no-console: ["error", { allow: ["warn"] }] */
 
+import Move from "../artifact/Move.js";
+
 import ActionCreator from "../state/ActionCreator.js";
+import MoveState from "../state/MoveState.js";
 import Selector from "../state/Selector.js";
 
 import MCTS from "../mcts/MonteCarloTreeSearch.js";
@@ -27,15 +30,30 @@ MCTSPlayerStrategy.chooseMove = (moveStates, store, delay = DELAY) =>
       const paymentCoinId = store.getState().currentPaymentCoinId;
       const filterFunction = child => child.state.currentPaymentCoinId === paymentCoinId;
       const paymentChildren = R.filter(filterFunction, mctsRoot.children);
-      const paymentChildNode = paymentChildren[0];
 
-      if (!paymentChildNode.children) {
-        console.warn(`paymentChildNode.children = ${paymentChildNode.children}`);
+      if (!paymentChildren || paymentChildren.length === 0) {
+        console.warn(`paymentCoinId = ${paymentCoinId}`);
+        console.warn(`mctsRoot.children = ${mctsRoot.children}`);
+        console.warn(`paymentChildren = ${paymentChildren}`);
       }
 
-      const bestChildNode = Node.best(R.prop("playoutCount"), paymentChildNode.children);
-      const bestMove = Selector.currentMove(bestChildNode.state);
-      resolve(bestMove);
+      if (paymentChildren.length > 0) {
+        const paymentChildNode = paymentChildren[0];
+
+        if (!paymentChildNode.children) {
+          console.warn(`paymentChildNode.children = ${paymentChildNode.children}`);
+        }
+
+        const bestChildNode = Node.best(R.prop("playoutCount"), paymentChildNode.children);
+        const bestMove = Selector.currentMove(bestChildNode.state);
+        resolve(bestMove);
+      } else {
+        // Pass
+        const moveKey = Move.PASS;
+        const playerId = store.getState().currentPlayerId;
+        const moveState = MoveState.create({ moveKey, playerId, paymentCoinId });
+        resolve(moveState);
+      }
     }
   });
 

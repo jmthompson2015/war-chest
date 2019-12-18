@@ -143,7 +143,7 @@ QUnit.test("generateBolsters()", assert => {
   verifyMoveState(assert, move0, Move.BOLSTER, playerId, paymentCoinId, an1);
 });
 
-QUnit.test("generateClaimInitiatives()", assert => {
+QUnit.test("generateClaimInitiative()", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 2;
@@ -152,14 +152,11 @@ QUnit.test("generateClaimInitiatives()", assert => {
   const paymentCoin = Selector.coin(paymentCoinId, store.getState());
 
   // Run.
-  const result = MoveGenerator.generateClaimInitiatives(player, paymentCoin, store.getState());
+  const result = MoveGenerator.generateClaimInitiative(player, paymentCoin, store.getState());
 
   // Verify.
   assert.ok(result);
-  assert.equal(Array.isArray(result), true);
-  assert.equal(result.length, 1, `result.length=${result.length}`);
-  const move0 = result[0];
-  verifyMoveState(assert, move0, Move.CLAIM_INITIATIVE, playerId, paymentCoinId);
+  verifyMoveState(assert, result, Move.CLAIM_INITIATIVE, playerId, paymentCoinId);
 });
 
 QUnit.test("generateControls()", assert => {
@@ -417,7 +414,7 @@ QUnit.test("generateMoveAUnits() four player", assert => {
   );
 });
 
-QUnit.test("generatePasses()", assert => {
+QUnit.test("generatePass()", assert => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 2;
@@ -426,14 +423,11 @@ QUnit.test("generatePasses()", assert => {
   const paymentCoin = Selector.coin(paymentCoinId, store.getState());
 
   // Run.
-  const result = MoveGenerator.generatePasses(player, paymentCoin, store.getState());
+  const result = MoveGenerator.generatePass(player, paymentCoin, store.getState());
 
   // Verify.
   assert.ok(result);
-  assert.equal(Array.isArray(result), true);
-  assert.equal(result.length, 1, `result.length=${result.length}`);
-  const move0 = result[0];
-  verifyMoveState(assert, move0, Move.PASS, playerId, paymentCoinId);
+  verifyMoveState(assert, result, Move.PASS, playerId, paymentCoinId);
 });
 
 QUnit.test("generateRecruits()", assert => {

@@ -47,7 +47,7 @@ QUnit.test("attack execute()", assert => {
   store.dispatch(ActionCreator.setUnit(an1, paymentCoinId));
   store.dispatch(ActionCreator.setUnit(an2, victimCoinId));
   const moveKey = Move.ATTACK;
-  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, an2 });
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, an2, victimCoinId });
 
   // Run.
   MoveFunction[moveKey].execute(moveState, store);
@@ -79,7 +79,7 @@ QUnit.test("attack execute() Pikeman", assert => {
   store.dispatch(ActionCreator.setUnit(an1, paymentCoinId));
   store.dispatch(ActionCreator.setUnit(an2, victimCoinId));
   const moveKey = Move.ATTACK;
-  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, an2 });
+  const moveState = MoveState.create({ moveKey, playerId, paymentCoinId, an1, an2, victimCoinId });
 
   // Run.
   MoveFunction[moveKey].execute(moveState, store);

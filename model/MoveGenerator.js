@@ -14,6 +14,26 @@ import Tactic from "./Tactic.js";
 
 const MoveGenerator = {};
 
+const concat = (array1, array2) => {
+  if (array2.length === 0) {
+    return array1;
+  }
+
+  if (array1.length === 0) {
+    return array2;
+  }
+
+  return [...array1, ...array2];
+};
+
+const push = (array, element) => {
+  if (element) {
+    array.push(element);
+  }
+
+  return array;
+};
+
 const generateAttacksForAN = (player, paymentCoin, an1, state, isLegalFunction0, neighbors0) => {
   const moveKey = Move.ATTACK;
   const playerId = player.id;
@@ -123,7 +143,7 @@ const generateTacticsCavalry = (player, paymentCoin, an1, state) => {
       store2.getState()
     );
     const tacticStates = R.map(mapFunction(moveState), attackStates);
-    return [...accum, ...tacticStates];
+    return concat(accum, tacticStates);
   };
 
   const moveStates = generateMoveAUnitsForAN(player, paymentCoin, an1, state);
@@ -162,7 +182,7 @@ const generateTacticsEnsign = (player, paymentCoin, an1, state) => {
       state,
       isLegalEnsignMove(an1)
     );
-    return [...moveStates, ...accum];
+    return concat(accum, moveStates);
   };
   const moveStates = R.reduce(reduceFunction2, [], nearANs);
 
@@ -213,7 +233,7 @@ const generateTacticsFootman = (player, paymentCoin, an1, state) => {
       });
     const reduceFunction = (accum, moveState1) => {
       const tacticStates = R.map(mapFunction(moveState1), maneuverStates2);
-      return [...accum, ...tacticStates];
+      return concat(accum, tacticStates);
     };
 
     return R.reduce(reduceFunction, [], maneuverStates1);
@@ -254,7 +274,7 @@ const generateTacticsLancer = (player, paymentCoin, an1, state) => {
         })
       ];
       const tacticStates = R.map(mapFunction(moveState), attackStates);
-      return [...accum, ...tacticStates];
+      return concat(accum, tacticStates);
     }
     return accum;
   };
@@ -269,7 +289,7 @@ const generateTacticsLancer = (player, paymentCoin, an1, state) => {
     tt.isLegalLancerMove2,
     neighbors2
   );
-  const moveStates = [...moveStates1, ...moveStates2];
+  const moveStates = concat(moveStates1, moveStates2);
 
   return R.reduce(reduceFunction, [], moveStates);
 };
@@ -321,7 +341,7 @@ const generateTacticsMarshall = (player, paymentCoin, an1, state) => {
   const reduceFunction2 = (accum, an) => {
     const myPaymentCoin = Selector.coinForUnit(an, state);
     const attackStates = generateAttacksForAN(player, myPaymentCoin, an, state);
-    return [...attackStates, ...accum];
+    return concat(accum, attackStates);
   };
   const attackStates = R.reduce(reduceFunction2, [], nearANs);
 
@@ -351,7 +371,7 @@ MoveGenerator.generateAttacks = (player, paymentCoin, state) => {
   const playerUnitANs = Selector.playerUnitANs(player.id, state);
   const reduceFunction1 = (accum1, an1) => {
     const accum2 = generateAttacksForAN(player, paymentCoin, an1, state);
-    return [...accum1, ...accum2];
+    return concat(accum1, accum2);
   };
 
   return R.reduce(reduceFunction1, [], playerUnitANs);
@@ -374,16 +394,15 @@ MoveGenerator.generateBolsters = (player, paymentCoin, state) => {
   return R.reduce(reduceFunction, [], playerUnitANs);
 };
 
-MoveGenerator.generateClaimInitiatives = (player, paymentCoin, state) => {
+MoveGenerator.generateClaimInitiative = (player, paymentCoin, state) => {
   const moveKey = Move.CLAIM_INITIATIVE;
   const playerId = player.id;
   const paymentCoinId = paymentCoin.id;
   const mm = MoveFunction[moveKey];
-  const answer = [];
+  let answer;
 
   if (mm.isLegal(player, paymentCoin, state)) {
-    const moveState = MoveState.create({ moveKey, playerId, paymentCoinId });
-    answer.push(moveState);
+    answer = MoveState.create({ moveKey, playerId, paymentCoinId });
   }
 
   return answer;
@@ -431,7 +450,7 @@ MoveGenerator.generateDeploys = (player, paymentCoin, state) => {
       return accum;
     };
     const answer2 = R.reduce(reduceFunction2, [], neighborANs);
-    answer = [...answer, ...answer2];
+    answer = concat(answer, answer2);
   }
 
   return answer;
@@ -441,22 +460,21 @@ MoveGenerator.generateMoveAUnits = (player, paymentCoin, state) => {
   const playerUnitANs = Selector.playerUnitANs(player.id, state);
   const reduceFunction1 = (accum1, an1) => {
     const accum2 = generateMoveAUnitsForAN(player, paymentCoin, an1, state);
-    return [...accum1, ...accum2];
+    return concat(accum1, accum2);
   };
 
   return R.reduce(reduceFunction1, [], playerUnitANs);
 };
 
-MoveGenerator.generatePasses = (player, paymentCoin, state) => {
+MoveGenerator.generatePass = (player, paymentCoin, state) => {
   const moveKey = Move.PASS;
   const playerId = player.id;
   const paymentCoinId = paymentCoin.id;
   const mm = MoveFunction[moveKey];
-  const answer = [];
+  let answer;
 
   if (mm.isLegal(player, paymentCoin, state)) {
-    const moveState = MoveState.create({ moveKey, playerId, paymentCoinId });
-    answer.push(moveState);
+    answer = MoveState.create({ moveKey, playerId, paymentCoinId });
   }
 
   return answer;
@@ -484,6 +502,7 @@ MoveGenerator.generateRecruits = (player, paymentCoin, state) => {
 
 MoveGenerator.generateTactics = (player, paymentCoin, state) => {
   const playerUnitANs = Selector.playerUnitANs(player.id, state);
+  const paymentCoinKey = paymentCoin.coinKey;
   let isFootmanDone = false;
   const reduceFunction = (accum, an1) => {
     const coinKey = Selector.coinKeyForUnit(an1, state);
@@ -491,48 +510,36 @@ MoveGenerator.generateTactics = (player, paymentCoin, state) => {
 
     if (tt) {
       if ([UnitCoin.ARCHER, UnitCoin.CROSSBOWMAN].includes(coinKey)) {
-        const accum3 = generateTacticsBowman(player, paymentCoin, an1, state);
-        return [...accum, ...accum3];
+        return concat(accum, generateTacticsBowman(player, paymentCoin, an1, state));
       }
 
-      if (paymentCoin.coinKey === UnitCoin.CAVALRY && coinKey === UnitCoin.CAVALRY) {
-        const accum3 = generateTacticsCavalry(player, paymentCoin, an1, state);
-        return [...accum, ...accum3];
+      if (paymentCoinKey === UnitCoin.CAVALRY && coinKey === UnitCoin.CAVALRY) {
+        return concat(accum, generateTacticsCavalry(player, paymentCoin, an1, state));
       }
 
-      if (paymentCoin.coinKey === UnitCoin.ENSIGN && coinKey === UnitCoin.ENSIGN) {
-        const accum3 = generateTacticsEnsign(player, paymentCoin, an1, state);
-        return [...accum, ...accum3];
+      if (paymentCoinKey === UnitCoin.ENSIGN && coinKey === UnitCoin.ENSIGN) {
+        return concat(accum, generateTacticsEnsign(player, paymentCoin, an1, state));
       }
 
-      if (
-        !isFootmanDone &&
-        paymentCoin.coinKey === UnitCoin.FOOTMAN &&
-        coinKey === UnitCoin.FOOTMAN
-      ) {
-        const accum3 = generateTacticsFootman(player, paymentCoin, an1, state);
+      if (!isFootmanDone && paymentCoinKey === UnitCoin.FOOTMAN && coinKey === UnitCoin.FOOTMAN) {
         isFootmanDone = true;
-        return [...accum, ...accum3];
+        return concat(accum, generateTacticsFootman(player, paymentCoin, an1, state));
       }
 
-      if (paymentCoin.coinKey === UnitCoin.LANCER && coinKey === UnitCoin.LANCER) {
-        const accum3 = generateTacticsLancer(player, paymentCoin, an1, state);
-        return [...accum, ...accum3];
+      if (paymentCoinKey === UnitCoin.LANCER && coinKey === UnitCoin.LANCER) {
+        return concat(accum, generateTacticsLancer(player, paymentCoin, an1, state));
       }
 
-      if (paymentCoin.coinKey === UnitCoin.MARSHALL && coinKey === UnitCoin.MARSHALL) {
-        const accum3 = generateTacticsMarshall(player, paymentCoin, an1, state);
-        return [...accum, ...accum3];
+      if (paymentCoinKey === UnitCoin.MARSHALL && coinKey === UnitCoin.MARSHALL) {
+        return concat(accum, generateTacticsMarshall(player, paymentCoin, an1, state));
       }
 
       if (coinKey === UnitCoin.LIGHT_CAVALRY) {
-        const accum3 = generateTacticsLightCavalry(player, paymentCoin, an1, state);
-        return [...accum, ...accum3];
+        return concat(accum, generateTacticsLightCavalry(player, paymentCoin, an1, state));
       }
 
-      if (Resolver.isRoyalCoin(paymentCoin.coinKey) && coinKey === UnitCoin.ROYAL_GUARD) {
-        const accum3 = generateTacticsRoyalGuard(player, paymentCoin, an1, state);
-        return [...accum, ...accum3];
+      if (Resolver.isRoyalCoin(paymentCoinKey) && coinKey === UnitCoin.ROYAL_GUARD) {
+        return concat(accum, generateTacticsRoyalGuard(player, paymentCoin, an1, state));
       }
     }
 
@@ -552,60 +559,44 @@ MoveGenerator.generateManeuvers = (player, paymentCoin, state) => {
 };
 
 MoveGenerator.generateForCoin = (player, paymentCoin, state, isPassAllowed = true) => {
-  const moves = Move.values();
-
-  const reduceFunction = (accum, m) => {
-    let newAccum = accum;
-    const moveKey = m.key;
-
+  const moveKeys = Move.keys();
+  const reduceFunction = (accum, moveKey) => {
     switch (moveKey) {
       case Move.CLAIM_INITIATIVE:
-        newAccum = [
-          ...newAccum,
-          ...MoveGenerator.generateClaimInitiatives(player, paymentCoin, state)
-        ];
-        break;
+        return push(accum, MoveGenerator.generateClaimInitiative(player, paymentCoin, state));
       case Move.PASS:
-        if (isPassAllowed) {
-          newAccum = [...newAccum, ...MoveGenerator.generatePasses(player, paymentCoin, state)];
-        }
-        break;
+        return isPassAllowed
+          ? push(accum, MoveGenerator.generatePass(player, paymentCoin, state))
+          : accum;
       case Move.RECRUIT:
-        newAccum = [...newAccum, ...MoveGenerator.generateRecruits(player, paymentCoin, state)];
-        break;
+        return concat(accum, MoveGenerator.generateRecruits(player, paymentCoin, state));
       case Move.DEPLOY:
-        newAccum = [...newAccum, ...MoveGenerator.generateDeploys(player, paymentCoin, state)];
-        break;
+        return concat(accum, MoveGenerator.generateDeploys(player, paymentCoin, state));
       case Move.BOLSTER:
-        newAccum = [...newAccum, ...MoveGenerator.generateBolsters(player, paymentCoin, state)];
-        break;
+        return concat(accum, MoveGenerator.generateBolsters(player, paymentCoin, state));
       case Move.MOVE_A_UNIT:
-        newAccum = [...newAccum, ...MoveGenerator.generateMoveAUnits(player, paymentCoin, state)];
-        break;
+        return concat(accum, MoveGenerator.generateMoveAUnits(player, paymentCoin, state));
       case Move.CONTROL:
-        newAccum = [...newAccum, ...MoveGenerator.generateControls(player, paymentCoin, state)];
-        break;
+        return concat(accum, MoveGenerator.generateControls(player, paymentCoin, state));
       case Move.ATTACK:
-        newAccum = [...newAccum, ...MoveGenerator.generateAttacks(player, paymentCoin, state)];
-        break;
+        return concat(accum, MoveGenerator.generateAttacks(player, paymentCoin, state));
       case Move.TACTIC:
-        newAccum = [...newAccum, ...MoveGenerator.generateTactics(player, paymentCoin, state)];
-        break;
+        return concat(accum, MoveGenerator.generateTactics(player, paymentCoin, state));
       default:
         console.warn(`Unknown move.key: ${moveKey}`);
     }
 
-    return newAccum;
+    return accum;
   };
 
-  return R.reduce(reduceFunction, [], moves);
+  return R.reduce(reduceFunction, [], moveKeys);
 };
 
 MoveGenerator.generate = (player, state) => {
   const hand = Selector.hand(player.id, state);
   const reduceFunction = (accum, paymentCoinId) => {
     const paymentCoin = Selector.coin(paymentCoinId, state);
-    return [...MoveGenerator.generateForCoin(player, paymentCoin, state), ...accum];
+    return concat(MoveGenerator.generateForCoin(player, paymentCoin, state), accum);
   };
 
   return R.reduce(reduceFunction, [], hand);
