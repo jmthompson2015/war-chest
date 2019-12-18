@@ -256,8 +256,6 @@ const generateTacticsLancer = (player, paymentCoin, an1, state) => {
     });
   const tt = Tactic[UnitCoin.LANCER];
   const reduceFunction = (accum, moveState) => {
-    const store2 = Redux.createStore(Reducer.root, state);
-    MoveFunction.execute(moveState, store2);
     const directionIndex = Board.cubeDirectionIndex(an1, moveState.an2);
     const neighbor = Board.neighborInDirection(moveState.an2, directionIndex);
 
@@ -509,33 +507,30 @@ MoveGenerator.generateTactics = (player, paymentCoin, state) => {
     const tt = Tactic[coinKey];
 
     if (tt) {
-      if ([UnitCoin.ARCHER, UnitCoin.CROSSBOWMAN].includes(coinKey)) {
-        return concat(accum, generateTacticsBowman(player, paymentCoin, an1, state));
-      }
-
-      if (paymentCoinKey === UnitCoin.CAVALRY && coinKey === UnitCoin.CAVALRY) {
-        return concat(accum, generateTacticsCavalry(player, paymentCoin, an1, state));
-      }
-
-      if (paymentCoinKey === UnitCoin.ENSIGN && coinKey === UnitCoin.ENSIGN) {
-        return concat(accum, generateTacticsEnsign(player, paymentCoin, an1, state));
-      }
-
-      if (!isFootmanDone && paymentCoinKey === UnitCoin.FOOTMAN && coinKey === UnitCoin.FOOTMAN) {
-        isFootmanDone = true;
-        return concat(accum, generateTacticsFootman(player, paymentCoin, an1, state));
-      }
-
-      if (paymentCoinKey === UnitCoin.LANCER && coinKey === UnitCoin.LANCER) {
-        return concat(accum, generateTacticsLancer(player, paymentCoin, an1, state));
-      }
-
-      if (paymentCoinKey === UnitCoin.MARSHALL && coinKey === UnitCoin.MARSHALL) {
-        return concat(accum, generateTacticsMarshall(player, paymentCoin, an1, state));
-      }
-
-      if (coinKey === UnitCoin.LIGHT_CAVALRY) {
-        return concat(accum, generateTacticsLightCavalry(player, paymentCoin, an1, state));
+      if (paymentCoinKey === coinKey) {
+        switch (coinKey) {
+          case UnitCoin.ARCHER:
+          case UnitCoin.CROSSBOWMAN:
+            return concat(accum, generateTacticsBowman(player, paymentCoin, an1, state));
+          case UnitCoin.CAVALRY:
+            return concat(accum, generateTacticsCavalry(player, paymentCoin, an1, state));
+          case UnitCoin.ENSIGN:
+            return concat(accum, generateTacticsEnsign(player, paymentCoin, an1, state));
+          case UnitCoin.FOOTMAN:
+            if (!isFootmanDone) {
+              isFootmanDone = true;
+              return concat(accum, generateTacticsFootman(player, paymentCoin, an1, state));
+            }
+            break;
+          case UnitCoin.LANCER:
+            return concat(accum, generateTacticsLancer(player, paymentCoin, an1, state));
+          case UnitCoin.LIGHT_CAVALRY:
+            return concat(accum, generateTacticsLightCavalry(player, paymentCoin, an1, state));
+          case UnitCoin.MARSHALL:
+            return concat(accum, generateTacticsMarshall(player, paymentCoin, an1, state));
+          default:
+          // Nothing to do.
+        }
       }
 
       if (Resolver.isRoyalCoin(paymentCoinKey) && coinKey === UnitCoin.ROYAL_GUARD) {
@@ -583,7 +578,7 @@ MoveGenerator.generateForCoin = (player, paymentCoin, state, isPassAllowed = tru
       case Move.TACTIC:
         return concat(accum, MoveGenerator.generateTactics(player, paymentCoin, state));
       default:
-        console.warn(`Unknown move.key: ${moveKey}`);
+      // Nothing to do.
     }
 
     return accum;
