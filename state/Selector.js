@@ -37,7 +37,7 @@ Selector.coinForUnit = (an, state) => {
 };
 
 Selector.coinIdForUnit = (an, state) => {
-  const unit = Selector.unit(an, state);
+  const unit = state.anToTokens[an];
 
   return unit && unit.length > 0 ? unit[0] : undefined;
 };
@@ -108,7 +108,7 @@ Selector.initiativePlayer = state => {
 };
 
 Selector.isBolstered = (an, state) => {
-  const unit = Selector.unit(an, state);
+  const unit = state.anToTokens[an];
 
   return unit && unit.length > 1;
 };
@@ -184,7 +184,7 @@ Selector.isInSupply = (playerId, coinId, state) => {
 };
 
 Selector.isOccupied = (an, state) => {
-  const unit = Selector.unit(an, state);
+  const unit = state.anToTokens[an];
 
   return !R.isNil(unit) && unit.length > 0;
 };
@@ -204,7 +204,7 @@ Selector.isUnitType = (an, coinKey, state) => {
 };
 
 Selector.isUnoccupied = (an, state) => {
-  const unit = Selector.unit(an, state);
+  const unit = state.anToTokens[an];
 
   return R.isNil(unit);
 };
