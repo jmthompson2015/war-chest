@@ -85,11 +85,14 @@ const Tactic = {
   ensign: {
     label: (moveState, state) => {
       const { an1, moveStates, moveType: move, paymentCoinId } = moveState;
-      const { an1: an2, an2: an3 } = moveStates[0];
+      const moveStates0 = moveStates[0];
+      const an2 = moveStates0.an1;
+      const an3 = moveStates0.an2;
       const paymentCoin = Selector.coinType(paymentCoinId, state);
       const moveCoin = Selector.coinTypeForUnit(an2, state);
+      const moveCoinName = moveCoin ? moveCoin.name : undefined;
       return (
-        `${move.name}: ${paymentCoin.name} at ${an1} orders ${moveCoin.name} at ${an2}` +
+        `${move.name}: ${paymentCoin.name} at ${an1} orders ${moveCoinName} at ${an2}` +
         ` to move to ${an3}`
       );
     }
@@ -139,13 +142,18 @@ const Tactic = {
     // isLegal: MoveFunction.isLegal() used instead.
     label: (moveState, state) => {
       const { an1, moveStates, moveType: move, paymentCoinId } = moveState;
-      const { an1: an2, an2: an3, victimCoinId } = moveStates[0];
+      const moveStates0 = moveStates[0];
+      const { victimCoinId } = moveStates0;
+      const an2 = moveStates0.an1;
+      const an3 = moveStates0.an2;
       const paymentCoin = Selector.coinType(paymentCoinId, state);
       const attackCoin = Selector.coinTypeForUnit(an2, state);
+      const attackCoinName = attackCoin ? attackCoin.name : undefined;
       const victimCoin = Selector.coinType(victimCoinId, state);
+      const victimCoinName = victimCoin ? victimCoin.name : undefined;
       return (
-        `${move.name}: ${paymentCoin.name} at ${an1} orders ${attackCoin.name} at ${an2}` +
-        ` to attack ${victimCoin.name} at ${an3}`
+        `${move.name}: ${paymentCoin.name} at ${an1} orders ${attackCoinName} at ${an2}` +
+        ` to attack ${victimCoinName} at ${an3}`
       );
     }
   },
