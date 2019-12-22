@@ -27,6 +27,8 @@ CoinState.create = ({ id, coinKey, count = 1, isFaceup = true, isHighlighted = f
   return coin;
 };
 
+CoinState.toString = coin => JSON.stringify(R.pick(["id", "coinKey"], coin));
+
 Object.freeze(CoinState);
 
 export default CoinState;

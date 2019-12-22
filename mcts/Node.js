@@ -1,3 +1,5 @@
+import CoinState from "../state/CoinState.js";
+
 const Node = {};
 
 const C = Math.sqrt(2.0); // exploration parameter
@@ -67,6 +69,23 @@ Node.level = node0 => {
   }
 
   return answer;
+};
+
+Node.toString = node => {
+  const nodeString = JSON.stringify(R.pick(["playoutCount", "winCount"], node));
+  const { state } = node;
+  const paymentCoin = state.coinInstances[state.currentPaymentCoinId];
+  const paymentCoinString = paymentCoin ? CoinState.toString(paymentCoin) : undefined;
+  const moveStates = state.currentMoves;
+  const moveCount = moveStates ? moveStates.length : undefined;
+  const childrenLength = node.children ? node.children.length : undefined;
+  const uct = Math.round(Node.uct(node) * 1000) / 1000;
+  const exploit = Math.round(Node.exploitation(node) * 1000) / 1000;
+
+  return (
+    `${nodeString} paymentCoin = ${paymentCoinString} moveCount = ${moveCount}` +
+    ` children.length = ${childrenLength} uct = ${uct} exploit = ${exploit}`
+  );
 };
 
 // Upper Confidence Bound applied to trees

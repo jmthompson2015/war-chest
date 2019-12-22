@@ -3,6 +3,7 @@
 // Monte Carlo Tree Search
 // see https://en.wikipedia.org/wiki/Monte_Carlo_tree_search
 
+import CoinState from "../state/CoinState.js";
 import Selector from "../state/Selector.js";
 
 import Backpropagation from "./Backpropagation.js";
@@ -38,17 +39,18 @@ const executeStep = (allowedTime, resolve, startTime, root, roundLimit, stats0) 
   // console.log(`time diff = ${time - startTime} allowedTime = ${allowedTime}`);
 
   if (time - startTime > allowedTime) {
-    const bestMove = determineBestMove(root);
+    const paymentCoinId = determineBestMove(root);
+    console.log(`executeStep() root = ${Node.toString(root)}`);
+    R.forEach(c => {
+      console.log(`child = ${Node.toString(c)}`);
+    }, root.children);
     console.log(
-      `executeStep() root = ${JSON.stringify(R.omit(["children", "parent", "state"], root))}`
-    );
-    console.log(
-      `executeStep() bestMove = ${JSON.stringify(bestMove)} coin = ${JSON.stringify(
-        R.omit(["isFaceup", "isHighlighted"], Selector.coin(bestMove, root.state))
+      `executeStep() bestMove = ${paymentCoinId} coin = ${CoinState.toString(
+        Selector.coin(paymentCoinId, root.state)
       )}`
     );
-    console.log(`stats = ${JSON.stringify(stats, null, 2)}`);
-    resolve({ paymentCoinId: bestMove, mctsRoot: root });
+    console.log(`executeStep() stats = ${JSON.stringify(stats)}`);
+    resolve({ paymentCoinId, mctsRoot: root });
   } else {
     const leaf = Selection.execute(root);
     const child = Expansion.execute(leaf);
@@ -68,11 +70,8 @@ MCTS.execute = (choices, state, roundLimit = 100, allowedTime = 5000) =>
     const root = Node.create({ state: myState });
 
     // Initialize children.
-    const paymentCoin = Selector.currentPaymentCoin(myState);
     const playerId = myState.currentPlayerId;
-    root.children = paymentCoin
-      ? Expansion.createMoveChildren(choices, playerId, myState, root)
-      : Expansion.createPaymentCoinChildren(choices, playerId, myState, root);
+    root.children = Expansion.createPaymentCoinChildren(choices, playerId, myState, root);
 
     const stats = {
       Raven: 0,

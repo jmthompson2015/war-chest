@@ -1,3 +1,7 @@
+import ActionCreator from "../state/ActionCreator.js";
+
+import TestData from "../model/TestData.js";
+
 import Node from "./Node.js";
 
 QUnit.module("Node");
@@ -85,6 +89,24 @@ QUnit.test("level()", assert => {
   assert.equal(Node.level(node2), 2);
   assert.equal(Node.level(node3), 3);
   assert.equal(Node.level(node4), 4);
+});
+
+QUnit.test("toString()", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  store.dispatch(ActionCreator.setCurrentPaymentCoin(1));
+  const node = Node.create({ state: store.getState(), playoutCount: 2, winCount: 1 });
+
+  // Run.
+  const result = Node.toString(node);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(
+    result,
+    '{"playoutCount":2,"winCount":1} paymentCoin = {"id":1,"coinKey":"raven"} moveCount = 0' +
+      " children.length = 0 uct = 0.5 exploit = 0.5"
+  );
 });
 
 const NodeTest = {};

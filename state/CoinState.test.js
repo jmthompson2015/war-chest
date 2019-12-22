@@ -9,25 +9,37 @@ const createTestData = () =>
 
 QUnit.test("create()", assert => {
   // Run.
-  const player = createTestData();
+  const coin = createTestData();
 
   // Verify.
   PROPS.forEach((prop, i) => {
-    assert.equal(player[prop], i + 1);
+    assert.equal(coin[prop], i + 1);
   });
 });
 
 QUnit.test("create() immutable", assert => {
   // Setup.
-  const player = createTestData();
+  const coin = createTestData();
 
   // Run / Verify.
   try {
-    player.count = 12;
+    coin.count = 12;
     assert.ok(false, "Should have thrown an exception");
   } catch (e) {
     assert.ok(true);
   }
+});
+
+QUnit.test("toString()", assert => {
+  // Setup.
+  const coin = createTestData();
+
+  // Run.
+  const result = CoinState.toString(coin);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result, '{"id":1,"coinKey":2}');
 });
 
 const PlayerStateTest = {};
