@@ -11,7 +11,22 @@ import RandomPlayerStrategy from "./RandomPlayerStrategy.js";
 const SimplePlayerStrategy = {};
 
 const DELAY = 1000;
+const PRIORITY_MOVE_KEYS = [Move.CONTROL, Move.ATTACK, Move.DEPLOY, Move.TACTIC, Move.MOVE_A_UNIT];
 const SUPPLY = Resolver.damageTarget(DamageTarget.SUPPLY);
+
+const choose = array => {
+  let answer;
+
+  if (array) {
+    if (array.length > 1) {
+      answer = ArrayUtils.randomElement(array);
+    } else if (array.length === 1) {
+      [answer] = array;
+    }
+  }
+
+  return answer;
+};
 
 SimplePlayerStrategy.chooseDamageTarget = (damageTargets, store, delay = DELAY) =>
   new Promise(resolve => {
@@ -27,24 +42,14 @@ SimplePlayerStrategy.chooseMove = (moveStates, store, delay = DELAY) =>
     if (moveStates.length <= 1) {
       [answer] = moveStates;
     } else {
-      const priorityMoveKeys = [
-        Move.CONTROL,
-        Move.ATTACK,
-        Move.DEPLOY,
-        Move.TACTIC,
-        Move.MOVE_A_UNIT
-      ];
-      let i = 0;
+      const keyToMoves = R.groupBy(R.prop("moveKey"), moveStates);
 
-      while (R.isNil(answer) && i < priorityMoveKeys.length) {
-        const priority = priorityMoveKeys[i];
-        const matchingMoveStates = R.filter(m => m.moveKey === priority, moveStates);
-        answer = ArrayUtils.randomElement(matchingMoveStates);
-        i += 1;
+      for (let i = 0; i < PRIORITY_MOVE_KEYS.length && !answer; i += 1) {
+        answer = choose(keyToMoves[PRIORITY_MOVE_KEYS[i]]);
       }
     }
 
-    if (R.isNil(answer)) {
+    if (!answer) {
       answer = ArrayUtils.randomElement(moveStates);
     }
 
@@ -62,12 +67,11 @@ SimplePlayerStrategy.choosePaymentCoin = (coinIds, store, delay = DELAY) =>
       [answer] = coinIds;
     } else {
       const state = store.getState();
-      const currentPlayer = Selector.currentPlayer(state);
-      const tokenANs = Object.keys(Selector.anToTokens(state));
+      const tokenANs = Object.keys(state.anToTokens);
 
       // Choose a coin that has a match on the board.
       const boardCoinKeys = R.uniq(R.map(an1 => Selector.coinKeyForUnit(an1, state), tokenANs));
-      const handCoins = Selector.coins(Selector.hand(currentPlayer.id, state), state);
+      const handCoins = Selector.coins(Selector.hand(state.currentPlayerId, state), state);
       const handCoinKeys = R.uniq(R.map(c => c.coinKey, handCoins));
       const targetCoinKeys = R.intersection(boardCoinKeys, handCoinKeys);
 
@@ -82,7 +86,7 @@ SimplePlayerStrategy.choosePaymentCoin = (coinIds, store, delay = DELAY) =>
       }
     }
 
-    if (R.isNil(answer)) {
+    if (!answer) {
       answer = ArrayUtils.randomElement(coinIds);
     }
 
