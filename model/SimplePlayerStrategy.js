@@ -1,5 +1,6 @@
 import ArrayUtils from "../util/ArrayUtilities.js";
 
+import Board from "../artifact/Board.js";
 import DamageTarget from "../artifact/DamageTarget.js";
 import Move from "../artifact/Move.js";
 import Resolver from "../artifact/Resolver.js";
@@ -11,7 +12,7 @@ import RandomPlayerStrategy from "./RandomPlayerStrategy.js";
 const SimplePlayerStrategy = {};
 
 const DELAY = 1000;
-const PRIORITY_MOVE_KEYS = [Move.CONTROL, Move.ATTACK, Move.DEPLOY, Move.TACTIC, Move.MOVE_A_UNIT];
+const PRIORITY_MOVE_KEYS = [Move.CONTROL, Move.ATTACK, Move.DEPLOY, Move.TACTIC];
 const SUPPLY = Resolver.damageTarget(DamageTarget.SUPPLY);
 
 const choose = array => {
@@ -34,6 +35,8 @@ SimplePlayerStrategy.chooseDamageTarget = (damageTargets, store, delay = DELAY) 
     RandomPlayerStrategy.delayedResolve(answer, resolve, delay);
   });
 
+const byDistance = an1 => R.groupBy(moveState => Board.distance(an1, moveState.an2));
+
 SimplePlayerStrategy.chooseMove = (moveStates, store, delay = DELAY) =>
   new Promise(resolve => {
     const startTime = Date.now();
@@ -46,6 +49,32 @@ SimplePlayerStrategy.chooseMove = (moveStates, store, delay = DELAY) =>
 
       for (let i = 0; i < PRIORITY_MOVE_KEYS.length && !answer; i += 1) {
         answer = choose(keyToMoves[PRIORITY_MOVE_KEYS[i]]);
+      }
+
+      if (!answer) {
+        const moves = keyToMoves[Move.MOVE_A_UNIT];
+
+        if (moves && moves.length > 0) {
+          // Find moves which put units closest to available control points.
+          let minDistance = Number.POSITIVE_INFINITY;
+          const reduceFunction = (accum, an1) => {
+            const distanceToMoves = byDistance(an1)(moves);
+            const min = Math.min(...Object.keys(distanceToMoves));
+
+            if (min < minDistance) {
+              minDistance = min;
+
+              return distanceToMoves[min];
+            }
+
+            return accum;
+          };
+          const { teamKey } = Selector.currentPlayer(store.getState());
+          const controlANs = Selector.possibleControlANs(teamKey, store.getState());
+          const nearest = R.reduce(reduceFunction, [], controlANs);
+
+          answer = choose(nearest);
+        }
       }
     }
 
