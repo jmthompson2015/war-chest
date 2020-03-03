@@ -65,12 +65,14 @@ MCTSPlayerStrategy.choosePaymentCoin = (
   allowedTime = ALLOWED_TIME
 ) =>
   new Promise(resolve => {
-    MCTS.execute(coinIds, store.getState(), roundLimit, allowedTime).then(
-      ({ paymentCoinId, mctsRoot }) => {
-        store.dispatch(ActionCreator.setMctsRoot(mctsRoot));
-        resolve(paymentCoinId);
-      }
-    );
+    setTimeout(() => {
+      MCTS.execute(coinIds, store.getState(), roundLimit, allowedTime).then(
+        ({ paymentCoinId, mctsRoot }) => {
+          store.dispatch(ActionCreator.setMctsRoot(mctsRoot));
+          resolve(paymentCoinId);
+        }
+      );
+    }, 100);
   });
 
 Object.freeze(MCTSPlayerStrategy);
