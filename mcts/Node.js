@@ -1,3 +1,5 @@
+import ArrayUtils from "../util/ArrayUtilities.js";
+
 import CoinState from "../state/CoinState.js";
 
 const Node = {};
@@ -30,19 +32,23 @@ Node.accept = (node, visitor) => {
 };
 
 Node.best = (evalFunction, nodes) => {
-  let rating = Number.NEGATIVE_INFINITY;
-  const reduceFunction = (accum, node) => {
-    const myRating = evalFunction(node);
+  let answer;
 
-    if (myRating > rating) {
-      rating = myRating;
-      return node;
+  if (nodes) {
+    if (nodes.length === 1) {
+      [answer] = nodes;
+    } else {
+      const ratingToNodes = R.groupBy(evalFunction, nodes);
+      const ratings = Object.keys(ratingToNodes);
+      ratings.sort();
+      const bestRating = R.last(ratings);
+      const bestNodes = ratingToNodes[bestRating];
+
+      answer = bestNodes.length === 1 ? bestNodes[0] : ArrayUtils.randomElement(bestNodes);
     }
+  }
 
-    return accum;
-  };
-
-  return R.reduce(reduceFunction, undefined, nodes);
+  return answer;
 };
 
 Node.exploitation = node => {

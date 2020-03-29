@@ -13,7 +13,7 @@ const createTestData = () =>
 
 const round4 = n => Math.round(n * 1000.0) / 1000.0;
 
-QUnit.test("best()", assert => {
+QUnit.test("best() single rating", assert => {
   // Setup.
   const node1 = Node.create({ state: 1, winCount: 0, playoutCount: 10 });
   const node2 = Node.create({ state: 2, winCount: 1, playoutCount: 10 });
@@ -28,6 +28,25 @@ QUnit.test("best()", assert => {
   assert.ok(result);
   assert.equal(result.playoutCount, 10);
   assert.equal(result.state, 4);
+  assert.equal(result.winCount, 3);
+});
+
+QUnit.test("best() dual rating", assert => {
+  // Setup.
+  const node1 = Node.create({ state: 1, winCount: 0, playoutCount: 10 });
+  const node2 = Node.create({ state: 2, winCount: 1, playoutCount: 10 });
+  const node3 = Node.create({ state: 3, winCount: 2, playoutCount: 10 });
+  const node4 = Node.create({ state: 4, winCount: 3, playoutCount: 10 });
+  const node5 = Node.create({ state: 5, winCount: 3, playoutCount: 10 });
+  const nodes = [node1, node2, node3, node4, node5];
+
+  // Run.
+  const result = Node.best(Node.exploitation, nodes);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.playoutCount, 10);
+  assert.equal([4, 5].includes(result.state), true, `result.state = ${result.state}`);
   assert.equal(result.winCount, 3);
 });
 
