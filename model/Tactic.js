@@ -104,7 +104,9 @@ const Tactic = {
     isLegalLancerAttack: (player, paymentCoin, an1, an2, state) => {
       const directionIndex = Board.cubeDirectionIndex(an1, an2);
       const an3 = Board.neighborInDirection(an2, directionIndex);
-      return Selector.isEnemyUnitAt(player.id, an3, state);
+      return (
+        Selector.canBeAttacked(an1, an3, state) && Selector.isEnemyUnitAt(player.id, an3, state)
+      );
     },
     isLegalLancerMove2: (player, paymentCoin, an1, an2, state) =>
       Selector.isUnitType(an1, UnitCoin.LANCER, state) &&

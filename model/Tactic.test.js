@@ -158,6 +158,36 @@ QUnit.test("isLegal() Royal Guard true", assert => {
   assert.equal(result, true);
 });
 
+QUnit.test("isLegalLancerAttack() Lancer-Knight false", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  // Player 1
+  store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", 1, UnitCard.LANCER));
+  const coinState1 = CoinState.create({ coinKey: UnitCoin.LANCER, store });
+  store.dispatch(ActionCreator.addCoin(coinState1));
+  store.dispatch(ActionCreator.addToPlayerArray("playerToHand", 1, coinState1.id));
+  const paymentCoinId = coinState1.id; // Lancer
+  const paymentCoin = Selector.coin(paymentCoinId, store.getState());
+  const player1 = Selector.player(1, store.getState());
+  // Player 2
+  store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", 2, UnitCard.KNIGHT));
+  const coinState2 = CoinState.create({ coinKey: UnitCoin.KNIGHT, store });
+  store.dispatch(ActionCreator.addCoin(coinState2));
+  const victimCoinId = coinState2.id; // Knight
+  const an1 = "e2"; // Raven control location.
+  const an2 = "e4";
+  const an3 = "e5";
+  store.dispatch(ActionCreator.setUnit(an1, paymentCoinId));
+  store.dispatch(ActionCreator.setUnit(an3, victimCoinId));
+  const tactic = Tactic[UnitCoin.LANCER];
+
+  // Run.
+  const result = tactic.isLegalLancerAttack(player1, paymentCoin, an1, an2, store.getState());
+
+  // Verify.
+  assert.equal(result, false);
+});
+
 QUnit.test("label() Archer", assert => {
   // Setup.
   const store = TestData.createStore();
