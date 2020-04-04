@@ -93,7 +93,10 @@ const executeAttack = (moveState, store) => {
   }
 
   // Pikeman attribute.
-  if (victimCoinKey === UnitCoin.PIKEMAN) {
+  if (
+    victimCoinKey === UnitCoin.PIKEMAN &&
+    Board.isNeighbor(an1, an2, Selector.isTwoPlayer(store.getState()))
+  ) {
     store.dispatch(ActionCreator.transferBoardToMorgue(playerId, an1));
   }
 };
