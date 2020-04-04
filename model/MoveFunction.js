@@ -200,6 +200,25 @@ const MoveFunction = {
   }
 };
 
+MoveFunction.createGameRecord = (moveState, state) => {
+  let answer;
+
+  if (moveState) {
+    const round = Selector.round(state);
+    const gameRecords = Selector.gameRecords(state);
+    const roundRecords = R.filter(r => r.round === round, gameRecords);
+    const turn = roundRecords.length + 1;
+    const player = state.playerInstances[moveState.playerId];
+    const playerName = player ? player.name : `Player ${moveState.playerId}`;
+    const teamName = player && player.teamType ? player.teamType.name : undefined;
+    const label = MoveFunction.label(moveState, state);
+
+    answer = `${round}.${turn} ${playerName} ${teamName} ${label}`;
+  }
+
+  return answer;
+};
+
 MoveFunction.execute = (moveState, store) => {
   const { moveKey, moveStates } = moveState;
 

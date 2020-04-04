@@ -31,6 +31,43 @@ QUnit.test("addCoin()", assert => {
   assert.equal(coin.coinKey, coinKey);
 });
 
+QUnit.test("addGameRecord()", assert => {
+  // Setup.
+  const state01 = AppState.create();
+  const action01 = ActionCreator.setRound(1);
+  const state0 = Reducer.root(state01, action01);
+  const action0 = ActionCreator.addGameRecord("first game record");
+
+  // Run.
+  const result0 = Reducer.root(state0, action0);
+
+  // Verify.
+  assert.ok(result0);
+  const { gameRecords: gameRecords0 } = result0;
+  assert.ok(gameRecords0);
+  assert.equal(gameRecords0.length, 1);
+  assert.equal(gameRecords0[0].round, 1);
+  assert.equal(gameRecords0[0].message, "first game record");
+
+  // Setup.
+  const action02 = ActionCreator.setRound(2);
+  const state02 = Reducer.root(result0, action02);
+  const action1 = ActionCreator.addGameRecord("second game record");
+
+  // Run.
+  const result1 = Reducer.root(state02, action1);
+
+  // Verify.
+  assert.ok(result1);
+  const { gameRecords: gameRecords1 } = result1;
+  assert.ok(gameRecords1);
+  assert.equal(gameRecords1.length, 2);
+  assert.equal(gameRecords0[0].round, 1);
+  assert.equal(gameRecords0[0].message, "first game record");
+  assert.equal(gameRecords1[1].round, 2);
+  assert.equal(gameRecords1[1].message, "second game record");
+});
+
 QUnit.test("addToPlayerBag()", assert => {
   // Setup.
   const state = AppState.create();

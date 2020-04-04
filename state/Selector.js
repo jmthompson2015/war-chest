@@ -100,6 +100,8 @@ Selector.damageTargets = (playerId, state) => {
 
 Selector.delay = state => state.delay;
 
+Selector.gameRecords = state => state.gameRecords;
+
 Selector.initiativeChangedThisRound = state => state.initiativeChangedThisRound;
 
 Selector.initiativePlayer = state => {

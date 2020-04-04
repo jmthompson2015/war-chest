@@ -213,6 +213,8 @@ PhaseFunction.finishChooseMove = (moveState, moveStates, paymentCoin, resolve, s
     store.dispatch(ActionCreator.setCurrentPaymentCoin(null));
     PhaseFunction.executePlayCoin(resolve, store, callback);
   } else {
+    const gameRecord = MoveFunction.createGameRecord(moveState, store.getState());
+    store.dispatch(ActionCreator.addGameRecord(gameRecord));
     beforeMoveExecute(store)
       .then(() => {
         MoveFunction.execute(moveState, store);

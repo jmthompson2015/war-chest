@@ -7,6 +7,7 @@ import Endpoint from "../view/Endpoint.js";
 import NewGameDialog from "../view/NewGameDialog.js";
 
 import BoardContainer from "../container/BoardContainer.js";
+import GameRecordsContainer from "../container/GameRecordsContainer.js";
 import PlayerPanelContainer from "../container/PlayerPanelContainer.js";
 import StatusBarContainer from "../container/StatusBarContainer.js";
 
@@ -61,6 +62,11 @@ const playGame = (playerInstances, playerToTableau) => {
     const element6 = React.createElement(ReactRedux.Provider, { store }, container6);
     ReactDOM.render(element6, document.getElementById("playerPanelD"));
   }
+
+  // Game Records
+  const container7 = React.createElement(GameRecordsContainer);
+  const element7 = React.createElement(ReactRedux.Provider, { store }, container7);
+  ReactDOM.render(element7, document.getElementById("gameRecords"));
 
   game.execute();
 };

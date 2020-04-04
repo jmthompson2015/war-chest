@@ -111,6 +111,7 @@ Reducer.root = (state, action) => {
   let newBag;
   let newCoinKey;
   let newCoins;
+  let newGameRecords;
   let newInputCallbackStack;
   let newPlayers;
   let newPlayerToBag;
@@ -128,8 +129,17 @@ Reducer.root = (state, action) => {
     case ActionType.ADD_COIN:
       newCoins = { ...state.coinInstances, [action.coinState.id]: action.coinState };
       return { ...state, coinInstances: newCoins };
+    case ActionType.ADD_GAME_RECORD:
+      log(`Reducer ADD_GAME_RECORD message = ${action.message}`, state);
+      newGameRecords = [...state.gameRecords, { round: state.round, message: action.message }];
+      return { ...state, gameRecords: newGameRecords };
     case ActionType.ADD_TO_PLAYER_ARRAY:
       return addToArray(state, action.arrayName, action.playerId, action.coinId);
+    case ActionType.CLEAR_UNIT:
+      log(`Reducer CLEAR_UNIT an = ${action.an}`, state);
+      newANToTokens = R.dissoc(action.an, state.anToTokens);
+      newANToCoinKey = R.dissoc(action.an, state.anToCoinKey);
+      return { ...state, anToTokens: newANToTokens, anToCoinKey: newANToCoinKey };
     case ActionType.MOVE_A_UNIT:
       log(`Reducer MOVE_A_UNIT an = ${action.an1} an2 = ${action.an2}`, state);
       unit = state.anToTokens[action.an1];

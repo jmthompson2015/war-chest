@@ -1,7 +1,9 @@
 const ActionType = {};
 
 ActionType.ADD_COIN = "addCoin";
+ActionType.ADD_GAME_RECORD = "addGameRecord";
 ActionType.ADD_TO_PLAYER_ARRAY = "addToPlayerArray";
+ActionType.CLEAR_UNIT = "clearUnit";
 ActionType.MOVE_A_UNIT = "moveAUnit";
 ActionType.POP_INPUT_CALLBACK = "popInputCallback";
 ActionType.PUSH_INPUT_CALLBACK = "pushInputCallback";

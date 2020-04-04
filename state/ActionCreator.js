@@ -13,9 +13,13 @@ const makeActionCreator = (type, ...argNames) => (...args) => {
 
 ActionCreator.addCoin = makeActionCreator(ActionType.ADD_COIN, "coinState");
 
+ActionCreator.addGameRecord = makeActionCreator(ActionType.ADD_GAME_RECORD, "message");
+
 ActionCreator.addToPlayerArray = (arrayName, playerId, coinId) => {
   return { type: ActionType.ADD_TO_PLAYER_ARRAY, arrayName, playerId, coinId };
 };
+
+ActionCreator.clearUnit = makeActionCreator(ActionType.CLEAR_UNIT, "an");
 
 ActionCreator.moveAUnit = makeActionCreator(ActionType.MOVE_A_UNIT, "playerId", "an1", "an2");
 

@@ -689,5 +689,38 @@ QUnit.test("tactic execute() Royal Guard", assert => {
   assert.equal(resultToUnit.join(""), 39);
 });
 
+QUnit.test("createGameRecord()", assert => {
+  // Setup.
+  const store = TestData.createStore();
+  store.dispatch(ActionCreator.setRound(1));
+  const moveState1 = MoveState.create({
+    moveKey: Move.DEPLOY,
+    playerId: 1,
+    paymentCoinId: 6,
+    an1: "e2"
+  });
+  const moveState2 = MoveState.create({
+    moveKey: Move.DEPLOY,
+    playerId: 2,
+    paymentCoinId: 25,
+    an1: "d7"
+  });
+
+  // Run.
+  const result1 = MoveFunction.createGameRecord(moveState1, store.getState());
+
+  // Verify.
+  assert.ok(result1);
+  assert.equal(result1, "1.1 Alfred Raven Deploy: Swordsman to e2");
+  store.dispatch(ActionCreator.addGameRecord(result1));
+
+  // Run.
+  const result2 = MoveFunction.createGameRecord(moveState2, store.getState());
+
+  // Verify.
+  assert.ok(result2);
+  assert.equal(result2, "1.2 Bruce Wolf Deploy: Archer to d7");
+});
+
 const MoveFunctionTest = {};
 export default MoveFunctionTest;
