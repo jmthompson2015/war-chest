@@ -1,5 +1,6 @@
 import Move from "../artifact/Move.js";
 import Phase from "../artifact/Phase.js";
+import Resolver from "../artifact/Resolver.js";
 import UnitCard from "../artifact/UnitCard.js";
 import UnitCoin from "../artifact/UnitCoin.js";
 
@@ -22,7 +23,7 @@ QUnit.module("PhaseFunction");
 //   console.log(`hand2 = ${JSON.stringify(Selector.hand(2, store.getState()))}`);
 // };
 
-QUnit.test("chooseMove()", assert => {
+QUnit.test("chooseMove()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -56,7 +57,7 @@ QUnit.test("chooseMove()", assert => {
   PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
 });
 
-QUnit.test("chooseMove() Berserker", assert => {
+QUnit.test("chooseMove() Berserker", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -88,7 +89,7 @@ QUnit.test("chooseMove() Berserker", assert => {
 
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates = [
-    MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, an1, an2, victimCoinId })
+    MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, an1, an2, victimCoinId }),
   ];
   const resolve = 12;
 
@@ -113,7 +114,7 @@ QUnit.test("chooseMove() Berserker", assert => {
   PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
 });
 
-QUnit.test("chooseMove() Mercenary", assert => {
+QUnit.test("chooseMove() Mercenary", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -138,7 +139,7 @@ QUnit.test("chooseMove() Mercenary", assert => {
 
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates = [
-    MoveState.create({ moveKey: Move.RECRUIT, playerId, paymentCoinId, recruitCoinId })
+    MoveState.create({ moveKey: Move.RECRUIT, playerId, paymentCoinId, recruitCoinId }),
   ];
   const resolve = 12;
 
@@ -158,7 +159,7 @@ QUnit.test("chooseMove() Mercenary", assert => {
   PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
 });
 
-QUnit.test("chooseMove() Royal Guard", assert => {
+QUnit.test("chooseMove() Royal Guard", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -182,7 +183,7 @@ QUnit.test("chooseMove() Royal Guard", assert => {
 
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates = [
-    MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, an1, an2, victimCoinId })
+    MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, an1, an2, victimCoinId }),
   ];
   const resolve = 12;
 
@@ -212,7 +213,7 @@ QUnit.test("chooseMove() Royal Guard", assert => {
   PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
 });
 
-QUnit.test("chooseMove() Swordsman", assert => {
+QUnit.test("chooseMove() Swordsman", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -232,7 +233,7 @@ QUnit.test("chooseMove() Swordsman", assert => {
 
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates = [
-    MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, an1, an2, victimCoinId })
+    MoveState.create({ moveKey: Move.ATTACK, playerId, paymentCoinId, an1, an2, victimCoinId }),
   ];
   const resolve = 12;
 
@@ -265,7 +266,7 @@ QUnit.test("chooseMove() Swordsman", assert => {
   PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
 });
 
-QUnit.test("chooseMove() Warrior Priest", assert => {
+QUnit.test("chooseMove() Warrior Priest", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -303,7 +304,7 @@ QUnit.test("chooseMove() Warrior Priest", assert => {
   PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
 });
 
-QUnit.test("drawThreeCoins()", assert => {
+QUnit.test("drawThreeCoins()", (assert) => {
   // Setup.
   const store = TestData.createStore(true, false);
   const players = Selector.playersInOrder(store.getState());
@@ -323,7 +324,55 @@ QUnit.test("drawThreeCoins()", assert => {
   phase.execute(store).then(callback);
 });
 
-QUnit.test("executeSwordsmanAttribute()", assert => {
+QUnit.test("drawThreeCoins() not enough", (assert) => {
+  // Setup.
+  const store = TestData.createStore(true, false);
+  const players = Selector.playersInOrder(store.getState());
+  const playerIds = R.map(R.prop("id"), players);
+  store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
+  const phase = PhaseFunction[Phase.DRAW_THREE_COINS];
+  // Move all except royal coin to morgue.
+  const bag2 = Selector.bag(2, store.getState());
+  bag2.forEach((coinId) => {
+    if (Resolver.isRoyalCoin(Selector.coinType(coinId, store.getState()).key)) {
+      store.dispatch(
+        ActionCreator.transferBetweenPlayerArrays(
+          "playerToBag",
+          "playerToDiscardFacedown",
+          2,
+          coinId
+        )
+      );
+    } else {
+      store.dispatch(
+        ActionCreator.transferBetweenPlayerArrays("playerToBag", "playerToMorgue", 2, coinId)
+      );
+    }
+  });
+  assert.equal(Selector.bag(1, store.getState()).length, 9);
+  assert.equal(Selector.bag(2, store.getState()).length, 0);
+  assert.equal(Selector.discardFacedown(1, store.getState()).length, 0);
+  assert.equal(Selector.discardFacedown(2, store.getState()).length, 1);
+  assert.equal(Selector.hand(1, store.getState()).length, 0);
+  assert.equal(Selector.hand(2, store.getState()).length, 0);
+
+  // Run.
+  const done = assert.async();
+  const callback = () => {
+    assert.ok(true, "test resumed from async operation");
+    // Verify.
+    assert.equal(Selector.bag(1, store.getState()).length, 6);
+    assert.equal(Selector.bag(2, store.getState()).length, 0);
+    assert.equal(Selector.discardFacedown(1, store.getState()).length, 0);
+    assert.equal(Selector.discardFacedown(2, store.getState()).length, 0);
+    assert.equal(Selector.hand(1, store.getState()).length, 3);
+    assert.equal(Selector.hand(2, store.getState()).length, 1);
+    done();
+  };
+  phase.execute(store).then(callback);
+});
+
+QUnit.test("executeSwordsmanAttribute()", (assert) => {
   // Setup.
   const store = TestData.createStore();
 
@@ -366,7 +415,7 @@ QUnit.test("executeSwordsmanAttribute()", assert => {
   PhaseFunction.executeSwordsmanAttribute(resolve, store, callback);
 });
 
-QUnit.test("playCoins()", assert => {
+QUnit.test("playCoins()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const players = Selector.playersInOrder(store.getState());

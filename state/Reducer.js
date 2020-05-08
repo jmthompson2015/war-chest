@@ -42,7 +42,7 @@ const transferBetweenArrays = (state, fromKey, toKey, playerId, coinId) => {
   return {
     ...state,
     [fromKey]: newPlayerToFrom,
-    [toKey]: newPlayerToTo
+    [toKey]: newPlayerToTo,
   };
 };
 
@@ -71,7 +71,7 @@ const transferBoardToPlayerArray = (state, toKey, playerId, an1) => {
     ...state,
     anToCoinKey: newANToCoinKey || {},
     anToTokens: newANToTokens || {},
-    [toKey]: newPlayerToTo
+    [toKey]: newPlayerToTo,
   };
 };
 
@@ -89,7 +89,7 @@ const transferPlayerArrayToBoard = (state, fromKey, playerId, coinId, an2) => {
     ...state,
     [fromKey]: newPlayerToFrom,
     anToCoinKey: newANToCoinKey,
-    anToTokens: newANToTokens
+    anToTokens: newANToTokens,
   };
 };
 
@@ -160,6 +160,7 @@ Reducer.root = (state, action) => {
       newInputCallbackStack = [...state.inputCallbackStack, action.callback];
       return { ...state, inputCallbackStack: newInputCallbackStack };
     case ActionType.REFILL_BAG:
+      log(`Reducer REFILL_BAG playerId = ${action.playerId}`, state);
       oldDiscardFacedown = state.playerToDiscardFacedown[action.playerId] || [];
       oldDiscardFaceup = state.playerToDiscardFaceup[action.playerId] || [];
       oldBag = state.playerToBag[action.playerId] || [];
@@ -171,7 +172,7 @@ Reducer.root = (state, action) => {
         ...state,
         playerToDiscardFacedown: newPlayerToDiscardFacedown,
         playerToDiscardFaceup: newPlayerToDiscardFaceup,
-        playerToBag: newPlayerToBag
+        playerToBag: newPlayerToBag,
       };
     case ActionType.REMOVE_FROM_PLAYER_ARRAY:
       return removeFromArray(state, action.arrayName, action.playerId, action.coinId);
@@ -213,7 +214,7 @@ Reducer.root = (state, action) => {
         currentMove: null,
         currentDamageTargetKey: null,
         currentDamageCallback: null,
-        userMessage: null
+        userMessage: null,
       };
     case ActionType.SET_CURRENT_PLAYER_ORDER:
       log(
@@ -268,6 +269,10 @@ Reducer.root = (state, action) => {
       log(`Reducer SET_WINNER winnerTeamKey = ${action.winnerTeamKey}`, state);
       return { ...state, winnerTeamKey: action.winnerTeamKey };
     case ActionType.TRANSFER_BAG_TO_HAND:
+      log(
+        `Reducer TRANSFER_BAG_TO_HAND playerId = ${action.playerId} coinId = ${action.coinId}`,
+        state
+      );
       return transferBetweenArrays(
         state,
         "playerToBag",

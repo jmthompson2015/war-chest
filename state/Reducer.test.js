@@ -10,7 +10,7 @@ import Selector from "./Selector.js";
 
 QUnit.module("Reducer");
 
-QUnit.test("addCoin()", assert => {
+QUnit.test("addCoin()", (assert) => {
   // Setup.
   const state = AppState.create();
   const coinKey = "knight";
@@ -31,7 +31,7 @@ QUnit.test("addCoin()", assert => {
   assert.equal(coin.coinKey, coinKey);
 });
 
-QUnit.test("addGameRecord()", assert => {
+QUnit.test("addGameRecord()", (assert) => {
   // Setup.
   const state01 = AppState.create();
   const action01 = ActionCreator.setRound(1);
@@ -68,7 +68,7 @@ QUnit.test("addGameRecord()", assert => {
   assert.equal(gameRecords1[1].message, "second game record");
 });
 
-QUnit.test("addToPlayerBag()", assert => {
+QUnit.test("addToPlayerBag()", (assert) => {
   // Setup.
   const state = AppState.create();
   const playerId = 3;
@@ -88,7 +88,7 @@ QUnit.test("addToPlayerBag()", assert => {
   assert.equal(bag[0], coinId);
 });
 
-QUnit.test("addToPlayerMorgue()", assert => {
+QUnit.test("addToPlayerMorgue()", (assert) => {
   // Setup.
   const state = AppState.create();
   const playerId = 3;
@@ -107,7 +107,7 @@ QUnit.test("addToPlayerMorgue()", assert => {
   assert.equal(morgue[0], coinId);
 });
 
-QUnit.test("addToPlayerDiscardFacedown()", assert => {
+QUnit.test("addToPlayerDiscardFacedown()", (assert) => {
   // Setup.
   const state = AppState.create();
   const playerId = 3;
@@ -126,7 +126,7 @@ QUnit.test("addToPlayerDiscardFacedown()", assert => {
   assert.equal(discard[0], coinId);
 });
 
-QUnit.test("addToPlayerDiscardFaceup()", assert => {
+QUnit.test("addToPlayerDiscardFaceup()", (assert) => {
   // Setup.
   const state = AppState.create();
   const playerId = 3;
@@ -145,7 +145,7 @@ QUnit.test("addToPlayerDiscardFaceup()", assert => {
   assert.equal(discard[0], coinId);
 });
 
-QUnit.test("addToPlayerHand()", assert => {
+QUnit.test("addToPlayerHand()", (assert) => {
   // Setup.
   const state = AppState.create();
   const playerId = 3;
@@ -164,7 +164,7 @@ QUnit.test("addToPlayerHand()", assert => {
   assert.equal(hand[0], coinId);
 });
 
-QUnit.test("addToPlayerSupply()", assert => {
+QUnit.test("addToPlayerSupply()", (assert) => {
   // Setup.
   const state = AppState.create();
   const playerId = 3;
@@ -183,7 +183,7 @@ QUnit.test("addToPlayerSupply()", assert => {
   assert.equal(supply[0], coinId);
 });
 
-QUnit.test("moveAUnit()", assert => {
+QUnit.test("moveAUnit()", (assert) => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
@@ -212,7 +212,7 @@ QUnit.test("moveAUnit()", assert => {
   assert.equal(anToCoinKey[an2], coinKey);
 });
 
-QUnit.test("popInputCallback()", assert => {
+QUnit.test("popInputCallback()", (assert) => {
   // Setup.
   const state0 = AppState.create();
   const callback = 12;
@@ -231,7 +231,7 @@ QUnit.test("popInputCallback()", assert => {
   assert.equal(stack.length, 0);
 });
 
-QUnit.test("pushInputCallback()", assert => {
+QUnit.test("pushInputCallback()", (assert) => {
   // Setup.
   const state = AppState.create();
   const callback = 12;
@@ -248,17 +248,16 @@ QUnit.test("pushInputCallback()", assert => {
   assert.equal(stack[0], callback);
 });
 
-QUnit.test("refillBag()", assert => {
+QUnit.test("refillBag()", (assert) => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 1;
-  const coinId0 = 12;
-  const action0 = ActionCreator.addToPlayerArray("playerToDiscardFacedown", playerId, coinId0);
+  const action0 = ActionCreator.addToPlayerArray("playerToDiscardFacedown", playerId, 11);
   const state1 = Reducer.root(state0, action0);
-  const state2 = Reducer.root(state1, action0);
-  const coinId3 = 13;
-  const action3 = ActionCreator.addToPlayerArray("playerToDiscardFaceup", playerId, coinId3);
-  const state = Reducer.root(state2, action3);
+  const action1 = ActionCreator.addToPlayerArray("playerToDiscardFacedown", playerId, 12);
+  const state2 = Reducer.root(state1, action1);
+  const action2 = ActionCreator.addToPlayerArray("playerToDiscardFaceup", playerId, 13);
+  const state = Reducer.root(state2, action2);
   const action = ActionCreator.refillBag(playerId);
 
   // Run.
@@ -272,9 +271,12 @@ QUnit.test("refillBag()", assert => {
   assert.equal(discardFaceup.length, 0);
   const bag = result.playerToBag[playerId];
   assert.equal(bag.length, 3);
+  assert.equal(bag[0], 11);
+  assert.equal(bag[1], 12);
+  assert.equal(bag[2], 13);
 });
 
-QUnit.test("removeFromPlayerHand()", assert => {
+QUnit.test("removeFromPlayerHand()", (assert) => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
@@ -294,7 +296,7 @@ QUnit.test("removeFromPlayerHand()", assert => {
   assert.equal(hand.length, 0);
 });
 
-QUnit.test("setControl()", assert => {
+QUnit.test("setControl()", (assert) => {
   // Setup.
   const state = AppState.create();
   const an1 = "a1";
@@ -309,7 +311,7 @@ QUnit.test("setControl()", assert => {
   assert.equal(result.anToControl[an1], controlKey);
 });
 
-QUnit.test("setCurrentDamageCallback()", assert => {
+QUnit.test("setCurrentDamageCallback()", (assert) => {
   // Setup.
   const state = AppState.create();
   const callback = 12;
@@ -323,7 +325,7 @@ QUnit.test("setCurrentDamageCallback()", assert => {
   assert.equal(result.currentDamageCallback, callback);
 });
 
-QUnit.test("setCurrentDamageTarget()", assert => {
+QUnit.test("setCurrentDamageTarget()", (assert) => {
   // Setup.
   const state = AppState.create();
   const damageTargetKey = 12;
@@ -337,7 +339,7 @@ QUnit.test("setCurrentDamageTarget()", assert => {
   assert.equal(result.currentDamageTargetKey, damageTargetKey);
 });
 
-QUnit.test("setCurrentHandCallback()", assert => {
+QUnit.test("setCurrentHandCallback()", (assert) => {
   // Setup.
   const state = AppState.create();
   const callback = 12;
@@ -351,7 +353,7 @@ QUnit.test("setCurrentHandCallback()", assert => {
   assert.equal(result.currentHandCallback, callback);
 });
 
-QUnit.test("setCurrentMove()", assert => {
+QUnit.test("setCurrentMove()", (assert) => {
   // Setup.
   const state = AppState.create();
   const moveState = 12;
@@ -365,7 +367,7 @@ QUnit.test("setCurrentMove()", assert => {
   assert.equal(result.currentMove, moveState);
 });
 
-QUnit.test("setCurrentMoves()", assert => {
+QUnit.test("setCurrentMoves()", (assert) => {
   // Setup.
   const state = AppState.create();
   const moveStates = 12;
@@ -379,7 +381,7 @@ QUnit.test("setCurrentMoves()", assert => {
   assert.equal(result.currentMoves, moveStates);
 });
 
-QUnit.test("setCurrentPaymentCoin()", assert => {
+QUnit.test("setCurrentPaymentCoin()", (assert) => {
   // Setup.
   const state = AppState.create();
   const coinId = 12;
@@ -393,7 +395,7 @@ QUnit.test("setCurrentPaymentCoin()", assert => {
   assert.equal(result.currentPaymentCoinId, coinId);
 });
 
-QUnit.test("setCurrentPhase()", assert => {
+QUnit.test("setCurrentPhase()", (assert) => {
   // Setup.
   const state = AppState.create();
   const phaseKey = "bogus";
@@ -407,7 +409,7 @@ QUnit.test("setCurrentPhase()", assert => {
   assert.equal(result.currentPhaseKey, phaseKey);
 });
 
-QUnit.test("setCurrentPlayer()", assert => {
+QUnit.test("setCurrentPlayer()", (assert) => {
   // Setup.
   const state = AppState.create();
   const playerId = 12;
@@ -421,7 +423,7 @@ QUnit.test("setCurrentPlayer()", assert => {
   assert.equal(result.currentPlayerId, playerId);
 });
 
-QUnit.test("setCurrentPlayerOrder()", assert => {
+QUnit.test("setCurrentPlayerOrder()", (assert) => {
   // Setup.
   const state = AppState.create();
   const playerIds = [4, 3, 2, 1];
@@ -435,7 +437,7 @@ QUnit.test("setCurrentPlayerOrder()", assert => {
   assert.equal(result.currentPlayerOrder.join(), playerIds.join());
 });
 
-QUnit.test("setDelay()", assert => {
+QUnit.test("setDelay()", (assert) => {
   // Setup.
   const state = AppState.create();
   const delay = 12;
@@ -449,7 +451,7 @@ QUnit.test("setDelay()", assert => {
   assert.equal(result.delay, delay);
 });
 
-QUnit.test("setInitiativePlayer()", assert => {
+QUnit.test("setInitiativePlayer()", (assert) => {
   // Setup.
   const state = AppState.create();
   const playerId = 3;
@@ -463,7 +465,7 @@ QUnit.test("setInitiativePlayer()", assert => {
   assert.equal(result.initiativePlayerId, playerId);
 });
 
-QUnit.test("setMctsRoot()", assert => {
+QUnit.test("setMctsRoot()", (assert) => {
   // Setup.
   const state = AppState.create();
   const mctsRoot = 12;
@@ -477,7 +479,7 @@ QUnit.test("setMctsRoot()", assert => {
   assert.equal(result.mctsRoot, mctsRoot);
 });
 
-QUnit.test("setPlayers()", assert => {
+QUnit.test("setPlayers()", (assert) => {
   // Setup.
   const state = AppState.create();
   const id1 = 1;
@@ -499,13 +501,13 @@ QUnit.test("setPlayers()", assert => {
   assert.equal(playerInstances[id2], wolfPlayer);
 });
 
-QUnit.test("setPlayerToTableau()", assert => {
+QUnit.test("setPlayerToTableau()", (assert) => {
   // Setup.
   const state = AppState.create();
   const cardKeys = UnitCard.keys();
   const playerToTableau0 = {
     1: cardKeys.slice(0, 4),
-    2: cardKeys.slice(4, 8)
+    2: cardKeys.slice(4, 8),
   };
   const action = ActionCreator.setPlayerToTableau(playerToTableau0);
 
@@ -532,7 +534,7 @@ QUnit.test("setPlayerToTableau()", assert => {
   assert.equal(resultTableau2[resultTableau2.length - 1], UnitCard.LANCER);
 });
 
-QUnit.test("setRound()", assert => {
+QUnit.test("setRound()", (assert) => {
   // Setup.
   const state = AppState.create();
   const round = 123;
@@ -546,7 +548,7 @@ QUnit.test("setRound()", assert => {
   assert.equal(result.round, round);
 });
 
-QUnit.test("setUnit()", assert => {
+QUnit.test("setUnit()", (assert) => {
   // Setup.
   const state0 = AppState.create();
   const an1 = "a1";
@@ -569,7 +571,7 @@ QUnit.test("setUnit()", assert => {
   assert.equal(unit[0], coinId);
 });
 
-QUnit.test("setUnit() 2", assert => {
+QUnit.test("setUnit() 2", (assert) => {
   // Setup.
   const state1 = AppState.create();
   const an1 = "a1";
@@ -595,7 +597,7 @@ QUnit.test("setUnit() 2", assert => {
   assert.equal(result.anToTokens[an1].join(), "1,2");
 });
 
-QUnit.test("setUserMessage()", assert => {
+QUnit.test("setUserMessage()", (assert) => {
   // Setup.
   const state = AppState.create();
   const userMessage = "bogus";
@@ -609,7 +611,7 @@ QUnit.test("setUserMessage()", assert => {
   assert.equal(result.userMessage, userMessage);
 });
 
-QUnit.test("setVerbose()", assert => {
+QUnit.test("setVerbose()", (assert) => {
   // Setup.
   const state = AppState.create();
   const isVerbose = false;
@@ -623,7 +625,7 @@ QUnit.test("setVerbose()", assert => {
   assert.equal(result.isVerbose, isVerbose);
 });
 
-QUnit.test("transferBagToHand()", assert => {
+QUnit.test("transferBagToHand()", (assert) => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
@@ -645,7 +647,7 @@ QUnit.test("transferBagToHand()", assert => {
   assert.equal(hand[0], coinId);
 });
 
-QUnit.test("transferBoardToDiscardFaceup()", assert => {
+QUnit.test("transferBoardToDiscardFaceup()", (assert) => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
@@ -675,7 +677,7 @@ QUnit.test("transferBoardToDiscardFaceup()", assert => {
   assert.equal(resultDiscardFaceup[0], coinId);
 });
 
-QUnit.test("transferBoardToMorgue() 1", assert => {
+QUnit.test("transferBoardToMorgue() 1", (assert) => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
@@ -705,7 +707,7 @@ QUnit.test("transferBoardToMorgue() 1", assert => {
   assert.equal(resultMorgue[0], coinId);
 });
 
-QUnit.test("transferBoardToMorgue() 2", assert => {
+QUnit.test("transferBoardToMorgue() 2", (assert) => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
@@ -739,7 +741,7 @@ QUnit.test("transferBoardToMorgue() 2", assert => {
   assert.equal(resultMorgue[0], coinId);
 });
 
-QUnit.test("transferHandToBoard()", assert => {
+QUnit.test("transferHandToBoard()", (assert) => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
@@ -770,7 +772,7 @@ QUnit.test("transferHandToBoard()", assert => {
   assert.equal(type, coinKey);
 });
 
-QUnit.test("transferHandToDiscardFacedown()", assert => {
+QUnit.test("transferHandToDiscardFacedown()", (assert) => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
@@ -794,7 +796,7 @@ QUnit.test("transferHandToDiscardFacedown()", assert => {
   assert.equal(discardFacedown[0], coinId);
 });
 
-QUnit.test("transferHandToDiscardFaceup()", assert => {
+QUnit.test("transferHandToDiscardFaceup()", (assert) => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
@@ -818,7 +820,7 @@ QUnit.test("transferHandToDiscardFaceup()", assert => {
   assert.equal(discardFaceup[0], coinId);
 });
 
-QUnit.test("transferSupplyToDiscardFaceup()", assert => {
+QUnit.test("transferSupplyToDiscardFaceup()", (assert) => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
@@ -842,7 +844,7 @@ QUnit.test("transferSupplyToDiscardFaceup()", assert => {
   assert.equal(discardFaceup[0], coinId);
 });
 
-QUnit.test("transferSupplyToHand()", assert => {
+QUnit.test("transferSupplyToHand()", (assert) => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
@@ -871,7 +873,7 @@ QUnit.test("transferSupplyToHand()", assert => {
   assert.equal(hand[0], coinId);
 });
 
-QUnit.test("transferSupplyToMorgue()", assert => {
+QUnit.test("transferSupplyToMorgue()", (assert) => {
   // Setup.
   const state0 = AppState.create();
   const playerId = 3;
