@@ -1,3 +1,4 @@
+import Resolver from "../artifact/Resolver.js";
 import Team from "../artifact/Team.js";
 
 import ActionCreator from "../state/ActionCreator.js";
@@ -16,18 +17,18 @@ const Simulation = {};
 const STRATEGY_NAME = "SimplePlayerStrategy";
 const STRATEGY = SimplePlayerStrategy;
 
-const createPlayers = isTwoPlayer => {
+const createPlayers = (isTwoPlayer) => {
   const player1 = PlayerState.create({
     id: 1,
     name: "Alfred",
     teamKey: Team.RAVEN,
-    strategy: STRATEGY_NAME
+    strategy: STRATEGY_NAME,
   });
   const player2 = PlayerState.create({
     id: 2,
     name: "Bruce",
     teamKey: Team.WOLF,
-    strategy: STRATEGY_NAME
+    strategy: STRATEGY_NAME,
   });
 
   const answer = [player1, player2];
@@ -37,13 +38,13 @@ const createPlayers = isTwoPlayer => {
       id: 3,
       name: "Clark",
       teamKey: Team.RAVEN,
-      strategy: STRATEGY_NAME
+      strategy: STRATEGY_NAME,
     });
     const player4 = PlayerState.create({
       id: 4,
       name: "Diana",
       teamKey: Team.WOLF,
-      strategy: STRATEGY_NAME
+      strategy: STRATEGY_NAME,
     });
 
     answer.push(player3, player4);
@@ -70,9 +71,10 @@ const finishChoose = (resolve, store, callback) => {
 };
 
 const executeRound = (roundLimit, resolve, store) => {
-  if (GameOver.isGameOver(store, roundLimit)) {
-    const winningTeam = Selector.winner(store.getState());
-    resolve(winningTeam);
+  if (GameOver.isGameOver(store.getState(), roundLimit)) {
+    const teamKey = GameOver.getWinner(store.getState());
+    const team = Resolver.team(teamKey);
+    resolve(team);
   } else {
     Round.execute(store).then(() => {
       executeRound(roundLimit, resolve, store);
@@ -81,13 +83,13 @@ const executeRound = (roundLimit, resolve, store) => {
 };
 
 Simulation.execute = (child, roundLimit = 100) =>
-  new Promise(resolve => {
+  new Promise((resolve) => {
     const { state } = child;
     const playerId = state.currentPlayerId;
     const store = Redux.createStore(Reducer.root, state);
     const players = createPlayers(Selector.isTwoPlayer(state));
     store.dispatch(ActionCreator.setPlayers(players));
-    R.forEach(player => {
+    R.forEach((player) => {
       store.dispatch(ActionCreator.setPlayerStrategy(player.id, STRATEGY));
     }, players);
     store.dispatch(ActionCreator.setCurrentPlayer(playerId));

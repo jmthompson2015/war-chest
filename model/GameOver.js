@@ -1,12 +1,13 @@
+/* eslint no-console: ["error", { allow: ["info"] }] */
+
+import Resolver from "../artifact/Resolver.js";
 import Team from "../artifact/Team.js";
 
-import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
 
 const GameOver = {};
 
-GameOver.isGameOver = (store, roundLimit = 100) => {
-  const state = store.getState();
+GameOver.getWinner = (state) => {
   const isTwoPlayer = Selector.isTwoPlayer(state);
   const isFourPlayer = Selector.isFourPlayer(state);
   let winnerTeamKey;
@@ -29,14 +30,26 @@ GameOver.isGameOver = (store, roundLimit = 100) => {
     }
   }
 
+  return winnerTeamKey;
+};
+
+GameOver.isGameOver = (state, roundLimit = 100) => {
+  const winnerTeamKey = GameOver.getWinner(state);
+
   if (!R.isNil(winnerTeamKey)) {
-    store.dispatch(ActionCreator.setCurrentMoves([]));
-    store.dispatch(ActionCreator.setWinner(winnerTeamKey));
-    const team = Selector.winner(store.getState());
-    store.dispatch(ActionCreator.setUserMessage(`Team ${team.name} won!`));
+    const team = Resolver.team(winnerTeamKey);
+    console.info(`Team ${team.name} won!`);
+    return true;
   }
 
-  return !R.isNil(winnerTeamKey) || Selector.round(store.getState()) >= roundLimit;
+  const round = Selector.round(state);
+
+  if (round >= roundLimit) {
+    console.info(`Over roundLimit: ${round}`);
+    return true;
+  }
+
+  return false;
 };
 
 Object.freeze(GameOver);

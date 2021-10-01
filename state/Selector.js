@@ -5,12 +5,12 @@ import UnitCoin from "../artifact/UnitCoin.js";
 
 const Selector = {};
 
-Selector.anToControl = state => state.anToControl;
+Selector.anToControl = (state) => state.anToControl;
 
-Selector.anToTokens = state => state.anToTokens;
+Selector.anToTokens = (state) => state.anToTokens;
 
 Selector.ansByType = (coinKey, state) => {
-  const filterFunction = an => Selector.isUnitType(an, coinKey, state);
+  const filterFunction = (an) => Selector.isUnitType(an, coinKey, state);
 
   return R.filter(filterFunction, Object.keys(state.anToTokens));
 };
@@ -57,7 +57,7 @@ Selector.coinTypeForUnit = (an, state) => {
 };
 
 Selector.coins = (coinIds, state) => {
-  const mapFunction = id => state.coinInstances[id];
+  const mapFunction = (id) => state.coinInstances[id];
 
   return R.map(mapFunction, coinIds);
 };
@@ -66,7 +66,7 @@ Selector.control = (an, state) => state.anToControl[an];
 
 Selector.controlANs = (teamKey, state) => {
   const allControlANs = Object.keys(state.anToControl);
-  const filterFunction = an => {
+  const filterFunction = (an) => {
     const control = Selector.control(an, state);
     return !R.isNil(control) && control === teamKey;
   };
@@ -74,23 +74,23 @@ Selector.controlANs = (teamKey, state) => {
   return R.filter(filterFunction, allControlANs);
 };
 
-Selector.currentDamageCallback = state => state.currentDamageCallback;
+Selector.currentDamageCallback = (state) => state.currentDamageCallback;
 
-Selector.currentDamageTarget = state => Resolver.damageTarget(state.currentDamageTargetKey);
+Selector.currentDamageTarget = (state) => Resolver.damageTarget(state.currentDamageTargetKey);
 
-Selector.currentHandCallback = state => state.currentHandCallback;
+Selector.currentHandCallback = (state) => state.currentHandCallback;
 
-Selector.currentMove = state => state.currentMove;
+Selector.currentMove = (state) => state.currentMove;
 
-Selector.currentMoves = state => state.currentMoves || [];
+Selector.currentMoves = (state) => state.currentMoves || [];
 
-Selector.currentPaymentCoin = state => Selector.coin(state.currentPaymentCoinId, state);
+Selector.currentPaymentCoin = (state) => Selector.coin(state.currentPaymentCoinId, state);
 
-Selector.currentPhase = state => Resolver.phase(state.currentPhaseKey);
+Selector.currentPhase = (state) => Resolver.phase(state.currentPhaseKey);
 
-Selector.currentPlayer = state => Selector.player(state.currentPlayerId, state);
+Selector.currentPlayer = (state) => Selector.player(state.currentPlayerId, state);
 
-Selector.currentPlayerOrder = state => state.currentPlayerOrder;
+Selector.currentPlayerOrder = (state) => state.currentPlayerOrder;
 
 Selector.damageTargets = (playerId, state) => {
   const isTypeInSupply = Selector.isTypeInSupply(playerId, UnitCoin.ROYAL_GUARD, state);
@@ -98,13 +98,13 @@ Selector.damageTargets = (playerId, state) => {
   return isTypeInSupply ? DamageTarget.values() : [Resolver.damageTarget(DamageTarget.BOARD)];
 };
 
-Selector.delay = state => state.delay;
+Selector.delay = (state) => state.delay;
 
-Selector.gameRecords = state => state.gameRecords;
+Selector.gameRecords = (state) => state.gameRecords;
 
-Selector.initiativeChangedThisRound = state => state.initiativeChangedThisRound;
+Selector.initiativeChangedThisRound = (state) => state.initiativeChangedThisRound;
 
-Selector.initiativePlayer = state => {
+Selector.initiativePlayer = (state) => {
   const id = state.initiativePlayerId;
   return state.playerInstances[id];
 };
@@ -149,7 +149,7 @@ Selector.isEnemyUnitAt = (playerId, an, state) => {
   return coinKey ? Selector.isEnemyUnit(playerId, coinKey, state) : false;
 };
 
-Selector.isFourPlayer = state => !state.isTwoPlayer;
+Selector.isFourPlayer = (state) => !state.isTwoPlayer;
 
 Selector.isFriendlyUnit = (playerId, coinKey, state) => {
   const tableau = Selector.tableau(playerId, state);
@@ -163,7 +163,7 @@ Selector.isFriendlyUnitAt = (playerId, an, state) => {
   return coinKey ? Selector.isFriendlyUnit(playerId, coinKey, state) : false;
 };
 
-Selector.isGameOver = state => state.isGameOver;
+Selector.isGameOver = (state) => state.isGameOver;
 
 Selector.isHumanPlayer = (playerId, state) => {
   const player = Selector.player(playerId, state);
@@ -191,7 +191,7 @@ Selector.isOccupied = (an, state) => {
   return !R.isNil(unit) && unit.length > 0;
 };
 
-Selector.isTwoPlayer = state => state.isTwoPlayer;
+Selector.isTwoPlayer = (state) => state.isTwoPlayer;
 
 Selector.isTypeInSupply = (playerId, coinKey, state) => {
   const coins = Selector.supplyCoinsByType(playerId, coinKey, state);
@@ -211,18 +211,19 @@ Selector.isUnoccupied = (an, state) => {
   return R.isNil(unit);
 };
 
-Selector.isVerbose = state => state.isVerbose;
+Selector.isVerbose = (state) => state.isVerbose;
 
-Selector.mctsRoot = state => state.mctsRoot;
+Selector.mctsRoot = (state) => state.mctsRoot;
 
-Selector.peekInputCallback = state => state.inputCallbackStack[state.inputCallbackStack.length - 1];
+Selector.peekInputCallback = (state) =>
+  state.inputCallbackStack[state.inputCallbackStack.length - 1];
 
 Selector.player = (playerId, state) => state.playerInstances[playerId];
 
-Selector.playerCount = state => Object.keys(state.playerInstances).length;
+Selector.playerCount = (state) => Object.keys(state.playerInstances).length;
 
 Selector.playerForCard = (cardKey, state) => {
-  const filterFunction = player => {
+  const filterFunction = (player) => {
     const tableau = Selector.tableau(player.id, state);
     return tableau.includes(cardKey);
   };
@@ -236,7 +237,7 @@ Selector.playerStrategy = (playerId, state) => state.playerToStrategy[playerId];
 Selector.playerUnitANs = (playerId, state) => {
   const tableau = Selector.tableau(playerId, state);
   const ans = Object.keys(state.anToTokens);
-  const filterFunction = an => {
+  const filterFunction = (an) => {
     const coinKey = state.anToCoinKey[an];
 
     return tableau.includes(coinKey);
@@ -245,9 +246,9 @@ Selector.playerUnitANs = (playerId, state) => {
   return R.filter(filterFunction, ans);
 };
 
-Selector.players = state => Object.values(state.playerInstances);
+Selector.players = (state) => Object.values(state.playerInstances);
 
-Selector.playersInOrder = state => {
+Selector.playersInOrder = (state) => {
   const count = Selector.playerCount(state);
   const players0 = Object.values(state.playerInstances);
   const index0 = R.findIndex(R.propEq("id", state.initiativePlayerId))(players0);
@@ -259,7 +260,7 @@ Selector.playersInOrder = state => {
 
 Selector.possibleControlANs = (teamKey, state) => {
   const allControlANs = Object.keys(state.anToControl);
-  const filterFunction = an => {
+  const filterFunction = (an) => {
     const control = Selector.control(an, state);
     return !R.isNil(control) && control !== teamKey;
   };
@@ -267,12 +268,12 @@ Selector.possibleControlANs = (teamKey, state) => {
   return R.filter(filterFunction, allControlANs);
 };
 
-Selector.round = state => state.round;
+Selector.round = (state) => state.round;
 
 Selector.supplyCoinsByType = (playerId, coinKey, state) => {
   const coinIds = Selector.supply(playerId, state);
   const coins = Selector.coins(coinIds, state);
-  const filterFunction = coin => coin.coinKey === coinKey;
+  const filterFunction = (coin) => coin.coinKey === coinKey;
 
   return R.filter(filterFunction, coins);
 };
@@ -291,7 +292,7 @@ Selector.teamAdjacentANs = (teamKey, state) => {
 Selector.teamANs = (teamKey, state) => {
   const teamTableau = Selector.teamTableau(teamKey, state);
   const ans = Object.keys(state.anToTokens);
-  const filterFunction = an => {
+  const filterFunction = (an) => {
     const coinKey = state.anToCoinKey[an];
 
     return teamTableau.includes(coinKey);
@@ -302,7 +303,7 @@ Selector.teamANs = (teamKey, state) => {
 
 Selector.teamPlayerIds = (teamKey, state) => {
   const playerIds = Object.keys(state.playerInstances);
-  const filterFunction = playerId => {
+  const filterFunction = (playerId) => {
     const player = Selector.player(playerId, state);
     return player.teamKey === teamKey;
   };
@@ -322,21 +323,19 @@ Selector.teamTableau = (teamKey, state) => {
 
 Selector.unit = (an, state) => state.anToTokens[an];
 
-Selector.userMessage = state => state.userMessage;
-
-Selector.winner = state => (state.winnerTeamKey ? Resolver.team(state.winnerTeamKey) : undefined);
+Selector.userMessage = (state) => state.userMessage;
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////
-const nextId = instanceMap => {
+const nextId = (instanceMap) => {
   const reduceFunction = (accum, key) => Math.max(accum, key);
   const maxId = R.reduce(reduceFunction, 0, Object.keys(instanceMap));
 
   return (maxId !== undefined ? maxId : 0) + 1;
 };
 
-Selector.nextCoinId = state => nextId(state.coinInstances);
+Selector.nextCoinId = (state) => nextId(state.coinInstances);
 
-Selector.nextPlayerId = state => nextId(state.playerInstances);
+Selector.nextPlayerId = (state) => nextId(state.playerInstances);
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////
 // Player collections.

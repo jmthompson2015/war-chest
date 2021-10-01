@@ -3,17 +3,17 @@ import ActionType from "./ActionType.js";
 
 QUnit.module("ActionType");
 
-QUnit.test("all action creators", assert => {
+QUnit.test("all action creators", (assert) => {
   // Setup.
   const actionCreatorKeys = Object.getOwnPropertyNames(ActionCreator);
-  assert.equal(actionCreatorKeys.length, 40);
+  assert.equal(actionCreatorKeys.length, 39);
   const actionTypeKeys = Object.getOwnPropertyNames(ActionType);
-  const actionTypes = actionTypeKeys.map(key => ActionType[key]);
+  const actionTypes = actionTypeKeys.map((key) => ActionType[key]);
 
   // Run / Verify.
   assert.equal(actionCreatorKeys.length, actionTypeKeys.length);
 
-  actionCreatorKeys.forEach(key => {
+  actionCreatorKeys.forEach((key) => {
     assert.equal(actionTypes.includes(key), true, `actionCreator = ${key}`);
   });
 });

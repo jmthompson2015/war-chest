@@ -14,7 +14,6 @@ AppState.create = ({
   isVerbose = true,
   mctsRoot = null,
   userMessage = null,
-  winnerTeamKey = null,
 
   round = 0,
   currentDamageCallback = null,
@@ -38,7 +37,7 @@ AppState.create = ({
   playerToTableau = {},
 
   coinInstances = {},
-  playerInstances = {}
+  playerInstances = {},
 } = {}) =>
   Immutable({
     anToCoinKey,
@@ -54,7 +53,6 @@ AppState.create = ({
     isVerbose,
     mctsRoot,
     userMessage,
-    winnerTeamKey,
 
     round,
     currentDamageCallback,
@@ -78,7 +76,7 @@ AppState.create = ({
     playerToTableau,
 
     coinInstances,
-    playerInstances
+    playerInstances,
   });
 
 Object.freeze(AppState);

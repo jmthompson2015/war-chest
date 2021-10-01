@@ -100,8 +100,6 @@ ActionCreator.setUserMessage = makeActionCreator(ActionType.SET_USER_MESSAGE, "u
 
 ActionCreator.setVerbose = makeActionCreator(ActionType.SET_VERBOSE, "isVerbose");
 
-ActionCreator.setWinner = makeActionCreator(ActionType.SET_WINNER, "winnerTeamKey");
-
 ActionCreator.transferBagToHand = makeActionCreator(
   ActionType.TRANSFER_BAG_TO_HAND,
   "playerId",
@@ -114,7 +112,7 @@ ActionCreator.transferBetweenPlayerArrays = (fromArrayName, toArrayName, playerI
     fromArrayName,
     toArrayName,
     playerId,
-    coinId
+    coinId,
   };
 };
 

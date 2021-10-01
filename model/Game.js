@@ -9,7 +9,7 @@ import Setup from "./Setup.js";
 import StrategyResolver from "./StrategyResolver.js";
 
 const executeGame = (roundLimit, resolve, store) => {
-  if (GameOver.isGameOver(store, roundLimit)) {
+  if (GameOver.isGameOver(store.getState(), roundLimit)) {
     resolve();
   } else {
     Round.execute(store).then(() => {
@@ -24,7 +24,7 @@ class Game {
     this._store = Redux.createStore(Reducer.root);
     this._store.dispatch(ActionCreator.setPlayers(players));
     this._store.dispatch(ActionCreator.setPlayerToTableau(playerToTableau));
-    R.forEach(player => {
+    R.forEach((player) => {
       const strategy = StrategyResolver.resolve(player.strategy);
       this._store.dispatch(ActionCreator.setPlayerStrategy(player.id, strategy));
     }, players);
@@ -46,7 +46,7 @@ class Game {
   }
 
   execute() {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       executeGame(this.roundLimit, resolve, this.store);
     });
   }

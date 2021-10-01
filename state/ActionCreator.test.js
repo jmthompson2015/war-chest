@@ -4,18 +4,18 @@ import PlayerState from "./PlayerState.js";
 
 QUnit.module("ActionCreator");
 
-QUnit.test("all action types", assert => {
+QUnit.test("all action types", (assert) => {
   // Setup.
   const actionTypeKeys = Object.getOwnPropertyNames(ActionType);
-  assert.equal(actionTypeKeys.length, 40);
+  assert.equal(actionTypeKeys.length, 39);
 
   // Run / Verify.
-  actionTypeKeys.forEach(key => {
+  actionTypeKeys.forEach((key) => {
     assert.ok(ActionCreator[ActionType[key]], `actionType = ${key} ${ActionType[key]}`);
   });
 });
 
-QUnit.test("addToPlayerBag()", assert => {
+QUnit.test("addToPlayerBag()", (assert) => {
   // Setup.
   const playerId = 3;
   const coinId = 12;
@@ -31,7 +31,7 @@ QUnit.test("addToPlayerBag()", assert => {
   assert.equal(result.coinId, coinId);
 });
 
-QUnit.test("addToPlayerMorgue()", assert => {
+QUnit.test("addToPlayerMorgue()", (assert) => {
   // Setup.
   const playerId = 3;
   const coinId = 12;
@@ -47,7 +47,7 @@ QUnit.test("addToPlayerMorgue()", assert => {
   assert.equal(result.coinId, coinId);
 });
 
-QUnit.test("addToPlayerDiscardFacedown()", assert => {
+QUnit.test("addToPlayerDiscardFacedown()", (assert) => {
   // Setup.
   const playerId = 3;
   const coinId = 12;
@@ -63,7 +63,7 @@ QUnit.test("addToPlayerDiscardFacedown()", assert => {
   assert.equal(result.coinId, coinId);
 });
 
-QUnit.test("addToPlayerDiscardFaceup()", assert => {
+QUnit.test("addToPlayerDiscardFaceup()", (assert) => {
   // Setup.
   const playerId = 3;
   const coinId = 12;
@@ -79,7 +79,7 @@ QUnit.test("addToPlayerDiscardFaceup()", assert => {
   assert.equal(result.coinId, coinId);
 });
 
-QUnit.test("addToPlayerHand()", assert => {
+QUnit.test("addToPlayerHand()", (assert) => {
   // Setup.
   const playerId = 3;
   const coinId = 12;
@@ -95,7 +95,7 @@ QUnit.test("addToPlayerHand()", assert => {
   assert.equal(result.coinId, coinId);
 });
 
-QUnit.test("addToPlayerSupply()", assert => {
+QUnit.test("addToPlayerSupply()", (assert) => {
   // Setup.
   const playerId = 3;
   const coinId = 12;
@@ -111,7 +111,7 @@ QUnit.test("addToPlayerSupply()", assert => {
   assert.equal(result.coinId, coinId);
 });
 
-QUnit.test("moveAUnit()", assert => {
+QUnit.test("moveAUnit()", (assert) => {
   // Setup.
   const playerId = 3;
   const an1 = "a1";
@@ -128,7 +128,7 @@ QUnit.test("moveAUnit()", assert => {
   assert.equal(result.an2, an2);
 });
 
-QUnit.test("setControl()", assert => {
+QUnit.test("setControl()", (assert) => {
   // Setup.
   const an = "a1";
   const controlKey = "raven";
@@ -143,7 +143,7 @@ QUnit.test("setControl()", assert => {
   assert.equal(result.controlKey, controlKey);
 });
 
-QUnit.test("setInitiativePlayer()", assert => {
+QUnit.test("setInitiativePlayer()", (assert) => {
   // Setup.
   const playerId = 3;
 
@@ -156,7 +156,7 @@ QUnit.test("setInitiativePlayer()", assert => {
   assert.equal(result.playerId, playerId);
 });
 
-QUnit.test("setPlayers()", assert => {
+QUnit.test("setPlayers()", (assert) => {
   // Setup.
   const ravenPlayer = PlayerState.create({ id: 1, name: "Raven" });
   const wolfPlayer = PlayerState.create({ id: 2, name: "Wolf" });
@@ -175,7 +175,7 @@ QUnit.test("setPlayers()", assert => {
   assert.equal(resultPlayers[1], wolfPlayer);
 });
 
-QUnit.test("transferBagToHand()", assert => {
+QUnit.test("transferBagToHand()", (assert) => {
   // Setup.
   const playerId = 3;
   const coinId = 12;
@@ -190,7 +190,7 @@ QUnit.test("transferBagToHand()", assert => {
   assert.equal(result.coinId, coinId);
 });
 
-QUnit.test("transferBoardToDiscardFaceup()", assert => {
+QUnit.test("transferBoardToDiscardFaceup()", (assert) => {
   // Setup.
   const an1 = "a1";
   const playerId = 3;
@@ -205,7 +205,7 @@ QUnit.test("transferBoardToDiscardFaceup()", assert => {
   assert.equal(result.an1, an1);
 });
 
-QUnit.test("transferBoardToMorgue()", assert => {
+QUnit.test("transferBoardToMorgue()", (assert) => {
   // Setup.
   const an1 = "a1";
   const playerId = 3;
@@ -220,7 +220,7 @@ QUnit.test("transferBoardToMorgue()", assert => {
   assert.equal(result.an1, an1);
 });
 
-QUnit.test("transferHandToBoard()", assert => {
+QUnit.test("transferHandToBoard()", (assert) => {
   // Setup.
   const playerId = 3;
   const coinId = 12;
@@ -237,7 +237,7 @@ QUnit.test("transferHandToBoard()", assert => {
   assert.equal(result.an2, an2);
 });
 
-QUnit.test("transferHandToDiscardFacedown()", assert => {
+QUnit.test("transferHandToDiscardFacedown()", (assert) => {
   // Setup.
   const playerId = 3;
   const coinId = 12;
@@ -252,7 +252,7 @@ QUnit.test("transferHandToDiscardFacedown()", assert => {
   assert.equal(result.coinId, coinId);
 });
 
-QUnit.test("transferHandToDiscardFaceup()", assert => {
+QUnit.test("transferHandToDiscardFaceup()", (assert) => {
   // Setup.
   const playerId = 3;
   const coinId = 12;
@@ -267,7 +267,7 @@ QUnit.test("transferHandToDiscardFaceup()", assert => {
   assert.equal(result.coinId, coinId);
 });
 
-QUnit.test("transferSupplyToDiscardFaceup()", assert => {
+QUnit.test("transferSupplyToDiscardFaceup()", (assert) => {
   // Setup.
   const playerId = 3;
   const coinId = 12;
@@ -282,7 +282,7 @@ QUnit.test("transferSupplyToDiscardFaceup()", assert => {
   assert.equal(result.coinId, coinId);
 });
 
-QUnit.test("transferSupplyToHand()", assert => {
+QUnit.test("transferSupplyToHand()", (assert) => {
   // Setup.
   const playerId = 3;
   const coinId = 12;
@@ -304,7 +304,7 @@ QUnit.test("transferSupplyToHand()", assert => {
   assert.equal(result.coinId, coinId);
 });
 
-QUnit.test("transferSupplyToMorgue()", assert => {
+QUnit.test("transferSupplyToMorgue()", (assert) => {
   // Setup.
   const playerId = 3;
   const coinId = 12;

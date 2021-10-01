@@ -30,7 +30,6 @@ ActionType.SET_ROUND = "setRound";
 ActionType.SET_UNIT = "setUnit";
 ActionType.SET_USER_MESSAGE = "setUserMessage";
 ActionType.SET_VERBOSE = "setVerbose";
-ActionType.SET_WINNER = "setWinner";
 ActionType.TRANSFER_BAG_TO_HAND = "transferBagToHand";
 ActionType.TRANSFER_BETWEEN_PLAYER_ARRAYS = "transferBetweenPlayerArrays";
 ActionType.TRANSFER_BOARD_TO_DISCARD_FACEUP = "transferBoardToDiscardFaceup"; // Berserker.

@@ -265,9 +265,6 @@ Reducer.root = (state, action) => {
     case ActionType.SET_VERBOSE:
       log(`Reducer SET_VERBOSE isVerbose = ${action.isVerbose}`, state);
       return { ...state, isVerbose: action.isVerbose };
-    case ActionType.SET_WINNER:
-      log(`Reducer SET_WINNER winnerTeamKey = ${action.winnerTeamKey}`, state);
-      return { ...state, winnerTeamKey: action.winnerTeamKey };
     case ActionType.TRANSFER_BAG_TO_HAND:
       log(
         `Reducer TRANSFER_BAG_TO_HAND playerId = ${action.playerId} coinId = ${action.coinId}`,
