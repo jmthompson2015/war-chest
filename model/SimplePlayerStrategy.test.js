@@ -10,7 +10,7 @@ import TestData from "./TestData.js";
 
 QUnit.module("SimplePlayerStrategy");
 
-QUnit.test("chooseDamageTarget()", assert => {
+QUnit.test("chooseDamageTarget()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const damageTargets = DamageTarget.values();
@@ -18,7 +18,7 @@ QUnit.test("chooseDamageTarget()", assert => {
 
   // Run.
   const done = assert.async();
-  const callback = result => {
+  const callback = (result) => {
     assert.ok(true, "test resumed from async operation");
     // Verify.
     assert.ok(result);
@@ -29,7 +29,7 @@ QUnit.test("chooseDamageTarget()", assert => {
   SimplePlayerStrategy.chooseDamageTarget(damageTargets, store, delay).then(callback);
 });
 
-QUnit.test("chooseMove()", assert => {
+QUnit.test("chooseMove()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const delay = 0;
@@ -42,7 +42,7 @@ QUnit.test("chooseMove()", assert => {
 
   // Run.
   const done = assert.async();
-  const callback = result => {
+  const callback = (result) => {
     assert.ok(true, "test resumed from async operation");
     // Verify.
     assert.ok(result);
@@ -55,7 +55,7 @@ QUnit.test("chooseMove()", assert => {
   SimplePlayerStrategy.chooseMove(moveStates, store, delay).then(callback);
 });
 
-QUnit.test("chooseMove() moveAUnit", assert => {
+QUnit.test("chooseMove() moveAUnit", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const delay = 0;
@@ -70,7 +70,7 @@ QUnit.test("chooseMove() moveAUnit", assert => {
 
   // Run.
   const done = assert.async();
-  const callback = result => {
+  const callback = (result) => {
     assert.ok(true, "test resumed from async operation");
     // Verify.
     assert.ok(result);
@@ -84,29 +84,31 @@ QUnit.test("chooseMove() moveAUnit", assert => {
   SimplePlayerStrategy.chooseMove(moveStates, store, delay).then(callback);
 });
 
-QUnit.test("choosePaymentCoin()", assert => {
+QUnit.test("choosePaymentCoin()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const delay = 0;
   const playerId = 1;
   store.dispatch(ActionCreator.setCurrentPlayer(playerId));
-  const hand = Selector.hand(playerId, store.getState());
+  const player = Selector.player(playerId, store.getState());
+  const moveStates = MoveGenerator.generate(player, store.getState());
   store.dispatch(ActionCreator.setUnit("e2", 6)); // Swordsman
 
   // Run.
   const done = assert.async();
-  const callback = result => {
+  const callback = (result) => {
     assert.ok(true, "test resumed from async operation");
     // Verify.
     assert.ok(result);
-    assert.equal(hand.includes(result), true);
-    const coin = Selector.coin(result, store.getState());
+    const coinIds = R.map((m) => m.coinId, moveStates);
+    assert.equal(coinIds.includes(result.coinId), true);
+    const coin = Selector.coin(result.coinId, store.getState());
     assert.ok(coin);
     assert.equal(coin.coinKey, UnitCoin.SWORDSMAN);
     done();
   };
 
-  SimplePlayerStrategy.choosePaymentCoin(hand, store, delay).then(callback);
+  SimplePlayerStrategy.choosePaymentCoin(moveStates, store, delay).then(callback);
 });
 
 const SimplePlayerStrategyTest = {};

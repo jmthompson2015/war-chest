@@ -15,7 +15,7 @@ const DELAY = 1000;
 const PRIORITY_MOVE_KEYS = [Move.CONTROL, Move.ATTACK, Move.DEPLOY, Move.TACTIC];
 const SUPPLY = Resolver.damageTarget(DamageTarget.SUPPLY);
 
-const choose = array => {
+const choose = (array) => {
   let answer;
 
   if (array) {
@@ -30,15 +30,15 @@ const choose = array => {
 };
 
 SimplePlayerStrategy.chooseDamageTarget = (damageTargets, store, delay = DELAY) =>
-  new Promise(resolve => {
+  new Promise((resolve) => {
     const answer = damageTargets.length <= 1 ? damageTargets[0] : SUPPLY;
     RandomPlayerStrategy.delayedResolve(answer, resolve, delay);
   });
 
-const byDistance = an1 => R.groupBy(moveState => Board.distance(an1, moveState.an2));
+const byDistance = (an1) => R.groupBy((moveState) => Board.distance(an1, moveState.an2));
 
 SimplePlayerStrategy.chooseMove = (moveStates, store, delay = DELAY) =>
-  new Promise(resolve => {
+  new Promise((resolve) => {
     const startTime = Date.now();
     let answer;
 
@@ -87,36 +87,36 @@ SimplePlayerStrategy.chooseMove = (moveStates, store, delay = DELAY) =>
     RandomPlayerStrategy.delayedResolve(answer, resolve, remainingTime);
   });
 
-SimplePlayerStrategy.choosePaymentCoin = (coinIds, store, delay = DELAY) =>
-  new Promise(resolve => {
+SimplePlayerStrategy.choosePaymentCoin = (moveStates, store, delay = DELAY) =>
+  new Promise((resolve) => {
     const startTime = Date.now();
     let answer;
 
-    if (coinIds.length <= 1) {
-      [answer] = coinIds;
+    if (moveStates.length <= 1) {
+      [answer] = moveStates;
     } else {
       const state = store.getState();
       const tokenANs = Object.keys(state.anToTokens);
 
       // Choose a coin that has a match on the board.
-      const boardCoinKeys = R.uniq(R.map(an1 => Selector.coinKeyForUnit(an1, state), tokenANs));
+      const boardCoinKeys = R.uniq(R.map((an1) => Selector.coinKeyForUnit(an1, state), tokenANs));
       const handCoins = Selector.coins(Selector.hand(state.currentPlayerId, state), state);
-      const handCoinKeys = R.uniq(R.map(c => c.coinKey, handCoins));
+      const handCoinKeys = R.uniq(R.map((c) => c.coinKey, handCoins));
       const targetCoinKeys = R.intersection(boardCoinKeys, handCoinKeys);
 
       if (targetCoinKeys.length > 0) {
         const coinKey = ArrayUtils.randomElement(targetCoinKeys);
-        const matchingCoins = R.filter(c => c.coinKey === coinKey, handCoins);
+        const matchingCoins = R.filter((c) => c.coinKey === coinKey, handCoins);
 
         if (matchingCoins.length > 0) {
           const coin = ArrayUtils.randomElement(matchingCoins);
-          answer = coin ? coin.id : undefined;
+          answer = coin ? { coinId: coin.id } : undefined;
         }
       }
     }
 
     if (!answer) {
-      answer = ArrayUtils.randomElement(coinIds);
+      answer = ArrayUtils.randomElement(moveStates);
     }
 
     const elapsedTime = Date.now() - startTime;

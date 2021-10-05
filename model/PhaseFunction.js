@@ -80,9 +80,10 @@ PhaseFunction.executePlayCoin = (resolve, store, callback) => {
   const hand = Selector.hand(currentPlayer.id, store.getState());
 
   if (hand.length > 0) {
+    const moveStates = MoveGenerator.generate(currentPlayer, store.getState());
     const delay = Selector.delay(store.getState());
-    strategy.choosePaymentCoin(hand, store, delay).then((paymentCoinId) => {
-      PhaseFunction.finishChoosePaymentCoin(paymentCoinId, resolve, store, callback);
+    strategy.choosePaymentCoin(moveStates, store, delay).then((moveState) => {
+      PhaseFunction.finishChoosePaymentCoin(moveState.coinId, resolve, store, callback);
     });
   } else {
     resolve();

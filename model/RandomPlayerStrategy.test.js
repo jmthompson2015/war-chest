@@ -8,7 +8,7 @@ import TestData from "./TestData.js";
 
 QUnit.module("RandomPlayerStrategy");
 
-QUnit.test("chooseDamageTarget()", assert => {
+QUnit.test("chooseDamageTarget()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const damageTargets = DamageTarget.values();
@@ -16,7 +16,7 @@ QUnit.test("chooseDamageTarget()", assert => {
 
   // Run.
   const done = assert.async();
-  const callback = result => {
+  const callback = (result) => {
     assert.ok(true, "test resumed from async operation");
     // Verify.
     assert.ok(result);
@@ -27,7 +27,7 @@ QUnit.test("chooseDamageTarget()", assert => {
   RandomPlayerStrategy.chooseDamageTarget(damageTargets, store, delay).then(callback);
 });
 
-QUnit.test("chooseMove()", assert => {
+QUnit.test("chooseMove()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const delay = 0;
@@ -40,7 +40,7 @@ QUnit.test("chooseMove()", assert => {
 
   // Run.
   const done = assert.async();
-  const callback = result => {
+  const callback = (result) => {
     assert.ok(true, "test resumed from async operation");
     // Verify.
     assert.ok(result);
@@ -53,24 +53,25 @@ QUnit.test("chooseMove()", assert => {
   RandomPlayerStrategy.chooseMove(moveStates, store, delay).then(callback);
 });
 
-QUnit.test("choosePaymentCoin()", assert => {
+QUnit.test("choosePaymentCoin()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const delay = 0;
   const playerId = 1;
-  const hand = Selector.hand(playerId, store.getState());
+  const player = Selector.player(playerId, store.getState());
+  const moveStates = MoveGenerator.generate(player, store.getState());
 
   // Run.
   const done = assert.async();
-  const callback = result => {
+  const callback = (result) => {
     assert.ok(true, "test resumed from async operation");
     // Verify.
     assert.ok(result);
-    assert.equal(hand.includes(result), true);
+    assert.equal(moveStates.includes(result), true);
     done();
   };
 
-  RandomPlayerStrategy.choosePaymentCoin(hand, store, delay).then(callback);
+  RandomPlayerStrategy.choosePaymentCoin(moveStates, store, delay).then(callback);
 });
 
 const RandomPlayerStrategyTest = {};

@@ -1,53 +1,53 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>War Chest (local)</title>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tachyons@4.11/css/tachyons.css" />
-	<link rel="stylesheet" href="../view/style.css" />
+  <head>
+    <title>War Chest (local)</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tachyons@4.11/css/tachyons.css" />
+    <link rel="stylesheet" href="../view/style.css" />
 
-	<script src="https://cdn.jsdelivr.net/npm/ramda@0.26/dist/ramda.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/react@16.9/umd/react.development.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/react-dom@16.9/umd/react-dom.development.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/prop-types@15.7/prop-types.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/react-dom-factories@1.0/index.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/redux@4.0/dist/redux.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/react-redux@7.1/dist/react-redux.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/seamless-immutable@7.1/seamless-immutable.development.js"></script>
-	<script src="https://cdn.jsdelivr.net/gh/jmthompson2015/react-components@latest/dist/react-components.js"></script>
-	<script src="https://cdn.jsdelivr.net/gh/jmthompson2015/react-game-board@latest/dist/react-game-board.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ramda@0.26/dist/ramda.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react@16.9/umd/react.development.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@16.9/umd/react-dom.development.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prop-types@15.7/prop-types.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom-factories@1.0/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/redux@4.0/dist/redux.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-redux@7.1/dist/react-redux.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/seamless-immutable@7.1/seamless-immutable.development.js"></script>
+    <script src="../../mcts/dist/mcts.js"></script>
+    <script src="../../react-components/dist/react-components.js"></script>
+    <script src="../../react-game-board/dist/react-game-board.js"></script>
 
-	<script src="WarChestApp.local.js" type="module"></script>
-</head>
-<body>
-	<div id="newGamePanel" class="center ma0 tc"></div>
-	<div class="dt">
-		<div class="dt-row">
-			<div id="statusBarPanel" class="dtc ma0 tc v-mid"></div>
-		</div>
+    <script src="WarChestApp.local.js" type="module"></script>
+  </head>
+  <body>
+    <div id="newGamePanel" class="center ma0 tc"></div>
+    <div class="dt">
+      <div class="dt-row">
+        <div id="statusBarPanel" class="dtc ma0 tc v-mid"></div>
+      </div>
 
-		<div class="dt-row">
-			<div class="dt">
-				<div class="dt-row">
-					<div class="dtc"></div>
-					<div id="playerPanelA" class="dtc ma0 tc v-mid"></div>
-					<div class="dtc"></div>
-				</div>
-				<div class="dt-row">
-					<div id="playerPanelD" class="dtc ma0 tc v-mid"></div>
-					<div id="boardPanel" class="dtc ma0 tc v-mid"></div>
-					<div id="playerPanelB" class="dtc ma0 tc v-mid"></div>
-				</div>
-				<div class="dt-row">
-					<div class="dtc"></div>
-					<div id="playerPanelC" class="dtc ma0 tc v-mid"></div>
-					<div class="dtc"></div>
-				</div>
-			</div>
-		</div>
-		<div class="dt-row">
-			<div id="gameRecords" class="dtc pa1 tc v-mid"></div>
-		</div>
-	</div>
-</body>
-
+      <div class="dt-row">
+        <div class="dt">
+          <div class="dt-row">
+            <div class="dtc"></div>
+            <div id="playerPanelA" class="dtc ma0 tc v-mid"></div>
+            <div class="dtc"></div>
+          </div>
+          <div class="dt-row">
+            <div id="playerPanelD" class="dtc ma0 tc v-mid"></div>
+            <div id="boardPanel" class="dtc ma0 tc v-mid"></div>
+            <div id="playerPanelB" class="dtc ma0 tc v-mid"></div>
+          </div>
+          <div class="dt-row">
+            <div class="dtc"></div>
+            <div id="playerPanelC" class="dtc ma0 tc v-mid"></div>
+            <div class="dtc"></div>
+          </div>
+        </div>
+      </div>
+      <div class="dt-row">
+        <div id="gameRecords" class="dtc pa1 tc v-mid"></div>
+      </div>
+    </div>
+  </body>
 </html>

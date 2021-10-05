@@ -1,10 +1,11 @@
 module.exports = {
   env: {
-    browser: true
+    browser: true,
   },
   extends: ["airbnb", "prettier"],
   globals: {
     Immutable: true,
+    MCTS: true,
     PropTypes: true,
     QUnit: true,
     R: true,
@@ -14,10 +15,10 @@ module.exports = {
     ReactDOMFactories: true,
     ReactGameBoard: true,
     ReactRedux: true,
-    Redux: true
+    Redux: true,
   },
   rules: {
     "import/extensions": ["error", { js: "always" }],
-    "max-len": ["error", { code: 100, ignoreUrls: true }]
-  }
+    "max-len": ["error", { code: 100, ignoreUrls: true }],
+  },
 };

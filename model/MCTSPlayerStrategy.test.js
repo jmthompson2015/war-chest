@@ -1,5 +1,7 @@
 import DamageTarget from "../artifact/DamageTarget.js";
 import Phase from "../artifact/Phase.js";
+import RoyalCoin from "../artifact/RoyalCoin.js";
+import UnitCoin from "../artifact/UnitCoin.js";
 
 import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
@@ -11,7 +13,7 @@ import MCTSPlayerStrategy from "./MCTSPlayerStrategy.js";
 
 QUnit.module("MCTSPlayerStrategy");
 
-QUnit.test("chooseDamageTarget()", assert => {
+QUnit.test("chooseDamageTarget()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const damageTargets = DamageTarget.values();
@@ -19,7 +21,7 @@ QUnit.test("chooseDamageTarget()", assert => {
 
   // Run.
   const done = assert.async();
-  const callback = result => {
+  const callback = (result) => {
     assert.ok(true, "test resumed from async operation");
     // Verify.
     assert.ok(result);
@@ -30,8 +32,10 @@ QUnit.test("chooseDamageTarget()", assert => {
   MCTSPlayerStrategy.chooseDamageTarget(damageTargets, store, delay).then(callback);
 });
 
-QUnit.test("chooseMove()", assert => {
+QUnit.test("chooseMove()", (assert) => {
   // Setup.
+  const playerId = 1;
+  const paymentCoinId = 6;
   const store = TestData.createStore();
   store.dispatch(ActionCreator.setDelay(0));
   store.dispatch(ActionCreator.setRound(1));
@@ -39,37 +43,41 @@ QUnit.test("chooseMove()", assert => {
   const players2 = Selector.playersInOrder(store.getState());
   const playerIds = R.map(R.prop("id"), players2);
   store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
-  store.dispatch(ActionCreator.setCurrentPlayer(1));
-  store.dispatch(ActionCreator.setCurrentPaymentCoin(6));
+  store.dispatch(ActionCreator.setCurrentPlayer(playerId));
+  store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
   store.dispatch(ActionCreator.setVerbose(false));
   const delay = 0;
   const roundLimit = 30;
-  const allowedTime = 500;
-  const playerId = 1;
+  const allowedTime = 100;
   const player = Selector.player(playerId, store.getState());
   const hand = Selector.hand(playerId, store.getState());
-  const paymentCoinId = hand[1];
   const paymentCoin = Selector.coin(paymentCoinId, store.getState());
   const moveStates = MoveGenerator.generateForCoin(player, paymentCoin, store.getState());
 
   // Run.
   const done = assert.async();
-  const callback = result => {
+  const callback = (result) => {
     assert.ok(true, "test resumed from async operation");
     // Verify.
     assert.ok(result);
-    assert.equal(["deploy", "pass", "recruit"].includes(result.moveKey), true);
-    assert.equal(result.playerId, playerId);
-    assert.equal(result.paymentCoinId, paymentCoinId);
+    assert.equal(
+      ["deploy", "pass", "recruit"].includes(result.moveKey),
+      true,
+      `result.moveKey = ${result.moveKey}`
+    );
+    assert.equal(result.playerId, playerId, `result.playerId = ${result.playerId}`);
+    assert.equal(
+      hand.includes(result.paymentCoinId),
+      true,
+      `result.paymentCoinId = ${result.paymentCoinId}`
+    );
     done();
   };
 
-  MCTSPlayerStrategy.choosePaymentCoin(hand, store, delay, roundLimit, allowedTime).then(() => {
-    MCTSPlayerStrategy.chooseMove(moveStates, store, delay, roundLimit, allowedTime).then(callback);
-  });
+  MCTSPlayerStrategy.chooseMove(moveStates, store, delay, roundLimit, allowedTime).then(callback);
 });
 
-QUnit.test("choosePaymentCoin()", assert => {
+QUnit.test("choosePaymentCoin()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   store.dispatch(ActionCreator.setDelay(0));
@@ -82,21 +90,32 @@ QUnit.test("choosePaymentCoin()", assert => {
   store.dispatch(ActionCreator.setVerbose(false));
   const delay = 0;
   const roundLimit = 30;
-  const allowedTime = 500;
+  const allowedTime = 100;
   const playerId = 1;
-  const hand = Selector.hand(playerId, store.getState());
+  const player = Selector.player(playerId, store.getState());
+  const moveStates = MoveGenerator.generate(player, store.getState());
 
   // Run.
   const done = assert.async();
-  const callback = result => {
+  const callback = (result) => {
     assert.ok(true, "test resumed from async operation");
     // Verify.
     assert.ok(result);
-    assert.equal(hand.includes(result), true);
+    const coinIds = R.map((m) => m.coinId, moveStates);
+    assert.equal(coinIds.includes(result.coinId), true);
+    const coin = Selector.coin(result.coinId, store.getState());
+    assert.ok(coin);
+    assert.equal(
+      [RoyalCoin.RAVEN, UnitCoin.PIKEMAN, UnitCoin.SWORDSMAN].includes(coin.coinKey),
+      true,
+      `coin.coinKey = ${coin.coinKey}`
+    );
     done();
   };
 
-  MCTSPlayerStrategy.choosePaymentCoin(hand, store, delay, roundLimit, allowedTime).then(callback);
+  MCTSPlayerStrategy.choosePaymentCoin(moveStates, store, delay, roundLimit, allowedTime).then(
+    callback
+  );
 });
 
 const MCTSPlayerStrategyTest = {};

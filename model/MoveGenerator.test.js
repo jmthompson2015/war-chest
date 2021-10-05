@@ -42,10 +42,31 @@ const verifyMoveState = (
   assert.equal(moveState.victimCoinId, victimCoinId, "victimCoinId");
 };
 
-QUnit.test("generate()", assert => {
+QUnit.test("generate() payment coins", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
+  const player = Selector.player(playerId, store.getState());
+
+  // Run.
+  const result = MoveGenerator.generate(player, store.getState());
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(Array.isArray(result), true);
+  assert.equal(result.length, 3, `result.length=${result.length}`);
+  const moveFirst = R.head(result);
+  assert.equal(moveFirst.coinId, 1, `moveFirst.coinId = ${moveFirst.coinId}`);
+  const moveLast = R.last(result);
+  assert.equal(moveLast.coinId, 10, `moveLast.coinId = ${moveLast.coinId}`);
+});
+
+QUnit.test("generate() moves", (assert) => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 1;
+  const paymentCoinId = 1;
+  store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
   const player = Selector.player(playerId, store.getState());
 
   // Run.
@@ -71,7 +92,7 @@ QUnit.test("generate()", assert => {
   verifyMoveState(assert, moveLast, Move.PASS, 1, 1);
 });
 
-QUnit.test("generateAttacks()", assert => {
+QUnit.test("generateAttacks()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -122,7 +143,7 @@ QUnit.test("generateAttacks()", assert => {
   );
 });
 
-QUnit.test("generateBolsters()", assert => {
+QUnit.test("generateBolsters()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -143,7 +164,7 @@ QUnit.test("generateBolsters()", assert => {
   verifyMoveState(assert, move0, Move.BOLSTER, playerId, paymentCoinId, an1);
 });
 
-QUnit.test("generateClaimInitiative()", assert => {
+QUnit.test("generateClaimInitiative()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 2;
@@ -159,7 +180,7 @@ QUnit.test("generateClaimInitiative()", assert => {
   verifyMoveState(assert, result, Move.CLAIM_INITIATIVE, playerId, paymentCoinId);
 });
 
-QUnit.test("generateControls()", assert => {
+QUnit.test("generateControls()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -180,7 +201,7 @@ QUnit.test("generateControls()", assert => {
   verifyMoveState(assert, move0, Move.CONTROL, playerId, paymentCoinId, an1);
 });
 
-QUnit.test("generateDeploys()", assert => {
+QUnit.test("generateDeploys()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -201,7 +222,7 @@ QUnit.test("generateDeploys()", assert => {
   verifyMoveState(assert, moveLast, Move.DEPLOY, playerId, paymentCoinId, "h1");
 });
 
-QUnit.test("generateDeploys() Scout", assert => {
+QUnit.test("generateDeploys() Scout", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 2;
@@ -226,7 +247,7 @@ QUnit.test("generateDeploys() Scout", assert => {
   verifyMoveState(assert, moveLast, Move.DEPLOY, playerId, paymentCoinId, "e6");
 });
 
-QUnit.test("generateForCoin()", assert => {
+QUnit.test("generateForCoin()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -258,7 +279,7 @@ QUnit.test("generateForCoin()", assert => {
   verifyMoveState(assert, moveLast, Move.PASS, 1, 1);
 });
 
-QUnit.test("generateForCoin() Scout", assert => {
+QUnit.test("generateForCoin() Scout", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 2;
@@ -281,7 +302,7 @@ QUnit.test("generateForCoin() Scout", assert => {
   verifyMoveState(assert, moveLast, Move.DEPLOY, playerId, paymentCoinId, "f2");
 });
 
-QUnit.test("generateManeuvers()", assert => {
+QUnit.test("generateManeuvers()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -331,7 +352,7 @@ QUnit.test("generateManeuvers()", assert => {
   );
 });
 
-QUnit.test("generateMoveAUnits()", assert => {
+QUnit.test("generateMoveAUnits()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -374,7 +395,7 @@ QUnit.test("generateMoveAUnits()", assert => {
   );
 });
 
-QUnit.test("generateMoveAUnits() four player", assert => {
+QUnit.test("generateMoveAUnits() four player", (assert) => {
   // Setup.
   const isTwoPlayer = false;
   const store = TestData.createStore(isTwoPlayer);
@@ -414,7 +435,7 @@ QUnit.test("generateMoveAUnits() four player", assert => {
   );
 });
 
-QUnit.test("generatePass()", assert => {
+QUnit.test("generatePass()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 2;
@@ -430,7 +451,7 @@ QUnit.test("generatePass()", assert => {
   verifyMoveState(assert, result, Move.PASS, playerId, paymentCoinId);
 });
 
-QUnit.test("generateRecruits()", assert => {
+QUnit.test("generateRecruits()", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -471,7 +492,7 @@ QUnit.test("generateRecruits()", assert => {
   );
 });
 
-QUnit.test("generateTactics() Archer", assert => {
+QUnit.test("generateTactics() Archer", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 2;
@@ -512,7 +533,7 @@ QUnit.test("generateTactics() Archer", assert => {
   );
 });
 
-QUnit.test("generateTactics() Cavalry", assert => {
+QUnit.test("generateTactics() Cavalry", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 2;
@@ -545,7 +566,7 @@ QUnit.test("generateTactics() Cavalry", assert => {
   assert.equal(moveStateLast.moveKey, Move.ATTACK);
 });
 
-QUnit.test("generateTactics() Crossbowman", assert => {
+QUnit.test("generateTactics() Crossbowman", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -586,7 +607,7 @@ QUnit.test("generateTactics() Crossbowman", assert => {
   );
 });
 
-QUnit.test("generateTactics() Ensign", assert => {
+QUnit.test("generateTactics() Ensign", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -649,7 +670,7 @@ QUnit.test("generateTactics() Ensign", assert => {
   );
 });
 
-QUnit.test("generateTactics() Footman", assert => {
+QUnit.test("generateTactics() Footman", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -725,7 +746,7 @@ QUnit.test("generateTactics() Footman", assert => {
   );
 });
 
-QUnit.test("generateTactics() Lancer", assert => {
+QUnit.test("generateTactics() Lancer", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 2;
@@ -784,7 +805,7 @@ QUnit.test("generateTactics() Lancer", assert => {
   assert.equal(moveState1Last.an2, "e5");
 });
 
-QUnit.test("generateTactics() Light Cavalry", assert => {
+QUnit.test("generateTactics() Light Cavalry", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -840,7 +861,7 @@ QUnit.test("generateTactics() Light Cavalry", assert => {
   );
 });
 
-QUnit.test("generateTactics() Marshall", assert => {
+QUnit.test("generateTactics() Marshall", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;
@@ -888,7 +909,7 @@ QUnit.test("generateTactics() Marshall", assert => {
   );
 });
 
-QUnit.test("generateTactics() Royal Guard", assert => {
+QUnit.test("generateTactics() Royal Guard", (assert) => {
   // Setup.
   const store = TestData.createStore();
   const playerId = 1;

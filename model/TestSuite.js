@@ -1,6 +1,7 @@
 import GameTest from "./Game.test.js";
 import GameOverTest from "./GameOver.test.js";
 import HumanPlayerStrategyTest from "./HumanPlayerStrategy.test.js";
+import MCTSGameTest from "./MCTSGame.test.js";
 import MCTSPlayerStrategyTest from "./MCTSPlayerStrategy.test.js";
 import MoveFunctionTest from "./MoveFunction.test.js";
 import MoveGeneratorTest from "./MoveGenerator.test.js";

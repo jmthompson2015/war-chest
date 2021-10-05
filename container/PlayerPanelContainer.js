@@ -29,7 +29,7 @@ function mapStateToProps(state, ownProps) {
     paymentCoinState = Selector.currentPaymentCoin(state);
   }
 
-  const labelFunction = moveState => MoveFunction.label(moveState, state);
+  const labelFunction = (moveState) => MoveFunction.label(moveState, state);
 
   return {
     coinInstances: state.coinInstances,
@@ -51,11 +51,11 @@ function mapStateToProps(state, ownProps) {
     isInitiativePlayer: Selector.isInitiativePlayer(player.id, state),
     moveStates,
     paymentCoinState,
-    resourceBase: ownProps.resourceBase
+    resourceBase: ownProps.resourceBase,
   };
 }
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   damageCallbackWithCallback: (playerId, damageTarget, currentDamageCallback) => {
     dispatch(ActionCreator.setCurrentDamageCallback());
     if (currentDamageCallback) {
@@ -65,7 +65,7 @@ const mapDispatchToProps = dispatch => ({
   handOnClickWithCallback: (playerId, coinId, currentHandCallback) => {
     dispatch(ActionCreator.setCurrentHandCallback());
     if (currentHandCallback) {
-      currentHandCallback(coinId);
+      currentHandCallback({ coinId });
     }
   },
   inputCallbackWithCallback: (playerId, moveState, currentInputCallback) => {
@@ -73,7 +73,7 @@ const mapDispatchToProps = dispatch => ({
     if (currentInputCallback) {
       currentInputCallback(moveState);
     }
-  }
+  },
 });
 
 const mergeProps = (stateProps, dispatchProps, ownProps) => {
@@ -89,7 +89,7 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
     },
     inputCallback: ({ playerId, moveState }) => {
       dispatchProps.inputCallbackWithCallback(playerId, moveState, stateProps.inputCallback);
-    }
+    },
   };
 };
 
