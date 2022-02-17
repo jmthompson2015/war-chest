@@ -92,6 +92,8 @@ Selector.currentPlayer = (state) => Selector.player(state.currentPlayerId, state
 
 Selector.currentPlayerOrder = (state) => state.currentPlayerOrder;
 
+Selector.currentRound = (state) => state.currentRound;
+
 Selector.damageTargets = (playerId, state) => {
   const isTypeInSupply = Selector.isTypeInSupply(playerId, UnitCoin.ROYAL_GUARD, state);
 
@@ -267,8 +269,6 @@ Selector.possibleControlANs = (teamKey, state) => {
 
   return R.filter(filterFunction, allControlANs);
 };
-
-Selector.round = (state) => state.round;
 
 Selector.supplyCoinsByType = (playerId, coinKey, state) => {
   const coinIds = Selector.supply(playerId, state);

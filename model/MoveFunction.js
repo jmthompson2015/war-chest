@@ -207,7 +207,7 @@ MoveFunction.createGameRecord = (moveState, state) => {
   let answer;
 
   if (moveState) {
-    const round = Selector.round(state);
+    const round = Selector.currentRound(state);
     const gameRecords = Selector.gameRecords(state);
     const roundRecords = R.filter(r => r.round === round, gameRecords);
     const turn = roundRecords.length + 1;

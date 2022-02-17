@@ -726,7 +726,7 @@ QUnit.test("tactic execute() Royal Guard", assert => {
 QUnit.test("createGameRecord()", assert => {
   // Setup.
   const store = TestData.createStore();
-  store.dispatch(ActionCreator.setRound(1));
+  store.dispatch(ActionCreator.setCurrentRound(1));
   const moveState1 = MoveState.create({
     moveKey: Move.DEPLOY,
     playerId: 1,

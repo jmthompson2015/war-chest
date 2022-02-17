@@ -131,7 +131,10 @@ Reducer.root = (state, action) => {
       return { ...state, coinInstances: newCoins };
     case ActionType.ADD_GAME_RECORD:
       log(`Reducer ADD_GAME_RECORD message = ${action.message}`, state);
-      newGameRecords = [...state.gameRecords, { round: state.round, message: action.message }];
+      newGameRecords = [
+        ...state.gameRecords,
+        { round: state.currentRound, message: action.message },
+      ];
       return { ...state, gameRecords: newGameRecords };
     case ActionType.ADD_TO_PLAYER_ARRAY:
       return addToArray(state, action.arrayName, action.playerId, action.coinId);
@@ -222,6 +225,9 @@ Reducer.root = (state, action) => {
         state
       );
       return { ...state, currentPlayerOrder: action.playerIds };
+    case ActionType.SET_CURRENT_ROUND:
+      log(`Reducer SET_CURRENT_ROUND round = ${action.round}`, state);
+      return { ...state, currentRound: action.round };
     case ActionType.SET_DELAY:
       log(`Reducer SET_DELAY delay = ${action.delay}`, state);
       return { ...state, delay: action.delay };
@@ -248,9 +254,6 @@ Reducer.root = (state, action) => {
     case ActionType.SET_PLAYER_TO_TABLEAU:
       log(`Reducer SET_PLAYER_TO_TABLEAU playerToTableau = ${action.playerToTableau}`, state);
       return { ...state, playerToTableau: action.playerToTableau };
-    case ActionType.SET_ROUND:
-      log(`Reducer SET_ROUND round = ${action.round}`, state);
-      return { ...state, round: action.round };
     case ActionType.SET_UNIT:
       log(`Reducer SET_UNIT an = ${action.an} coinId = ${action.coinId}`, state);
       oldUnit = state.anToTokens[action.an] || [];

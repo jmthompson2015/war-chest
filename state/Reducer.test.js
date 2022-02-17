@@ -34,7 +34,7 @@ QUnit.test("addCoin()", (assert) => {
 QUnit.test("addGameRecord()", (assert) => {
   // Setup.
   const state01 = AppState.create();
-  const action01 = ActionCreator.setRound(1);
+  const action01 = ActionCreator.setCurrentRound(1);
   const state0 = Reducer.root(state01, action01);
   const action0 = ActionCreator.addGameRecord("first game record");
 
@@ -50,7 +50,7 @@ QUnit.test("addGameRecord()", (assert) => {
   assert.equal(gameRecords0[0].message, "first game record");
 
   // Setup.
-  const action02 = ActionCreator.setRound(2);
+  const action02 = ActionCreator.setCurrentRound(2);
   const state02 = Reducer.root(result0, action02);
   const action1 = ActionCreator.addGameRecord("second game record");
 
@@ -437,6 +437,20 @@ QUnit.test("setCurrentPlayerOrder()", (assert) => {
   assert.equal(result.currentPlayerOrder.join(), playerIds.join());
 });
 
+QUnit.test("setCurrentRound()", (assert) => {
+  // Setup.
+  const state = AppState.create();
+  const round = 123;
+  const action = ActionCreator.setCurrentRound(round);
+
+  // Run.
+  const result = Reducer.root(state, action);
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(result.currentRound, round);
+});
+
 QUnit.test("setDelay()", (assert) => {
   // Setup.
   const state = AppState.create();
@@ -532,20 +546,6 @@ QUnit.test("setPlayerToTableau()", (assert) => {
   assert.equal(resultTableau2.length, 4);
   assert.equal(resultTableau2[0], UnitCard.ENSIGN);
   assert.equal(resultTableau2[resultTableau2.length - 1], UnitCard.LANCER);
-});
-
-QUnit.test("setRound()", (assert) => {
-  // Setup.
-  const state = AppState.create();
-  const round = 123;
-  const action = ActionCreator.setRound(round);
-
-  // Run.
-  const result = Reducer.root(state, action);
-
-  // Verify.
-  assert.ok(result);
-  assert.equal(result.round, round);
 });
 
 QUnit.test("setUnit()", (assert) => {

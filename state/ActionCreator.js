@@ -68,6 +68,8 @@ ActionCreator.setCurrentPlayerOrder = makeActionCreator(
   "playerIds"
 );
 
+ActionCreator.setCurrentRound = makeActionCreator(ActionType.SET_CURRENT_ROUND, "round");
+
 ActionCreator.setDelay = makeActionCreator(ActionType.SET_DELAY, "delay");
 
 ActionCreator.setInitiativeChangedThisRound = makeActionCreator(
@@ -91,8 +93,6 @@ ActionCreator.setPlayerToTableau = makeActionCreator(
   ActionType.SET_PLAYER_TO_TABLEAU,
   "playerToTableau"
 );
-
-ActionCreator.setRound = makeActionCreator(ActionType.SET_ROUND, "round");
 
 ActionCreator.setUnit = makeActionCreator(ActionType.SET_UNIT, "an", "coinId");
 

@@ -48,7 +48,7 @@ QUnit.test("execute()", assert => {
   const callback = () => {
     assert.ok(true, "test resumed from async operation");
     // Verify.
-    assert.equal(Selector.round(store.getState()), 1);
+    assert.equal(Selector.currentRound(store.getState()), 1);
     assert.equal(Selector.currentPhase(store.getState()), undefined);
     done();
   };

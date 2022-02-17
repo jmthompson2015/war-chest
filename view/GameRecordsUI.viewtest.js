@@ -42,7 +42,7 @@ console.log(`hand2 = ${Selector.hand(2, store.getState())}`);
 console.log(`tableau2 = ${Selector.tableau(2, store.getState())}`);
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////
-store.dispatch(ActionCreator.setRound(1));
+store.dispatch(ActionCreator.setCurrentRound(1));
 store.dispatch(
   ActionCreator.addGameRecord(
     MoveFunction.createGameRecord(
@@ -122,7 +122,7 @@ store.dispatch(
 );
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////
-store.dispatch(ActionCreator.setRound(2));
+store.dispatch(ActionCreator.setCurrentRound(2));
 store.dispatch(
   ActionCreator.addGameRecord(
     MoveFunction.createGameRecord(
@@ -255,7 +255,7 @@ store.dispatch(
 );
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////
-store.dispatch(ActionCreator.setRound(3));
+store.dispatch(ActionCreator.setCurrentRound(3));
 store.dispatch(ActionCreator.setUnit("e2", 40)); // Footman
 store.dispatch(
   ActionCreator.addGameRecord(

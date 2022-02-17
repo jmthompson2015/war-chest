@@ -14,11 +14,11 @@ function mapStateToProps(state, ownProps) {
   return {
     ravenScore,
     wolfScore,
-    round: state.round,
+    round: state.currentRound,
     helpBase: ownProps.helpBase || `${Endpoint.NETWORK_RESOURCE}view/`,
     phaseName: phase ? phase.name : undefined,
     playerName: player ? player.name : undefined,
-    userMessage: Selector.userMessage(state)
+    userMessage: Selector.userMessage(state),
   };
 }
 

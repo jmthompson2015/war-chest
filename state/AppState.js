@@ -15,7 +15,6 @@ AppState.create = ({
   mctsRoot = null,
   userMessage = null,
 
-  round = 0,
   currentDamageCallback = null,
   currentDamageTargetKey = null,
   currentPlayerOrder = null,
@@ -25,6 +24,7 @@ AppState.create = ({
   currentHandCallback = null,
   currentMoves = [],
   currentMove = null,
+  currentRound = 0,
   inputCallbackStack = [],
 
   playerToBag = {},
@@ -54,7 +54,6 @@ AppState.create = ({
     mctsRoot,
     userMessage,
 
-    round,
     currentDamageCallback,
     currentDamageTargetKey,
     currentPlayerOrder,
@@ -64,6 +63,7 @@ AppState.create = ({
     currentHandCallback,
     currentMoves,
     currentMove,
+    currentRound,
     inputCallbackStack,
 
     playerToBag,

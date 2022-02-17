@@ -42,7 +42,7 @@ GameOver.isGameOver = (state, roundLimit = 100) => {
     return true;
   }
 
-  const round = Selector.round(state);
+  const round = Selector.currentRound(state);
 
   if (round >= roundLimit) {
     console.info(`Over roundLimit: ${round}`);
