@@ -17,16 +17,18 @@ import StrategyResolver from "./StrategyResolver.js";
 
 const TestData = {};
 
-const createPlayers = isTwoPlayer => {
+TestData.DELAY = 50;
+
+const createPlayers = (isTwoPlayer) => {
   const player1 = PlayerState.create({
     id: 1,
     name: "Alfred",
-    teamKey: Team.RAVEN
+    teamKey: Team.RAVEN,
   });
   const player2 = PlayerState.create({
     id: 2,
     name: "Bruce",
-    teamKey: Team.WOLF
+    teamKey: Team.WOLF,
   });
 
   const answer = [player1, player2];
@@ -35,12 +37,12 @@ const createPlayers = isTwoPlayer => {
     const player3 = PlayerState.create({
       id: 3,
       name: "Clark",
-      teamKey: Team.RAVEN
+      teamKey: Team.RAVEN,
     });
     const player4 = PlayerState.create({
       id: 4,
       name: "Diana",
-      teamKey: Team.WOLF
+      teamKey: Team.WOLF,
     });
 
     answer.push(player3, player4);
@@ -72,16 +74,16 @@ const initializePlayerControlMarkers = (isTwoPlayer, isRaven, store) => {
       : Board.WOLF_STARTER_CONTROL_POINTS_4P;
   }
 
-  R.forEach(an => {
-    store.dispatch(ActionCreator.setControl(an, controlKey));
+  R.forEach((an1) => {
+    store.dispatch(ActionCreator.setControl(an1, controlKey));
   }, controlANs);
 };
 
 const initializeControlMarkers = (store, isTwoPlayer) => {
   // Place neutral control marker on locations.
   const controlPoints = isTwoPlayer ? Board.CONTROL_POINTS_2P : Board.CONTROL_POINTS_4P;
-  R.forEach(an => {
-    store.dispatch(ActionCreator.setControl(an, ControlMarker.NEUTRAL));
+  R.forEach((an1) => {
+    store.dispatch(ActionCreator.setControl(an1, ControlMarker.NEUTRAL));
   }, controlPoints);
 
   initializePlayerControlMarkers(isTwoPlayer, true, store);
@@ -92,7 +94,7 @@ TestData.createStore = (isTwoPlayer = true, drawCoins = true) => {
   const store = Redux.createStore(Reducer.root);
   const players = createPlayers(isTwoPlayer);
   store.dispatch(ActionCreator.setPlayers(players));
-  R.forEach(player => {
+  R.forEach((player) => {
     const strategy = StrategyResolver.resolve(player.strategy);
     store.dispatch(ActionCreator.setPlayerStrategy(player.id, strategy));
   }, players);
@@ -108,44 +110,45 @@ TestData.createStore = (isTwoPlayer = true, drawCoins = true) => {
     UnitCard.SWORDSMAN,
     UnitCard.PIKEMAN,
     UnitCard.CROSSBOWMAN,
-    UnitCard.LIGHT_CAVALRY
+    UnitCard.LIGHT_CAVALRY,
   ];
-  const unitCards1 = R.map(c => Resolver.card(c), unitCardKeys1);
+  const unitCards1 = R.map((c) => Resolver.card(c), unitCardKeys1);
   const unitCardKeys2 = [UnitCard.ARCHER, UnitCard.CAVALRY, UnitCard.LANCER, UnitCard.SCOUT];
-  const unitCards2 = R.map(c => Resolver.card(c), unitCardKeys2);
+  const unitCards2 = R.map((c) => Resolver.card(c), unitCardKeys2);
 
-  R.forEach(p => {
+  R.forEach((p) => {
     // Place Royal Coin in bag.
     const royalCoinKey = p.teamKey === "raven" ? RoyalCoin.RAVEN : RoyalCoin.WOLF;
     const royalCoin = CoinState.create({ coinKey: royalCoinKey, store });
     store.dispatch(ActionCreator.addToPlayerArray("playerToBag", p.id, royalCoin.id));
     let unitCards = p.id === 1 ? unitCards1 : unitCards2;
 
-    // Randomly deal or draft four (2 player) or three (4 player) unit cards.
     for (let i = 0; i < maxCards; i += 1) {
       const card = unitCards[0];
       unitCards = ArrayUtils.remove(card, unitCards);
       store.dispatch(ActionCreator.addToPlayerArray("playerToTableau", p.id, card.key));
     }
 
-    // Randomly deal or draft four (2 player) or three (4 player) unit cards.
+    // Fill supply with unit coins.
     const cardKeys = Selector.tableau(p.id, store.getState());
-    const cards = R.map(c => Resolver.card(c), cardKeys);
+    const cards = R.map((c) => Resolver.card(c), cardKeys);
 
-    R.forEach(card => {
-      // Fill supply with unit coins.
+    R.forEach((card) => {
       for (let j = 0; j < card.initialCount - 2; j += 1) {
         const coin = CoinState.create({ coinKey: card.key, store });
         store.dispatch(ActionCreator.addToPlayerArray("playerToSupply", p.id, coin.id));
       }
 
-      // Move two of each unit coin type into bag.
+      // Put two of each unit coin type into bag.
       for (let j = 0; j < 2; j += 1) {
         const coin = CoinState.create({ coinKey: card.key, store });
         store.dispatch(ActionCreator.addToPlayerArray("playerToBag", p.id, coin.id));
       }
     }, cards);
   }, players);
+
+  const playerIds = R.map(R.prop("id"), players);
+  store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
 
   if (drawCoins) {
     // Draw three coins.

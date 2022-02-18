@@ -228,6 +228,9 @@ Reducer.root = (state, action) => {
     case ActionType.SET_CURRENT_ROUND:
       log(`Reducer SET_CURRENT_ROUND round = ${action.round}`, state);
       return { ...state, currentRound: action.round };
+    case ActionType.SET_CURRENT_STEP:
+      log(`Reducer SET_CURRENT_STEP stepKey = ${action.stepKey}`, state);
+      return { ...state, currentStepKey: action.stepKey };
     case ActionType.SET_DELAY:
       log(`Reducer SET_DELAY delay = ${action.delay}`, state);
       return { ...state, delay: action.delay };

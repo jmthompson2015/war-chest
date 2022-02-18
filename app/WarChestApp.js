@@ -1,7 +1,10 @@
+import ActionCreator from "../state/ActionCreator.js";
+import Reducer from "../state/Reducer.js";
 import Selector from "../state/Selector.js";
 
-import Game from "../model/Game.js";
 import Setup from "../model/Setup.js";
+import StrategyResolver from "../model/StrategyResolver.js";
+import WCGame from "../model/WCGame.js";
 
 import Endpoint from "../view/Endpoint.js";
 import NewGameDialog from "../view/NewGameDialog.js";
@@ -19,11 +22,17 @@ const resourceBase = endpoint;
 const helpBase = `${endpoint}view/`;
 
 const playGame = (playerInstances, playerToTableau) => {
+  const store = Redux.createStore(Reducer.root);
   document.getElementById("newGamePanel").style.display = "none";
 
   const players = Object.values(playerInstances);
-  const game = new Game(players, playerToTableau);
-  const { store } = game;
+  store.dispatch(ActionCreator.setPlayers(players));
+  store.dispatch(ActionCreator.setPlayerToTableau(playerToTableau));
+  Setup.execute(store);
+  R.forEach((player) => {
+    const strategy = StrategyResolver.resolve(player.strategy);
+    store.dispatch(ActionCreator.setPlayerStrategy(player.id, strategy));
+  }, players);
 
   // Status Bar
   const container1 = React.createElement(StatusBarContainer, { helpBase });
@@ -51,7 +60,7 @@ const playGame = (playerInstances, playerToTableau) => {
   const myPlayerId = Selector.isTwoPlayer(store.getState()) ? 2 : 3;
   const container5 = React.createElement(PlayerPanelContainer, {
     playerId: myPlayerId,
-    resourceBase
+    resourceBase,
   });
   const element5 = React.createElement(ReactRedux.Provider, { store }, container5);
   ReactDOM.render(element5, document.getElementById("playerPanelC"));
@@ -68,12 +77,12 @@ const playGame = (playerInstances, playerToTableau) => {
   const element7 = React.createElement(ReactRedux.Provider, { store }, container7);
   ReactDOM.render(element7, document.getElementById("gameRecords"));
 
-  game.execute();
+  WCGame.execute(store);
 };
 
 const element1 = React.createElement(NewGameDialog, {
   initialPlayerToTableau: Setup.createInitialPlayerToTableau(),
-  callback: playGame
+  callback: playGame,
 });
 
 ReactDOM.render(element1, document.getElementById("newGamePanel"));

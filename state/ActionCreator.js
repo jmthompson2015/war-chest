@@ -11,6 +11,14 @@ const makeActionCreator = (type, ...argNames) => (...args) => {
   return action;
 };
 
+const makeActionCreatorNilAllowed = (type, ...argNames) => (...args) => {
+  const action = { type };
+  argNames.forEach((arg, index) => {
+    action[argNames[index]] = args[index];
+  });
+  return action;
+};
+
 ActionCreator.addCoin = makeActionCreator(ActionType.ADD_COIN, "coinState");
 
 ActionCreator.addGameRecord = makeActionCreator(ActionType.ADD_GAME_RECORD, "message");
@@ -69,6 +77,8 @@ ActionCreator.setCurrentPlayerOrder = makeActionCreator(
 );
 
 ActionCreator.setCurrentRound = makeActionCreator(ActionType.SET_CURRENT_ROUND, "round");
+
+ActionCreator.setCurrentStep = makeActionCreatorNilAllowed(ActionType.SET_CURRENT_STEP, "stepKey");
 
 ActionCreator.setDelay = makeActionCreator(ActionType.SET_DELAY, "delay");
 

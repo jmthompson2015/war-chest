@@ -4,6 +4,7 @@ module.exports = {
   },
   extends: ["airbnb", "prettier"],
   globals: {
+    GameEngine: true,
     Immutable: true,
     MCTS: true,
     PropTypes: true,

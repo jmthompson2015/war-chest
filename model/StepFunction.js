@@ -1,37 +1,21 @@
+/* eslint no-console: ["error", { allow: ["log"] }] */
+
 import ArrayUtils from "../util/ArrayUtilities.js";
 
 import Move from "../artifact/Move.js";
+import Phase from "../artifact/Phase.js";
 import UnitCoin from "../artifact/UnitCoin.js";
 
 import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
 
 import GameOver from "./GameOver.js";
-import MoveGenerator from "./MoveGenerator.js";
 import MoveFunction from "./MoveFunction.js";
+import MoveGenerator from "./MoveGenerator.js";
 
-const PhaseFunction = {};
+const StepFunction = {};
 
-const advanceCurrentPlayer = (store) => {
-  const oldPlayer = Selector.currentPlayer(store.getState());
-  const oldPlayerId = oldPlayer ? oldPlayer.id : undefined;
-  const playerIds = Selector.currentPlayerOrder(store.getState());
-  let newPlayerId;
-
-  if (R.isNil(oldPlayerId)) {
-    newPlayerId = Selector.initiativePlayer(store.getState()).id;
-  } else {
-    const index = playerIds.indexOf(oldPlayerId);
-
-    if (index === playerIds.length - 1) {
-      [newPlayerId] = playerIds; // first element
-    } else {
-      newPlayerId = playerIds[index + 1];
-    }
-  }
-
-  store.dispatch(ActionCreator.setCurrentPlayer(newPlayerId));
-};
+// /////////////////////////////////////////////////////////////////////////////
 
 const drawCoin = (playerId, store) => {
   let bag = Selector.bag(playerId, store.getState());
@@ -54,27 +38,7 @@ const drawThreeCoins = (playerId, store) => {
   }
 };
 
-const executeDrawThreeCoins = (resolve, store) => {
-  const playerIds = Selector.currentPlayerOrder(store.getState());
-
-  R.forEach((playerId) => {
-    drawThreeCoins(playerId, store);
-  }, playerIds);
-
-  resolve();
-};
-
-const hasCoinsInHand = (state) => {
-  const reduceFunction = (accum, playerId) => {
-    const hand = Selector.hand(playerId, state);
-    return accum || hand.length > 0;
-  };
-  const playerIds = Selector.currentPlayerOrder(state);
-
-  return R.reduce(reduceFunction, false, playerIds);
-};
-
-PhaseFunction.executePlayCoin = (resolve, store, callback) => {
+StepFunction.executePlayCoin = (resolve, store) => {
   const currentPlayer = Selector.currentPlayer(store.getState());
   const strategy = Selector.playerStrategy(currentPlayer.id, store.getState());
   const hand = Selector.hand(currentPlayer.id, store.getState());
@@ -83,14 +47,14 @@ PhaseFunction.executePlayCoin = (resolve, store, callback) => {
     const moveStates = MoveGenerator.generate(currentPlayer, store.getState());
     const delay = Selector.delay(store.getState());
     strategy.choosePaymentCoin(moveStates, store, delay).then((moveState) => {
-      PhaseFunction.finishChoosePaymentCoin(moveState.coinId, resolve, store, callback);
+      StepFunction.finishChoosePaymentCoin(moveState.coinId, resolve, store);
     });
   } else {
     resolve();
   }
 };
 
-PhaseFunction.finishChoosePaymentCoin = (paymentCoinId, resolve, store, callback) => {
+StepFunction.finishChoosePaymentCoin = (paymentCoinId, resolve, store) => {
   if (!R.isNil(paymentCoinId)) {
     const currentPlayer = Selector.currentPlayer(store.getState());
     store.dispatch(ActionCreator.setCurrentPaymentCoin(paymentCoinId));
@@ -98,42 +62,10 @@ PhaseFunction.finishChoosePaymentCoin = (paymentCoinId, resolve, store, callback
     const moveStates = MoveGenerator.generateForCoin(currentPlayer, paymentCoin, store.getState());
     store.dispatch(ActionCreator.setCurrentMoves(moveStates));
 
-    PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
-  }
-};
-
-PhaseFunction.executePlayCoins = (resolve, store) => {
-  advanceCurrentPlayer(store);
-
-  const hasCoins = hasCoinsInHand(store.getState());
-
-  if (hasCoins) {
-    PhaseFunction.executePlayCoin(resolve, store, PhaseFunction.executePlayCoins);
+    StepFunction.chooseMove(moveStates, paymentCoin, resolve, store);
   } else {
     resolve();
   }
-};
-
-PhaseFunction.drawThreeCoins = {
-  execute: (store) =>
-    new Promise((resolve) => {
-      if (GameOver.isGameOver(store.getState())) {
-        resolve();
-      } else {
-        executeDrawThreeCoins(resolve, store);
-      }
-    }),
-};
-
-PhaseFunction.playCoins = {
-  execute: (store) =>
-    new Promise((resolve) => {
-      if (GameOver.isGameOver(store.getState())) {
-        resolve();
-      } else {
-        PhaseFunction.executePlayCoins(resolve, store);
-      }
-    }),
 };
 
 const beforeMoveExecute = (store) =>
@@ -148,7 +80,7 @@ const beforeMoveExecute = (store) =>
       victimCoin.coinKey === UnitCoin.ROYAL_GUARD &&
       moveState.moveKey === Move.ATTACK
     ) {
-      PhaseFunction.executeRoyalGuardAttribute(store).then(() => {
+      StepFunction.executeRoyalGuardAttribute(store).then(() => {
         resolve();
       });
     } else {
@@ -156,7 +88,7 @@ const beforeMoveExecute = (store) =>
     }
   });
 
-const afterMoveExecute = (paymentCoin, resolve, store, callback) => {
+const afterMoveExecute = (paymentCoin, resolve, store) => {
   const moveState = Selector.currentMove(store.getState());
   const move = moveState.moveType;
   const an = moveState.moveKey === Move.MOVE_A_UNIT ? moveState.an2 : moveState.an1;
@@ -172,47 +104,47 @@ const afterMoveExecute = (paymentCoin, resolve, store, callback) => {
     unit &&
     unit.length > 1
   ) {
-    PhaseFunction.executeBerserkerAttribute(resolve, store, callback);
+    StepFunction.executeBerserkerAttribute(resolve, store);
   } else if (
     recruitCoin &&
     recruitCoin.coinKey === UnitCoin.MERCENARY &&
     moveState.moveKey === Move.RECRUIT
   ) {
     store.dispatch(ActionCreator.setCurrentPaymentCoin(recruitCoin.id));
-    PhaseFunction.executeMercenaryAttribute(resolve, store, callback);
+    StepFunction.executeMercenaryAttribute(resolve, store);
   } else if (paymentCoin.coinKey === UnitCoin.SWORDSMAN && moveState.moveKey === Move.ATTACK) {
-    PhaseFunction.executeSwordsmanAttribute(resolve, store, callback);
+    StepFunction.executeSwordsmanAttribute(resolve, store);
   } else if (
     paymentCoin.coinKey === UnitCoin.WARRIOR_PRIEST &&
     [Move.ATTACK, Move.CONTROL].includes(moveState.moveKey)
   ) {
-    PhaseFunction.executeWarriorPriestAttribute(resolve, store, callback);
+    StepFunction.executeWarriorPriestAttribute(resolve, store);
   } else {
-    callback(resolve, store);
+    resolve();
   }
 };
 
-PhaseFunction.chooseMove = (moveStates, paymentCoin, resolve, store, callback) => {
+StepFunction.chooseMove = (moveStates, paymentCoin, resolve, store) => {
   if (!R.isEmpty(moveStates)) {
     const currentPlayer = Selector.currentPlayer(store.getState());
     const strategy = Selector.playerStrategy(currentPlayer.id, store.getState());
     const delay = Selector.delay(store.getState());
 
     strategy.chooseMove(moveStates, store, delay).then((moveState) => {
-      PhaseFunction.finishChooseMove(moveState, moveStates, paymentCoin, resolve, store, callback);
+      StepFunction.finishChooseMove(moveState, moveStates, paymentCoin, resolve, store);
     });
   } else {
-    callback(resolve, store);
+    resolve();
   }
 };
 
-PhaseFunction.finishChooseMove = (moveState, moveStates, paymentCoin, resolve, store, callback) => {
+StepFunction.finishChooseMove = (moveState, moveStates, paymentCoin, resolve, store) => {
   store.dispatch(ActionCreator.setCurrentMove(moveState));
 
   if (R.isNil(moveState)) {
     store.dispatch(ActionCreator.setCurrentMoves([]));
     store.dispatch(ActionCreator.setCurrentPaymentCoin(null));
-    PhaseFunction.executePlayCoin(resolve, store, callback);
+    resolve();
   } else {
     const gameRecord = MoveFunction.createGameRecord(moveState, store.getState());
     store.dispatch(ActionCreator.addGameRecord(gameRecord));
@@ -224,32 +156,56 @@ PhaseFunction.finishChooseMove = (moveState, moveStates, paymentCoin, resolve, s
         if (GameOver.isGameOver(store.getState())) {
           resolve();
         } else {
-          afterMoveExecute(paymentCoin, resolve, store, callback);
+          afterMoveExecute(paymentCoin, resolve, store);
         }
       });
   }
 };
 
-PhaseFunction.executeBerserkerAttribute = (resolve, store, callback) => {
+StepFunction.execute = (store) => {
+  return new Promise((resolve) => {
+    const phaseKey = Selector.currentPhaseKey(store.getState());
+    const playerId = Selector.currentPlayerId(store.getState());
+    let answer = Promise.resolve();
+
+    switch (phaseKey) {
+      case Phase.DRAW_THREE_COINS:
+        drawThreeCoins(playerId, store);
+        resolve();
+        break;
+      case Phase.PLAY_COIN_1:
+      case Phase.PLAY_COIN_2:
+      case Phase.PLAY_COIN_3:
+        answer = StepFunction.executePlayCoin(resolve, store);
+        break;
+      default:
+        throw new Error(`Unknown phaseKey = ${phaseKey}`);
+    }
+
+    return answer;
+  });
+};
+
+StepFunction.executeBerserkerAttribute = (resolve, store) => {
   const currentPlayer = Selector.currentPlayer(store.getState());
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates0 = MoveGenerator.generateManeuvers(currentPlayer, paymentCoin, store.getState());
   const moveStates = R.map((m) => ({ ...m, isBerserker: true }), moveStates0);
   store.dispatch(ActionCreator.setCurrentMoves(moveStates));
 
-  PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
+  StepFunction.chooseMove(moveStates, paymentCoin, resolve, store);
 };
 
-PhaseFunction.executeMercenaryAttribute = (resolve, store, callback) => {
+StepFunction.executeMercenaryAttribute = (resolve, store) => {
   const currentPlayer = Selector.currentPlayer(store.getState());
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates = MoveGenerator.generateManeuvers(currentPlayer, paymentCoin, store.getState());
   store.dispatch(ActionCreator.setCurrentMoves(moveStates));
 
-  PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
+  StepFunction.chooseMove(moveStates, paymentCoin, resolve, store);
 };
 
-PhaseFunction.executeRoyalGuardAttribute = (store) =>
+StepFunction.executeRoyalGuardAttribute = (store) =>
   new Promise((resolve) => {
     const moveState = Selector.currentMove(store.getState());
     const victimCoin = Selector.coin(moveState.victimCoinId, store.getState());
@@ -263,16 +219,16 @@ PhaseFunction.executeRoyalGuardAttribute = (store) =>
     });
   });
 
-PhaseFunction.executeSwordsmanAttribute = (resolve, store, callback) => {
+StepFunction.executeSwordsmanAttribute = (resolve, store) => {
   const currentPlayer = Selector.currentPlayer(store.getState());
   const paymentCoin = Selector.currentPaymentCoin(store.getState());
   const moveStates = MoveGenerator.generateMoveAUnits(currentPlayer, paymentCoin, store.getState());
   store.dispatch(ActionCreator.setCurrentMoves(moveStates));
 
-  PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
+  StepFunction.chooseMove(moveStates, paymentCoin, resolve, store);
 };
 
-PhaseFunction.executeWarriorPriestAttribute = (resolve, store, callback) => {
+StepFunction.executeWarriorPriestAttribute = (resolve, store) => {
   const currentPlayer = Selector.currentPlayer(store.getState());
   drawCoin(currentPlayer.id, store);
   const hand = Selector.hand(currentPlayer.id, store.getState());
@@ -281,9 +237,9 @@ PhaseFunction.executeWarriorPriestAttribute = (resolve, store, callback) => {
   const moveStates = MoveGenerator.generateForCoin(currentPlayer, paymentCoin, store.getState());
   store.dispatch(ActionCreator.setCurrentMoves(moveStates));
 
-  PhaseFunction.chooseMove(moveStates, paymentCoin, resolve, store, callback);
+  StepFunction.chooseMove(moveStates, paymentCoin, resolve, store);
 };
 
-Object.freeze(PhaseFunction);
+Object.freeze(StepFunction);
 
-export default PhaseFunction;
+export default StepFunction;

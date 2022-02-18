@@ -16,8 +16,8 @@ class TableauUI extends React.PureComponent {
       key: "tableau",
       element,
       className: "bg-wc-medium center ma1 tc",
-      header: "Tableau",
-      headerClass: "b bg-wc-dark f6 tc wc-light"
+      title: "Tableau",
+      titleClass: "b bg-wc-dark f6 tc wc-light",
     });
   }
 }
@@ -25,11 +25,11 @@ class TableauUI extends React.PureComponent {
 TableauUI.propTypes = {
   tableau: PropTypes.arrayOf(PropTypes.string).isRequired,
 
-  resourceBase: PropTypes.string
+  resourceBase: PropTypes.string,
 };
 
 TableauUI.defaultProps = {
-  resourceBase: Endpoint.NETWORK_RESOURCE
+  resourceBase: Endpoint.NETWORK_RESOURCE,
 };
 
 export default TableauUI;

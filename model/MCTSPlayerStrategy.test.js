@@ -39,7 +39,7 @@ QUnit.test("chooseMove()", (assert) => {
   const store = TestData.createStore();
   store.dispatch(ActionCreator.setDelay(0));
   store.dispatch(ActionCreator.setCurrentRound(1));
-  store.dispatch(ActionCreator.setCurrentPhase(Phase.PLAY_COINS));
+  store.dispatch(ActionCreator.setCurrentPhase(Phase.PLAY_COIN_1));
   const players2 = Selector.playersInOrder(store.getState());
   const playerIds = R.map(R.prop("id"), players2);
   store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
@@ -82,7 +82,7 @@ QUnit.test("choosePaymentCoin()", (assert) => {
   const store = TestData.createStore();
   store.dispatch(ActionCreator.setDelay(0));
   store.dispatch(ActionCreator.setCurrentRound(1));
-  store.dispatch(ActionCreator.setCurrentPhase(Phase.PLAY_COINS));
+  store.dispatch(ActionCreator.setCurrentPhase(Phase.PLAY_COIN_1));
   const players2 = Selector.playersInOrder(store.getState());
   const playerIds = R.map(R.prop("id"), players2);
   store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));

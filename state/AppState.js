@@ -11,7 +11,7 @@ AppState.create = ({
   initiativePlayerId,
   isGameOver = false,
   isTwoPlayer = true,
-  isVerbose = true,
+  isVerbose = false,
   mctsRoot = null,
   userMessage = null,
 
@@ -25,6 +25,7 @@ AppState.create = ({
   currentMoves = [],
   currentMove = null,
   currentRound = 0,
+  currentStepKey = null,
   inputCallbackStack = [],
 
   playerToBag = {},
@@ -64,6 +65,7 @@ AppState.create = ({
     currentMoves,
     currentMove,
     currentRound,
+    currentStepKey,
     inputCallbackStack,
 
     playerToBag,

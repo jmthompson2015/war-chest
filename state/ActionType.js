@@ -20,6 +20,7 @@ ActionType.SET_CURRENT_PHASE = "setCurrentPhase";
 ActionType.SET_CURRENT_PLAYER = "setCurrentPlayer";
 ActionType.SET_CURRENT_PLAYER_ORDER = "setCurrentPlayerOrder";
 ActionType.SET_CURRENT_ROUND = "setCurrentRound";
+ActionType.SET_CURRENT_STEP = "setCurrentStep";
 ActionType.SET_DELAY = "setDelay";
 ActionType.SET_INITIATIVE_CHANGED_THIS_ROUND = "setInitiativeChangedThisRound";
 ActionType.SET_INITIATIVE_PLAYER = "setInitiativePlayer";

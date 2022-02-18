@@ -88,11 +88,17 @@ Selector.currentPaymentCoin = (state) => Selector.coin(state.currentPaymentCoinI
 
 Selector.currentPhase = (state) => Resolver.phase(state.currentPhaseKey);
 
+Selector.currentPhaseKey = (state) => state.currentPhaseKey;
+
 Selector.currentPlayer = (state) => Selector.player(state.currentPlayerId, state);
+
+Selector.currentPlayerId = (state) => state.currentPlayerId;
 
 Selector.currentPlayerOrder = (state) => state.currentPlayerOrder;
 
 Selector.currentRound = (state) => state.currentRound;
+
+Selector.currentStepKey = (state) => state.currentStepKey;
 
 Selector.damageTargets = (playerId, state) => {
   const isTypeInSupply = Selector.isTypeInSupply(playerId, UnitCoin.ROYAL_GUARD, state);

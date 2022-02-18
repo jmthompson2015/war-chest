@@ -11,13 +11,13 @@ import Setup from "./Setup.js";
 
 QUnit.module("Setup");
 
-QUnit.test("Setup.determinePlayerToTableau() 2", assert => {
+QUnit.test("Setup.determinePlayerToTableau() 2", (assert) => {
   // Setup.
   const playerCount = 2;
   const cardKeys = UnitCard.keys();
   const initialPlayerToTableau = {
     1: cardKeys.slice(0, 4),
-    2: cardKeys.slice(4, 8)
+    2: cardKeys.slice(4, 8),
   };
 
   // Run.
@@ -40,7 +40,7 @@ QUnit.test("Setup.determinePlayerToTableau() 2", assert => {
   assert.equal(tableau2[tableau2.length - 1], UnitCard.LANCER);
 });
 
-QUnit.test("Setup.determinePlayerToTableau() 4", assert => {
+QUnit.test("Setup.determinePlayerToTableau() 4", (assert) => {
   // Setup.
   const playerCount = 4;
   const cardKeys = UnitCard.keys();
@@ -48,7 +48,7 @@ QUnit.test("Setup.determinePlayerToTableau() 4", assert => {
     1: cardKeys.slice(0, 4),
     2: cardKeys.slice(4, 8),
     3: cardKeys.slice(8, 11),
-    4: cardKeys.slice(11, 14)
+    4: cardKeys.slice(11, 14),
   };
 
   // Run.
@@ -75,7 +75,7 @@ QUnit.test("Setup.determinePlayerToTableau() 4", assert => {
   assert.equal(tableau4.length, 3);
 });
 
-QUnit.test("Setup.createInitialPlayerToTableau()", assert => {
+QUnit.test("Setup.createInitialPlayerToTableau()", (assert) => {
   // Setup.
 
   // Run.
@@ -102,7 +102,7 @@ QUnit.test("Setup.createInitialPlayerToTableau()", assert => {
   assert.equal(tableau4.length, 3);
 });
 
-QUnit.test("Setup.execute()", assert => {
+QUnit.test("Setup.execute()", (assert) => {
   // Setup.
   const store = Redux.createStore(Reducer.root);
   const ravenPlayer = PlayerState.create({ id: 1, name: "Raven" });
@@ -148,7 +148,7 @@ QUnit.test("Setup.execute()", assert => {
   assert.equal(player2Supply.length >= 8 && player2Supply.length <= 12, true);
 });
 
-QUnit.skip("state", assert => {
+QUnit.skip("state", (assert) => {
   // Setup.
   const store = Redux.createStore(Reducer.root);
   const ravenPlayer = PlayerState.create({ id: 1, name: "Raven" });
@@ -158,7 +158,6 @@ QUnit.skip("state", assert => {
 
   // Run / Verify.
   assert.ok(store);
-  console.log(`state = ${JSON.stringify(store.getState(), null, 3)}`);
 });
 
 const SetupTest = {};

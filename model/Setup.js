@@ -30,7 +30,7 @@ const initializePlayerControlMarkers = (isTwoPlayer, isRaven, store) => {
       : Board.WOLF_STARTER_CONTROL_POINTS_4P;
   }
 
-  R.forEach(an1 => {
+  R.forEach((an1) => {
     store.dispatch(ActionCreator.setControl(an1, controlKey));
   }, controlANs);
 };
@@ -38,7 +38,7 @@ const initializePlayerControlMarkers = (isTwoPlayer, isRaven, store) => {
 const initializeControlMarkers = (store, isTwoPlayer) => {
   // Place neutral control marker on locations.
   const controlPoints = isTwoPlayer ? Board.CONTROL_POINTS_2P : Board.CONTROL_POINTS_4P;
-  R.forEach(an1 => {
+  R.forEach((an1) => {
     store.dispatch(ActionCreator.setControl(an1, ControlMarker.NEUTRAL));
   }, controlPoints);
 
@@ -85,7 +85,7 @@ Setup.determinePlayerToTableau = (playerCount, initialPlayerToTableau) => {
   return answer;
 };
 
-Setup.execute = store => {
+Setup.execute = (store) => {
   const players0 = Selector.players(store.getState());
   const isTwoPlayer = players0.length === 2;
 
@@ -99,7 +99,7 @@ Setup.execute = store => {
   // For each player,
   const players = Selector.playersInOrder(store.getState());
 
-  R.forEach(p => {
+  R.forEach((p) => {
     // Place Royal Coin in bag.
     const royalCoinKey = p.teamKey === "raven" ? RoyalCoin.RAVEN : RoyalCoin.WOLF;
     const royalCoin = CoinState.create({ coinKey: royalCoinKey, store });
@@ -107,9 +107,9 @@ Setup.execute = store => {
 
     // Fill supply with unit coins.
     const cardKeys = Selector.tableau(p.id, store.getState());
-    const cards = R.map(c => Resolver.card(c), cardKeys);
+    const cards = R.map((c) => Resolver.card(c), cardKeys);
 
-    R.forEach(card => {
+    R.forEach((card) => {
       for (let j = 0; j < card.initialCount - 2; j += 1) {
         const coin = CoinState.create({ coinKey: card.key, store });
         store.dispatch(ActionCreator.addToPlayerArray("playerToSupply", p.id, coin.id));
@@ -122,6 +122,9 @@ Setup.execute = store => {
       }
     }, cards);
   }, players);
+
+  const playerIds = R.map(R.prop("id"), players);
+  store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
 };
 
 Object.freeze(Setup);
