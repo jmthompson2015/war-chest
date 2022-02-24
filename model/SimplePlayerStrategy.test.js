@@ -1,5 +1,4 @@
 import DamageTarget from "../artifact/DamageTarget.js";
-import UnitCoin from "../artifact/UnitCoin.js";
 
 import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
@@ -82,33 +81,6 @@ QUnit.test("chooseMove() moveAUnit", (assert) => {
   };
 
   SimplePlayerStrategy.chooseMove(moveStates, store, delay).then(callback);
-});
-
-QUnit.test("choosePaymentCoin()", (assert) => {
-  // Setup.
-  const store = TestData.createStore();
-  const delay = 0;
-  const playerId = 1;
-  store.dispatch(ActionCreator.setCurrentPlayer(playerId));
-  const player = Selector.player(playerId, store.getState());
-  const moveStates = MoveGenerator.generate(player, store.getState());
-  store.dispatch(ActionCreator.setUnit("e2", 6)); // Swordsman
-
-  // Run.
-  const done = assert.async();
-  const callback = (result) => {
-    assert.ok(true, "test resumed from async operation");
-    // Verify.
-    assert.ok(result);
-    const coinIds = R.map((m) => m.coinId, moveStates);
-    assert.equal(coinIds.includes(result.coinId), true);
-    const coin = Selector.coin(result.coinId, store.getState());
-    assert.ok(coin);
-    assert.equal(coin.coinKey, UnitCoin.SWORDSMAN);
-    done();
-  };
-
-  SimplePlayerStrategy.choosePaymentCoin(moveStates, store, delay).then(callback);
 });
 
 const SimplePlayerStrategyTest = {};

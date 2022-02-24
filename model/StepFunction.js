@@ -33,8 +33,11 @@ const drawCoin = (playerId, store) => {
 };
 
 const drawThreeCoins = (playerId, store) => {
-  for (let i = 0; i < 3; i += 1) {
+  let handLen = Selector.hand(playerId, store.getState()).length;
+
+  for (let i = 0; i < 3 && handLen < 3; i += 1) {
     drawCoin(playerId, store);
+    handLen = Selector.hand(playerId, store.getState()).length;
   }
 };
 
@@ -43,7 +46,18 @@ StepFunction.executePlayCoin = (resolve, store) => {
   const strategy = Selector.playerStrategy(currentPlayer.id, store.getState());
   const hand = Selector.hand(currentPlayer.id, store.getState());
 
-  if (hand.length > 0) {
+  if (currentPlayer.isComputer) {
+    if (hand.length > 0) {
+      const moveStates = MoveGenerator.generateFull(currentPlayer, store.getState());
+      const delay = Selector.delay(store.getState());
+      strategy.chooseMove(moveStates, store, delay).then((moveState) => {
+        const paymentCoin = Selector.coin(moveState.paymentCoinId, store.getState());
+        StepFunction.finishChooseMove(moveState, moveStates, paymentCoin, resolve, store);
+      });
+    } else {
+      resolve();
+    }
+  } else if (hand.length > 0) {
     const moveStates = MoveGenerator.generate(currentPlayer, store.getState());
     const delay = Selector.delay(store.getState());
     strategy.choosePaymentCoin(moveStates, store, delay).then((moveState) => {
@@ -144,7 +158,7 @@ StepFunction.finishChooseMove = (moveState, moveStates, paymentCoin, resolve, st
   if (R.isNil(moveState)) {
     store.dispatch(ActionCreator.setCurrentMoves([]));
     store.dispatch(ActionCreator.setCurrentPaymentCoin(null));
-    resolve();
+    StepFunction.executePlayCoin(resolve, store);
   } else {
     const gameRecord = MoveFunction.createGameRecord(moveState, store.getState());
     store.dispatch(ActionCreator.addGameRecord(gameRecord));

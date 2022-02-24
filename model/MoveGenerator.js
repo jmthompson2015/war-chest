@@ -592,19 +592,25 @@ MoveGenerator.generate = (player, state) => {
   const hand = Selector.hand(player.id, state);
   const paymentCoin0 = Selector.currentPaymentCoin(state);
 
-  if (!paymentCoin0) {
+  if (R.isNil(paymentCoin0)) {
     const mapFunction = (coinId) => ({ coinId });
     answer = R.map(mapFunction, hand);
   } else {
-    const reduceFunction = (accum, paymentCoinId) => {
-      const paymentCoin = Selector.coin(paymentCoinId, state);
-      return concat(MoveGenerator.generateForCoin(player, paymentCoin, state), accum);
-    };
-
-    answer = R.reduce(reduceFunction, [], hand);
+    const paymentCoin = Selector.coin(paymentCoin0.id, state);
+    answer = MoveGenerator.generateForCoin(player, paymentCoin, state);
   }
 
   return answer;
+};
+
+MoveGenerator.generateFull = (player, state) => {
+  const hand = Selector.hand(player.id, state);
+  const reduceFunction = (accum, paymentCoinId) => {
+    const paymentCoin = Selector.coin(paymentCoinId, state);
+    return concat(MoveGenerator.generateForCoin(player, paymentCoin, state), accum);
+  };
+
+  return R.reduce(reduceFunction, [], hand);
 };
 
 Object.freeze(MoveGenerator);

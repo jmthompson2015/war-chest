@@ -75,14 +75,14 @@ QUnit.test("generate() moves", (assert) => {
   // Verify.
   assert.ok(result);
   assert.equal(Array.isArray(result), true);
-  assert.equal(result.length, 19, `result.length=${result.length}`);
+  assert.equal(result.length, 5, `result.length=${result.length}`);
   const move0 = result[0];
   verifyMoveState(
     assert,
     move0,
     Move.RECRUIT,
-    1, // playerId
-    10, // paymentCoinId
+    playerId,
+    paymentCoinId,
     undefined, // an1
     undefined, // an2
     undefined, // an3
@@ -300,6 +300,35 @@ QUnit.test("generateForCoin() Scout", (assert) => {
   verifyMoveState(assert, move0, Move.CLAIM_INITIATIVE, playerId, paymentCoinId);
   const moveLast = result[result.length - 1];
   verifyMoveState(assert, moveLast, Move.DEPLOY, playerId, paymentCoinId, "f2");
+});
+
+QUnit.test("generateFull()", (assert) => {
+  // Setup.
+  const store = TestData.createStore();
+  const playerId = 1;
+  const player = Selector.player(playerId, store.getState());
+
+  // Run.
+  const result = MoveGenerator.generateFull(player, store.getState());
+
+  // Verify.
+  assert.ok(result);
+  assert.equal(Array.isArray(result), true);
+  assert.equal(result.length, 19, `result.length=${result.length}`);
+  const move0 = result[0];
+  verifyMoveState(
+    assert,
+    move0,
+    Move.RECRUIT,
+    playerId,
+    10, // paymentCoinId
+    undefined, // an1
+    undefined, // an2
+    undefined, // an3
+    2 // recruitCoinId
+  );
+  const moveLast = result[result.length - 1];
+  verifyMoveState(assert, moveLast, Move.PASS, 1, 1);
 });
 
 QUnit.test("generateManeuvers()", (assert) => {

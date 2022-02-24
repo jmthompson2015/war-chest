@@ -1,7 +1,5 @@
 import DamageTarget from "../artifact/DamageTarget.js";
 import Phase from "../artifact/Phase.js";
-import RoyalCoin from "../artifact/RoyalCoin.js";
-import UnitCoin from "../artifact/UnitCoin.js";
 
 import ActionCreator from "../state/ActionCreator.js";
 import Selector from "../state/Selector.js";
@@ -48,7 +46,7 @@ QUnit.test("chooseMove()", (assert) => {
   store.dispatch(ActionCreator.setVerbose(false));
   const delay = 0;
   const roundLimit = 30;
-  const allowedTime = 100;
+  const allowedTime = 500;
   const player = Selector.player(playerId, store.getState());
   const hand = Selector.hand(playerId, store.getState());
   const paymentCoin = Selector.coin(paymentCoinId, store.getState());
@@ -75,47 +73,6 @@ QUnit.test("chooseMove()", (assert) => {
   };
 
   MCTSPlayerStrategy.chooseMove(moveStates, store, delay, roundLimit, allowedTime).then(callback);
-});
-
-QUnit.test("choosePaymentCoin()", (assert) => {
-  // Setup.
-  const store = TestData.createStore();
-  store.dispatch(ActionCreator.setDelay(0));
-  store.dispatch(ActionCreator.setCurrentRound(1));
-  store.dispatch(ActionCreator.setCurrentPhase(Phase.PLAY_COIN_1));
-  const players2 = Selector.playersInOrder(store.getState());
-  const playerIds = R.map(R.prop("id"), players2);
-  store.dispatch(ActionCreator.setCurrentPlayerOrder(playerIds));
-  store.dispatch(ActionCreator.setCurrentPlayer(1));
-  store.dispatch(ActionCreator.setVerbose(false));
-  const delay = 0;
-  const roundLimit = 30;
-  const allowedTime = 100;
-  const playerId = 1;
-  const player = Selector.player(playerId, store.getState());
-  const moveStates = MoveGenerator.generate(player, store.getState());
-
-  // Run.
-  const done = assert.async();
-  const callback = (result) => {
-    assert.ok(true, "test resumed from async operation");
-    // Verify.
-    assert.ok(result);
-    const coinIds = R.map((m) => m.coinId, moveStates);
-    assert.equal(coinIds.includes(result.coinId), true);
-    const coin = Selector.coin(result.coinId, store.getState());
-    assert.ok(coin);
-    assert.equal(
-      [RoyalCoin.RAVEN, UnitCoin.PIKEMAN, UnitCoin.SWORDSMAN].includes(coin.coinKey),
-      true,
-      `coin.coinKey = ${coin.coinKey}`
-    );
-    done();
-  };
-
-  MCTSPlayerStrategy.choosePaymentCoin(moveStates, store, delay, roundLimit, allowedTime).then(
-    callback
-  );
 });
 
 const MCTSPlayerStrategyTest = {};

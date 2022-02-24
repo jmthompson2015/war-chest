@@ -29,7 +29,7 @@ class MCTSGame {
   getPossibleMoves() {
     const player = this.getCurrentPlayer();
 
-    return MoveGenerator.generate(player, this._state);
+    return MoveGenerator.generateFull(player, this._state);
   }
 
   getWinner() {

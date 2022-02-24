@@ -53,26 +53,5 @@ QUnit.test("chooseMove()", (assert) => {
   RandomPlayerStrategy.chooseMove(moveStates, store, delay).then(callback);
 });
 
-QUnit.test("choosePaymentCoin()", (assert) => {
-  // Setup.
-  const store = TestData.createStore();
-  const delay = 0;
-  const playerId = 1;
-  const player = Selector.player(playerId, store.getState());
-  const moveStates = MoveGenerator.generate(player, store.getState());
-
-  // Run.
-  const done = assert.async();
-  const callback = (result) => {
-    assert.ok(true, "test resumed from async operation");
-    // Verify.
-    assert.ok(result);
-    assert.equal(moveStates.includes(result), true);
-    done();
-  };
-
-  RandomPlayerStrategy.choosePaymentCoin(moveStates, store, delay).then(callback);
-});
-
 const RandomPlayerStrategyTest = {};
 export default RandomPlayerStrategyTest;

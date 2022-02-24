@@ -25,27 +25,6 @@ QUnit.test("getCurrentPlayer()", (assert) => {
   assert.equal(result.teamKey, Team.RAVEN, `result.teamKey ? ${result.teamKey}`);
 });
 
-QUnit.test("getPossibleMoves() payment coin", (assert) => {
-  // Setup.
-  const store = TestData.createStore();
-  store.dispatch(ActionCreator.setCurrentPlayer(1));
-  const game = new MCTSGame(store.getState());
-
-  // Run.
-  const result = game.getPossibleMoves();
-
-  // Verify.
-  assert.ok(result, "result !== undefined");
-  assert.equal(Array.isArray(result), true, `Array.isArray(result) ? ${Array.isArray(result)}`);
-  assert.equal(result.length, 3, `result.length = ${result.length}`);
-  const move0 = result[0];
-  assert.ok(move0);
-  assert.equal(move0.coinId, 1);
-  const moveLast = R.last(result);
-  assert.ok(moveLast);
-  assert.equal(moveLast.coinId, 10);
-});
-
 QUnit.test("getPossibleMoves() moves", (assert) => {
   // Setup.
   const store = TestData.createStore();

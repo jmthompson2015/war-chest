@@ -87,43 +87,6 @@ SimplePlayerStrategy.chooseMove = (moveStates, store, delay = DELAY) =>
     RandomPlayerStrategy.delayedResolve(answer, resolve, remainingTime);
   });
 
-SimplePlayerStrategy.choosePaymentCoin = (moveStates, store, delay = DELAY) =>
-  new Promise((resolve) => {
-    const startTime = Date.now();
-    let answer;
-
-    if (moveStates.length <= 1) {
-      [answer] = moveStates;
-    } else {
-      const state = store.getState();
-      const tokenANs = Object.keys(state.anToTokens);
-
-      // Choose a coin that has a match on the board.
-      const boardCoinKeys = R.uniq(R.map((an1) => Selector.coinKeyForUnit(an1, state), tokenANs));
-      const handCoins = Selector.coins(Selector.hand(state.currentPlayerId, state), state);
-      const handCoinKeys = R.uniq(R.map((c) => c.coinKey, handCoins));
-      const targetCoinKeys = R.intersection(boardCoinKeys, handCoinKeys);
-
-      if (targetCoinKeys.length > 0) {
-        const coinKey = ArrayUtils.randomElement(targetCoinKeys);
-        const matchingCoins = R.filter((c) => c.coinKey === coinKey, handCoins);
-
-        if (matchingCoins.length > 0) {
-          const coin = ArrayUtils.randomElement(matchingCoins);
-          answer = coin ? { coinId: coin.id } : undefined;
-        }
-      }
-    }
-
-    if (!answer) {
-      answer = ArrayUtils.randomElement(moveStates);
-    }
-
-    const elapsedTime = Date.now() - startTime;
-    const remainingTime = delay - elapsedTime;
-    RandomPlayerStrategy.delayedResolve(answer, resolve, remainingTime);
-  });
-
 Object.freeze(SimplePlayerStrategy);
 
 export default SimplePlayerStrategy;
